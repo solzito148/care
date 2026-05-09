@@ -67,6 +67,10 @@ create table if not exists public.care_recipients (
   updated_at timestamptz not null default now()
 );
 
+-- Campos JSON para UI (listas en persona cuidada, snapshot de medicacion). Idempotente.
+alter table public.care_recipients
+  add column if not exists metadata jsonb not null default '{}'::jsonb;
+
 -- Medication catalog assigned to care recipient
 create table if not exists public.medications (
   id uuid primary key default gen_random_uuid(),
@@ -79,6 +83,9 @@ create table if not exists public.medications (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.medications
+  add column if not exists metadata jsonb not null default '{}'::jsonb;
 
 create table if not exists public.medication_schedules (
   id uuid primary key default gen_random_uuid(),
@@ -251,6 +258,12 @@ as $$
     from public.household_members hm
     where hm.household_id = target_household_id
       and hm.user_id = auth.uid()
+  )
+  or exists (
+    select 1
+    from public.households h
+    where h.id = target_household_id
+      and h.owner_user_id = auth.uid()
   );
 $$;
 

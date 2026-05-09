@@ -1,10 +1,14 @@
-import { SectionPage } from "@/components/sections/section-page";
+import { redirect } from "next/navigation";
 
-export default function AgendaPage() {
-  return (
-    <SectionPage
-      title="Agenda"
-      description="Planificacion diaria y semanal de actividades, recordatorios y tareas del cuidado."
-    />
-  );
+import { AgendaClient } from "@/app/(app)/agenda/agenda-client";
+import { loadAgendaItems } from "@/lib/data/agenda";
+import { ensureCareContext } from "@/lib/data/care-context";
+
+export default async function AgendaPage() {
+  const ctx = await ensureCareContext();
+  if (!ctx) redirect("/login");
+
+  const items = await loadAgendaItems(ctx.careRecipientId);
+
+  return <AgendaClient items={items} />;
 }

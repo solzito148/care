@@ -86,6 +86,236 @@ export type Database = {
         Update: never;
         Relationships: [];
       };
+      households: {
+        Row: {
+          id: string;
+          name: string;
+          owner_user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          name: string;
+          owner_user_id: string;
+        };
+        Update: Partial<{ name: string }>;
+        Relationships: [];
+      };
+      household_members: {
+        Row: {
+          id: string;
+          household_id: string;
+          user_id: string;
+          member_role: "owner" | "family" | "caregiver" | "professional";
+          created_at: string;
+        };
+        Insert: {
+          household_id: string;
+          user_id: string;
+          member_role: "owner" | "family" | "caregiver" | "professional";
+        };
+        Update: never;
+        Relationships: [];
+      };
+      care_recipients: {
+        Row: {
+          id: string;
+          household_id: string;
+          full_name: string;
+          preferred_name: string | null;
+          birth_date: string | null;
+          blood_type: string | null;
+          emergency_notes: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          household_id: string;
+          full_name: string;
+          preferred_name?: string | null;
+          birth_date?: string | null;
+          blood_type?: string | null;
+          emergency_notes?: string | null;
+          metadata?: Json;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["care_recipients"]["Insert"], "household_id">> & {
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      medications: {
+        Row: {
+          id: string;
+          care_recipient_id: string;
+          name: string;
+          dosage: string;
+          route: string | null;
+          instructions: string | null;
+          active: boolean;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          care_recipient_id: string;
+          name: string;
+          dosage: string;
+          route?: string | null;
+          instructions?: string | null;
+          active?: boolean;
+          metadata?: Json;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["medications"]["Insert"], "care_recipient_id">>;
+        Relationships: [];
+      };
+      medication_schedules: {
+        Row: {
+          id: string;
+          medication_id: string;
+          frequency: string;
+          time_of_day: string;
+          start_date: string;
+          end_date: string | null;
+          created_at: string;
+        };
+        Insert: {
+          medication_id: string;
+          frequency: string;
+          time_of_day: string;
+          start_date: string;
+          end_date?: string | null;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["medication_schedules"]["Insert"], "medication_id">>;
+        Relationships: [];
+      };
+      medication_intakes: {
+        Row: {
+          id: string;
+          schedule_id: string;
+          taken_at: string | null;
+          status: "pending" | "taken" | "skipped" | "late";
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          schedule_id: string;
+          taken_at?: string | null;
+          status: "pending" | "taken" | "skipped" | "late";
+          notes?: string | null;
+          created_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["medication_intakes"]["Insert"]>;
+        Relationships: [];
+      };
+      appointments: {
+        Row: {
+          id: string;
+          care_recipient_id: string;
+          title: string;
+          provider_name: string | null;
+          location: string | null;
+          starts_at: string;
+          ends_at: string | null;
+          status: "scheduled" | "confirmed" | "done" | "cancelled";
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          care_recipient_id: string;
+          title: string;
+          provider_name?: string | null;
+          location?: string | null;
+          starts_at: string;
+          ends_at?: string | null;
+          status?: "scheduled" | "confirmed" | "done" | "cancelled";
+          notes?: string | null;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["appointments"]["Insert"], "care_recipient_id">>;
+        Relationships: [];
+      };
+      caregiver_profiles: {
+        Row: {
+          id: string;
+          display_initials: string;
+          full_name: string;
+          zones: string[];
+          locality: string;
+          modalities: string[];
+          availability_special: string[];
+          experience_years: number;
+          tasks: string[];
+          rating: string;
+          profile_complete: boolean;
+          references_loaded: boolean;
+          references_verified: boolean;
+          recommended_care: boolean;
+          data_updated: boolean;
+          profile_status:
+            | "datos-actualizados"
+            | "pendiente-actualizacion"
+            | "datos-vencidos"
+            | "perfil-pausado";
+          high_availability: boolean;
+          last_profile_update: string | null;
+          linked_user_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          display_initials: string;
+          full_name: string;
+          zones?: string[];
+          locality?: string;
+          modalities?: string[];
+          availability_special?: string[];
+          experience_years?: number;
+          tasks?: string[];
+          rating?: string;
+          profile_complete?: boolean;
+          references_loaded?: boolean;
+          references_verified?: boolean;
+          recommended_care?: boolean;
+          data_updated?: boolean;
+          profile_status?:
+            | "datos-actualizados"
+            | "pendiente-actualizacion"
+            | "datos-vencidos"
+            | "perfil-pausado";
+          high_availability?: boolean;
+          last_profile_update?: string | null;
+          linked_user_id?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["caregiver_profiles"]["Insert"]>;
+        Relationships: [];
+      };
+      caregiver_reference_entries: {
+        Row: {
+          id: string;
+          caregiver_profile_id: string;
+          hirer_name: string;
+          zone: string | null;
+          period: string | null;
+          modality: string | null;
+          tasks_summary: string | null;
+          phone: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          caregiver_profile_id: string;
+          hirer_name: string;
+          zone?: string | null;
+          period?: string | null;
+          modality?: string | null;
+          tasks_summary?: string | null;
+          phone?: string | null;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["caregiver_reference_entries"]["Insert"], "caregiver_profile_id">>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

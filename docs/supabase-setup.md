@@ -48,6 +48,18 @@ En el dashboard Supabase abrir **SQL Editor** y ejecutar el contenido de
   `auth.users` para crear automaticamente el `profile` y un `user_role` por
   defecto al registrarse.
 
+### Fase 2 (persistencia modulos — ejecutar despues del schema base)
+
+Si el proyecto ya tenia `schema.sql` aplicado antes de mayo 2026, ejecutar ademas
+**una vez** el script `supabase/phase2.sql` en SQL Editor. Agrega:
+
+- `metadata` en `care_recipients` y `medications` (JSON flexible para la UI).
+- Tablas `caregiver_profiles` y `caregiver_reference_entries` + RLS + seed del directorio de cuidadores.
+
+Las instalaciones nuevas pueden ejecutar `schema.sql` (ya incluye la funcion
+`is_household_member` corregida para incluir al owner del hogar) y luego
+`phase2.sql` para columnas/tablas adicionales.
+
 ## 4. Configurar Auth en Supabase
 
 En el dashboard, **Authentication > Providers**:
@@ -128,9 +140,9 @@ npm run dev
    dashboard si ya hay sesion.
 6. Probar logout desde el header privado.
 
-## 7. Que protege el middleware
+## 7. Que protege el proxy (middleware)
 
-`src/middleware.ts` corre `updateSession` en cada request:
+`src/proxy.ts` corre `updateSession` en cada request:
 
 - Refresca cookies de sesion.
 - Si la ruta esta dentro de prefijos protegidos
@@ -146,7 +158,6 @@ Para sumar una nueva ruta protegida:
 1. Crear el directorio dentro de `src/app/(app)/<ruta>/`.
 2. Agregar el prefijo en `PROTECTED_PREFIXES` de
    `src/lib/supabase/middleware.ts`.
-
 ## 9. Troubleshooting
 
 - **`Faltan NEXT_PUBLIC_SUPABASE_URL...`**: confirmar que `.env.local` existe y
