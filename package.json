@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next dev",
     "build": "next build",
+    "build:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next build",
     "start": "next start",
-    "lint": "next lint"
+    "start:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "install:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' npm install"
   },
   "dependencies": {
     "@supabase/ssr": "latest",
@@ -16,6 +21,7 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",

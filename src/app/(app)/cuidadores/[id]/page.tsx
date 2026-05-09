@@ -16,9 +16,12 @@ type Props = {
 };
 
 export default function CuidadorPerfilPage({ params, searchParams }: Props) {
+  // Hooks deben llamarse en el mismo orden en cada render: declarar arriba,
+  // antes de cualquier early return.
+  const [confirmedUpdated, setConfirmedUpdated] = useState(false);
+
   const caregiver = caregiversMock.find((item) => item.id === params.id);
   if (!caregiver) return notFound();
-  const [confirmedUpdated, setConfirmedUpdated] = useState(false);
 
   const references = caregiverReferencesMock[params.id] ?? [];
   const approvedRecommendations = caregiverRecommendationsMock.filter(

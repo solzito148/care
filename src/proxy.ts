@@ -1,7 +1,10 @@
+// Next 16 renombro `middleware.ts` a `proxy.ts`. Mismo runtime y matcher.
+// Ver https://nextjs.org/docs/app/api-reference/file-conventions/proxy
+
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
