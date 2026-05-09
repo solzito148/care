@@ -1,0 +1,132 @@
+.editorconfig
+  s_24cf7604c4eb95::t_031d2caa996a2d 1-12
+src/lib/permissions.ts
+  s_069c0feb07c302::t_804950a6e565cf 4-44,50-66,68,70-71,73,75-76,79,92-94,96-107
+  s_069c0feb07c302::t_ed5e75d6cc0b16 45-49,67,69,72,74,77-78,80-91,95
+  s_069c0feb07c302::t_a3450d1f710d3d 1-3
+docs/sprints-8-semanas.md
+  s_24cf7604c4eb95::t_841b64d1664f94 1-59
+src/app/login/login-form.tsx
+  s_069c0feb07c302::t_06e7776cef2969 17-20,22-26
+  s_069c0feb07c302::t_b06e3b859313e3 1-16,21,27-109
+supabase/schema.sql
+  s_069c0feb07c302::t_7496c68368203c 503,507-526,530-557
+  s_069c0feb07c302::t_57dc6e8e12b3c7 118-134
+  s_24cf7604c4eb95::t_8cbd7839a06e47 227-239
+  s_069c0feb07c302::t_97f7078ccedc63 22,27-29
+  s_24cf7604c4eb95::t_14e8799c36cab1 1-21,23-26,30-117,135-145,165,168-170,172-198,204-212,214-226,240,243-246,248-255,260-336,496-502,504-506
+  s_24cf7604c4eb95::t_8f2e4f83b3d93a 337-409,476-481,484-485,487
+  s_069c0feb07c302::t_335333070e17e4 410-475
+  s_069c0feb07c302::t_651d980d2ae07c 166-167,171
+  s_24cf7604c4eb95::t_47c48673cb211c 482-483,486
+  s_069c0feb07c302::t_4ae3a4909cd25d 199-203,213
+  s_069c0feb07c302::t_76efa7d732d146 527-529
+  s_069c0feb07c302::t_e612ca24d05cd7 241-242,247,256-259
+  s_069c0feb07c302::t_182ad20c224aaf 146-164
+  s_24cf7604c4eb95::t_5fa1369c0cdc95 488-495
+.gitignore
+  s_24cf7604c4eb95::t_6f69d1c025309b 1-20,22-26
+  s_069c0feb07c302::t_ce0ef2d8027b02 21
+src/lib/auth.ts
+  s_069c0feb07c302::t_e21caaa611567c 81-84,86-89
+  s_069c0feb07c302::t_0fa2556ec15a84 42-52
+  s_069c0feb07c302::t_77cba9ddb91a4a 78-80,85,90-108
+  s_069c0feb07c302::t_11b4d269bac972 1-41,53-77,109-132
+scripts/auto-push-to-github.sh
+  s_069c0feb07c302::t_c3fae8b5c49fba 78-83,88-95,103
+  s_069c0feb07c302::t_721649615e2fc7 1-77,84,86-87,96-102,104-113
+  s_069c0feb07c302::t_17476effa48660 85
+.nvmrc
+  s_24cf7604c4eb95::t_554046372b8d02 1
+docs/aws-deploy-checklist.md
+  s_24cf7604c4eb95::t_617728503f6988 1-76
+src/app/onboarding/[tipo]/page.tsx
+  s_069c0feb07c302::t_cf8492d1e0db01 1-20
+src/app/actualizar-password/page.tsx
+  s_069c0feb07c302::t_b971a3e115fe72 1-100
+docs/trabajo-sin-red.md
+  s_24cf7604c4eb95::t_d90ba3d3500bdc 1-29
+src/lib/supabase/types.ts
+  s_069c0feb07c302::t_345600fadf4a63 1-30,37-63,65-75,77-86,88-89,94-95
+  s_069c0feb07c302::t_61b53b217db286 31-36,64,76,87,90-93
+src/components/layout/app-shell.tsx
+  s_069c0feb07c302::t_f0a3b612c2c209 8-19
+src/lib/supabase/server.ts
+  s_069c0feb07c302::t_97cc9a6ed12b33 1-2,4-16,18-33
+  s_069c0feb07c302::t_05dd3d6518d5a6 3
+  s_069c0feb07c302::t_2521b8cd18f5a7 17
+src/app/registro/page.tsx
+  s_069c0feb07c302::t_5de6cba3a20d3c 12-166
+.github/workflows/ci.yml
+  s_24cf7604c4eb95::t_1668c71f507622 25-30
+  s_24cf7604c4eb95::t_646919e6b475fe 1-24,31-36
+src/app/(app)/layout.tsx
+  s_069c0feb07c302::t_d2d3ad6943fca1 3,10,16-23
+  s_069c0feb07c302::t_5754a19ee7611b 1,5,11-15
+src/app/recuperar-password/page.tsx
+  s_069c0feb07c302::t_9418159ab735fb 1-82
+src/app/(app)/mi-cuenta/page.tsx
+  s_069c0feb07c302::t_0bbfb8a1d7cef7 1-103
+docs/supabase-setup.md
+  s_069c0feb07c302::t_b18c32a7e829e8 28,30-33
+  s_069c0feb07c302::t_14cf63e68dd96c 1-27,29,34-61,83-157
+  s_069c0feb07c302::t_dfedc3193ae8f6 62-82
+src/app/login/page.tsx
+  s_069c0feb07c302::t_b72e120c2fd142 1-8
+.env.example
+  s_24cf7604c4eb95::t_c9a916eef1554e 1-5,10-35
+  s_069c0feb07c302::t_af59e2d0c54e02 6-9
+src/app/auth/callback/route.ts
+  s_069c0feb07c302::t_2ea4c18ec38b7c 8-10,20,23-25,29,36-38,42,44,49
+  s_069c0feb07c302::t_4d15840c2b5a77 1-7,11-19,21-22,26-28,30-35,39-41,43,50
+  s_069c0feb07c302::t_fd061e5915104f 45-48
+src/lib/supabase/middleware.ts
+  s_069c0feb07c302::t_b9dda0c3b4a011 15
+  s_069c0feb07c302::t_d1eb697393ca89 1-14,16-74
+src/app/actions/auth.ts
+  s_069c0feb07c302::t_eccfb94d38119d 1-12
+src/components/layout/private-header.tsx
+  s_069c0feb07c302::t_bd0ab7d531b9d4 88-90
+  s_069c0feb07c302::t_cace6fa118b13b 18-23
+  s_069c0feb07c302::t_a302b21164cef4 37-46
+  s_069c0feb07c302::t_d779fc7f41a22e 6-17,47-51,105-109
+scripts/install-auto-push-launchagent.sh
+  s_069c0feb07c302::t_53cc76a9157526 1-52
+src/lib/supabase/client.ts
+  s_069c0feb07c302::t_c09d4af808ef86 1,3-13,15
+  s_069c0feb07c302::t_dd3cfde90734f2 2,14
+package.json
+  s_069c0feb07c302::t_1cce0ea2303c84 12-13
+src/middleware.ts
+  s_069c0feb07c302::t_d801bc2e3b901e 1-12
+README.md
+  s_069c0feb07c302::t_7d3519c183c14e 86-99
+  s_24cf7604c4eb95::t_5cdb256f95bd25 1-20,23-46,67-78
+  s_069c0feb07c302::t_d9d7939c2ece82 47-66
+  s_24cf7604c4eb95::t_b2108c1369633c 85
+  s_24cf7604c4eb95::t_edfa79112f7ae5 21-22,79-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "b53517d9f73cb9fd6299f787d09c974774e5708b",
+  "prompts": {},
+  "sessions": {
+    "s_069c0feb07c302": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "2d155a2d-8840-45e1-8ee6-88aef182c384",
+        "model": "default"
+      },
+      "human_author": "solzito148 <solzito@gmail.com>"
+    },
+    "s_24cf7604c4eb95": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "892673ae-b659-4230-a264-dae846558be2",
+        "model": "default"
+      },
+      "human_author": "solzito148 <solzito@gmail.com>"
+    }
+  }
+}
