@@ -2,7 +2,18 @@
 // route handlers o server actions: la cadena llama a `next/headers` -> cookies(),
 // que arroja si se ejecuta en cliente.
 import { createClient } from "@/lib/supabase/server";
+import {
+  canAccessRouteForRoles,
+  hasAnyRole as rolesIncludeAny,
+} from "@/lib/route-access";
 import type { AccountTypeCode, Database, RoleCode } from "@/lib/supabase/types";
+
+export {
+  ROUTE_ACCESS,
+  canAccessRouteForRoles,
+  hasAnyRole as hasAnyRoleCode,
+  normalizePath,
+} from "@/lib/route-access";
 
 export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
@@ -104,4 +115,87 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 export function hasRole(user: CurrentUser | null, ...required: RoleCode[]): boolean {
   if (!user) return false;
   return required.some((code) => user.roles.includes(code));
+}
+
+const PERMISSION_ROLES = [
+  "tutor",
+  "caregiver",
+  "professional",
+  "legal_admin",
+  "provider",
+] as const satisfies readonly RoleCode[];
+
+type PermissionRole = (typeof PERMISSION_ROLES)[number];
+
+export const PERMISSION_MAP: Record<PermissionRole, Set<string>> = {
+  tutor: new Set([
+    "ver_mayores",
+    "editar_perfil",
+    "ver_cuidadores",
+    "ver_reportes",
+    "editar_medicacion",
+    "ver_documentos_legales",
+  ]),
+  caregiver: new Set([
+    "ver_tareas",
+    "registrar_actividades",
+    "alertar",
+    "ver_medicacion",
+    "ver_persona_cuidada",
+  ]),
+  professional: new Set([
+    "ver_historial",
+    "prescribir",
+    "ver_alertas",
+    "editar_historial",
+    "ver_medicacion",
+  ]),
+  legal_admin: new Set([
+    "ver_documentos",
+    "editar_legales",
+    "firmar_documentos",
+  ]),
+  provider: new Set([
+    "ver_mi_perfil",
+    "editar_servicios",
+    "ver_ordenes",
+  ]),
+};
+
+export function hasAnyRole(user: CurrentUser, roles: RoleCode[]): boolean {
+  return rolesIncludeAny(user.roles, roles);
+}
+
+export function hasPermission(user: CurrentUser, permission: string): boolean {
+  if (user.roles.includes("admin")) {
+    return true;
+  }
+
+  return user.roles.some((role) => {
+    const permissions = PERMISSION_MAP[role as PermissionRole];
+    return permissions?.has(permission) ?? false;
+  });
+}
+
+export function canAccessRoute(
+  user: CurrentUser | null,
+  pathname: string,
+): boolean {
+  if (!user) {
+    return false;
+  }
+
+  return canAccessRouteForRoles(user.roles, pathname);
+}
+
+export function getRoleLabel(role: RoleCode): string {
+  const labels: Partial<Record<RoleCode, string>> = {
+    tutor: "Tutor",
+    caregiver: "Cuidador",
+    professional: "Profesional",
+    legal_admin: "Admin legal",
+    provider: "Proveedor",
+    admin: "Administrador",
+  };
+  return labels[role] ?? role;
 }
