@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { appNavItems } from "@/lib/navigation";
+
+import { useFilteredMobileNavItems } from "@/hooks/useCurrentUser";
 
 export function BottomNav() {
   const pathname = usePathname();
-  const mobileItems = appNavItems.filter((item) => item.mobilePrimary);
+  const mobileItems = useFilteredMobileNavItems();
 
   return (
     <nav

@@ -1,6 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  canAccessRouteForRoles,
+  isRoleRestrictedRoute,
+} from "@/lib/route-access";
+import type { RoleCode } from "@/lib/supabase/types";
+
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/admin",
@@ -24,6 +30,30 @@ function isProtectedPath(pathname: string) {
   return PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
+}
+
+async function getUserRoleCodes(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string,
+): Promise<RoleCode[]> {
+  const { data: userRoles } = await supabase
+    .from("user_roles")
+    .select("role_id")
+    .eq("user_id", userId);
+
+  const roleIds = (userRoles ?? []).map((row: { role_id: string }) => row.role_id);
+  if (roleIds.length === 0) {
+    return [];
+  }
+
+  const { data: rolesRows } = await supabase
+    .from("roles")
+    .select("code")
+    .in("id", roleIds);
+
+  return (rolesRows ?? [])
+    .map((row: { code: RoleCode }) => row.code)
+    .filter(Boolean);
 }
 
 export async function updateSession(request: NextRequest) {
@@ -67,6 +97,19 @@ export async function updateSession(request: NextRequest) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (
+    user &&
+    isRoleRestrictedRoute(request.nextUrl.pathname) &&
+    !canAccessRouteForRoles(
+      await getUserRoleCodes(supabase, user.id),
+      request.nextUrl.pathname,
+    )
+  ) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/403";
     return NextResponse.redirect(redirectUrl);
   }
 

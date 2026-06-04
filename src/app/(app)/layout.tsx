@@ -14,10 +14,7 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <AppShell
-      userDisplayName={user.displayName}
-      userEmail={user.email ?? ""}
-    >
+    <AppShell user={user}>
       {children}
     </AppShell>
   );
