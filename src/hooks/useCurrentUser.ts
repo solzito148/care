@@ -13,7 +13,7 @@ import {
   filterNavItemsByRoles,
   getMobileNavItems,
 } from "@/lib/navigation";
-import { hasAnyRole, hasPermission } from "@/lib/permissions";
+import { hasAnyRole, hasPermission } from "@/lib/permission-helpers";
 import type { RoleCode } from "@/lib/supabase/types";
 
 export type { CurrentUser } from "@/lib/permissions";

@@ -1,5 +1,5 @@
 import { ROUTE_ACCESS } from "@/lib/route-access";
-import type { CurrentUser } from "@/lib/permissions";
+import type { PermissionSubject } from "@/lib/permission-helpers";
 import type { RoleCode } from "@/lib/supabase/types";
 
 export type NavItem = {
@@ -128,7 +128,7 @@ export function getMobileNavItems(items: NavItem[]): NavItem[] {
   return items.filter((item) => item.mobilePrimary).slice(0, 5);
 }
 
-export function canSeeNavRoute(user: CurrentUser | null, href: string): boolean {
+export function canSeeNavRoute(user: PermissionSubject | null, href: string): boolean {
   if (!user) {
     return false;
   }
