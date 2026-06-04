@@ -22,6 +22,27 @@ export function normalizePath(pathname: string): string {
   return withoutQuery.replace(/\/$/, "") || "/";
 }
 
+/** null = autenticado; undefined = sin regla; RoleCode[] = roles requeridos */
+export function getRequiredRolesForPath(
+  pathname: string,
+): RoleCode[] | null | undefined {
+  const normalized = normalizePath(pathname);
+
+  if (Object.prototype.hasOwnProperty.call(ROUTE_ACCESS, normalized)) {
+    return ROUTE_ACCESS[normalized];
+  }
+
+  const parentRoute = Object.keys(ROUTE_ACCESS)
+    .filter((route) => route !== "/" && normalized.startsWith(`${route}/`))
+    .sort((a, b) => b.length - a.length)[0];
+
+  if (parentRoute) {
+    return ROUTE_ACCESS[parentRoute];
+  }
+
+  return undefined;
+}
+
 export function hasAnyRole(roles: RoleCode[], required: RoleCode[]): boolean {
   return required.some((role) => roles.includes(role));
 }
@@ -34,8 +55,7 @@ export function canAccessRouteForRoles(
     return true;
   }
 
-  const normalized = normalizePath(pathname);
-  const allowedRoles = ROUTE_ACCESS[normalized];
+  const allowedRoles = getRequiredRolesForPath(pathname);
 
   if (allowedRoles === undefined || allowedRoles === null) {
     return true;
@@ -45,7 +65,6 @@ export function canAccessRouteForRoles(
 }
 
 export function isRoleRestrictedRoute(pathname: string): boolean {
-  const normalized = normalizePath(pathname);
-  const allowedRoles = ROUTE_ACCESS[normalized];
+  const allowedRoles = getRequiredRolesForPath(pathname);
   return Array.isArray(allowedRoles) && allowedRoles.length > 0;
 }
