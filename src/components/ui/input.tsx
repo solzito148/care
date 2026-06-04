@@ -1,38 +1,28 @@
-import { InputHTMLAttributes } from "react";
-import { cn } from "@/lib/cn";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-  hint?: string;
-  large?: boolean;
-  error?: string;
+import { cn } from "@/lib/utils";
+
+export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+  hasError?: boolean;
 };
 
-export function Input({ label, hint, large = false, className, id, error, ...props }: InputProps) {
-  const inputId = id ?? label.toLowerCase().replace(/\s+/g, "-");
-  return (
-    <label htmlFor={inputId} className="block text-sm font-medium text-slate-800">
-      {label}
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, hasError, ...props }, ref) => {
+    return (
       <input
-        id={inputId}
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${inputId}-error` : undefined}
+        ref={ref}
         className={cn(
-          "mt-2 w-full rounded-xl2 border bg-white px-4 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:outline-none focus-visible:ring-4",
-          error
-            ? "border-danger-700 focus:border-danger-700 focus-visible:ring-danger-100"
-            : "border-slate-300 focus:border-care-500 focus-visible:ring-care-200",
-          large ? "min-h-14 text-lg" : "min-h-12 text-base",
-          className
+          "min-h-12 w-full rounded-lg border bg-white px-4 text-base text-care-text",
+          "placeholder:text-care-muted",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-care-primary",
+          hasError ? "border-red-600" : "border-care-border",
+          className,
         )}
+        aria-invalid={hasError || undefined}
         {...props}
       />
-      {error ? (
-        <span id={`${inputId}-error`} className="mt-1 block text-xs font-semibold text-danger-700">
-          {error}
-        </span>
-      ) : null}
-      {hint ? <span className="mt-1 block text-xs text-slate-600">{hint}</span> : null}
-    </label>
-  );
-}
+    );
+  },
+);
+
+Input.displayName = "Input";

@@ -1,107 +1,129 @@
-// Helpers de identidad y permisos. Solo invocables desde Server Components,
-// route handlers o server actions: la cadena llama a `next/headers` -> cookies(),
-// que arroja si se ejecuta en cliente.
-import { createClient } from "@/lib/supabase/server";
-import type { AccountTypeCode, Database, RoleCode } from "@/lib/supabase/types";
+export const ROLE_CODES = [
+  "tutor",
+  "caregiver",
+  "professional",
+  "legal_admin",
+  "provider",
+] as const;
 
-export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
+export type RoleCode = (typeof ROLE_CODES)[number];
 
 export type CurrentUser = {
   id: string;
-  email: string | null;
-  profile: ProfileRow | null;
+  email: string;
   roles: RoleCode[];
   displayName: string;
 };
 
-const ACCOUNT_TYPE_TO_ROLE: Record<AccountTypeCode, RoleCode> = {
-  "tutor-familiar-encargado": "tutor",
-  cuidador: "caregiver",
-  "profesional-salud": "professional",
-  "profesional-legal-administrativo": "legal_admin",
-  "proveedor-marketplace": "provider",
-  "proveedor-servicios": "provider",
+export const PERMISSION_MAP: Record<RoleCode, Set<string>> = {
+  tutor: new Set([
+    "ver_mayores",
+    "editar_perfil",
+    "ver_cuidadores",
+    "ver_reportes",
+    "editar_medicacion",
+    "ver_documentos_legales",
+  ]),
+  caregiver: new Set([
+    "ver_tareas",
+    "registrar_actividades",
+    "alertar",
+    "ver_medicacion",
+    "ver_persona_cuidada",
+  ]),
+  professional: new Set([
+    "ver_historial",
+    "prescribir",
+    "ver_alertas",
+    "editar_historial",
+    "ver_medicacion",
+  ]),
+  legal_admin: new Set([
+    "ver_documentos",
+    "editar_legales",
+    "firmar_documentos",
+  ]),
+  provider: new Set([
+    "ver_mi_perfil",
+    "editar_servicios",
+    "ver_ordenes",
+  ]),
 };
 
-export function defaultRoleFor(accountType: AccountTypeCode | null): RoleCode | null {
-  if (!accountType) return null;
-  return ACCOUNT_TYPE_TO_ROLE[accountType] ?? null;
+export const ROUTE_ACCESS: Record<string, RoleCode[] | null> = {
+  "/dashboard": null,
+  "/persona-cuidada": ["tutor", "caregiver", "professional"],
+  "/agenda": ["tutor", "caregiver"],
+  "/medicacion": ["tutor", "caregiver", "professional"],
+  "/turnos": ["tutor", "caregiver"],
+  "/estudios": ["tutor", "professional"],
+  "/contactos": ["tutor", "caregiver", "professional"],
+  "/cuidadores": ["tutor"],
+  "/servicios": ["tutor", "provider"],
+  "/marketplace": ["tutor", "provider"],
+  "/planes": ["tutor"],
+  "/legales": ["legal_admin"],
+  "/mi-cuenta": null,
+};
+
+export const PRIVATE_ROUTE_PREFIXES = Object.keys(ROUTE_ACCESS);
+
+export function hasRole(user: CurrentUser, role: RoleCode): boolean {
+  return user.roles.includes(role);
 }
 
-export const ACCOUNT_TYPE_LABELS: Record<AccountTypeCode, string> = {
-  "tutor-familiar-encargado": "Tutor / Familiar / Encargado",
-  cuidador: "Cuidador",
-  "profesional-salud": "Profesional de salud",
-  "profesional-legal-administrativo": "Profesional legal o administrativo",
-  "proveedor-marketplace": "Proveedor de marketplace",
-  "proveedor-servicios": "Proveedor de servicios",
-};
+export function hasAnyRole(user: CurrentUser, roles: RoleCode[]): boolean {
+  return roles.some((role) => user.roles.includes(role));
+}
 
-/**
- * Obtiene el usuario autenticado junto con su profile y roles.
- * Si no hay sesion, devuelve null.
- *
- * NO redirige; eso lo hace el layout/protected route que llama a esta funcion.
- *
- * Estrategia de queries: dos pasos en lugar de embed (`roles!inner(code)`).
- * Razon: el `Database` type esta hand-rolled y no expone Relationships, asi que
- * los embeds quedan tipados como `unknown`. Dos queries simples + un IN final
- * son mas explicitas y se llevan bien con TS estricto.
- */
-export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const supabase = await createClient();
+export function hasPermission(user: CurrentUser, permission: string): boolean {
+  return user.roles.some((role) => PERMISSION_MAP[role]?.has(permission) ?? false);
+}
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const profilePromise = supabase
-    .from("profiles")
-    .select(
-      "id, full_name, phone, avatar_url, birth_date, account_type, is_active, created_at, updated_at"
-    )
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const userRolesPromise = supabase
-    .from("user_roles")
-    .select("role_id")
-    .eq("user_id", user.id);
-
-  const [profileResult, userRolesResult] = await Promise.all([
-    profilePromise,
-    userRolesPromise,
-  ]);
-
-  const profile = (profileResult.data as ProfileRow | null) ?? null;
-  const roleIds = (userRolesResult.data ?? []).map((r) => r.role_id);
-
-  let roles: RoleCode[] = [];
-  if (roleIds.length > 0) {
-    const { data: rolesRows } = await supabase
-      .from("roles")
-      .select("code")
-      .in("id", roleIds);
-
-    roles = (rolesRows ?? [])
-      .map((r) => r.code as RoleCode | null)
-      .filter((code): code is RoleCode => Boolean(code));
+export function canAccessRoute(user: CurrentUser | null, pathname: string): boolean {
+  if (!user) {
+    return false;
   }
 
-  return {
-    id: user.id,
-    email: user.email ?? null,
-    profile,
-    roles,
-    displayName:
-      (profile?.full_name && profile.full_name.trim()) ||
-      user.email ||
-      "Usuario CARE",
-  };
+  const normalized = normalizePath(pathname);
+  const allowedRoles = ROUTE_ACCESS[normalized];
+
+  if (allowedRoles === undefined) {
+    return true;
+  }
+
+  if (allowedRoles === null) {
+    return true;
+  }
+
+  return hasAnyRole(user, allowedRoles);
 }
 
-export function hasRole(user: CurrentUser | null, ...required: RoleCode[]): boolean {
-  if (!user) return false;
-  return required.some((code) => user.roles.includes(code));
+export function getRequiredRolesForRoute(pathname: string): RoleCode[] | null {
+  const normalized = normalizePath(pathname);
+  return ROUTE_ACCESS[normalized] ?? null;
+}
+
+export function normalizePath(pathname: string): string {
+  const withoutQuery = pathname.split("?")[0] ?? pathname;
+  const trimmed = withoutQuery.replace(/\/$/, "") || "/";
+  return trimmed;
+}
+
+export function isPrivateRoute(pathname: string): boolean {
+  const normalized = normalizePath(pathname);
+  return PRIVATE_ROUTE_PREFIXES.some(
+    (route) => normalized === route || normalized.startsWith(`${route}/`),
+  );
+}
+
+export function getRoleLabel(role: RoleCode): string {
+  const labels: Record<RoleCode, string> = {
+    tutor: "Tutor",
+    caregiver: "Cuidador",
+    professional: "Profesional",
+    legal_admin: "Admin legal",
+    provider: "Proveedor",
+  };
+  return labels[role];
 }

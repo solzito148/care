@@ -1,55 +1,35 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Care — tokens de accesibilidad para personas mayores (WCAG AA).
+ * Los valores se aplican vía @theme en src/app/globals.css (@config).
+ */
 const config: Config = {
-  content: [
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
   theme: {
     extend: {
+      fontSize: {
+        sm: "1rem",
+        base: "1.125rem",
+        lg: "1.25rem",
+      },
+      lineHeight: {
+        relaxed: "1.875",
+      },
+      minHeight: {
+        touch: "2.75rem",
+        "touch-lg": "3.5rem",
+      },
       colors: {
         care: {
-          50: "#f3f8ff",
-          100: "#e4efff",
-          200: "#c8ddff",
-          300: "#9fc3ff",
-          400: "#6ea4ff",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
+          primary: "#1e4d8c",
+          text: "#1a1a1a",
+          muted: "#4a4a4a",
+          surface: "#f8fafc",
+          border: "#cbd5e1",
         },
-        success: {
-          100: "#dcfce7",
-          700: "#15803d",
-        },
-        warning: {
-          100: "#fef9c3",
-          700: "#a16207",
-        },
-        danger: {
-          100: "#fee2e2",
-          700: "#b91c1c",
-        },
-        info: {
-          100: "#e0f2fe",
-          700: "#0369a1",
-        },
-      },
-      fontSize: {
-        "simple-title": ["2rem", { lineHeight: "2.5rem", fontWeight: "700" }],
-        "simple-text": ["1.25rem", { lineHeight: "1.875rem" }],
-      },
-      borderRadius: {
-        xl2: "1rem",
-      },
-      boxShadow: {
-        soft: "0 8px 20px rgba(15, 23, 42, 0.08)",
       },
     },
   },
-  plugins: [],
 };
 
 export default config;

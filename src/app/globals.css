@@ -2,37 +2,51 @@
 @config "../../tailwind.config.ts";
 
 :root {
-  color-scheme: light;
+  --background: #f8fafc;
+  --foreground: #1a1a1a;
+  --care-primary: #1e4d8c;
+  --care-text: #1a1a1a;
+  --care-muted: #4a4a4a;
+  --care-surface: #f8fafc;
+  --care-border: #cbd5e1;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: #f8fafc;
-  color: #0f172a;
-  font-family: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+@theme inline {
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --leading-relaxed: 1.875;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-care-primary: var(--care-primary);
+  --color-care-text: var(--care-text);
+  --color-care-muted: var(--care-muted);
+  --color-care-surface: var(--care-surface);
+  --color-care-border: var(--care-border);
 }
 
 @layer base {
-  h1,
-  h2,
-  h3,
-  h4 {
-    letter-spacing: -0.01em;
+  html {
+    scroll-behavior: smooth;
   }
 
-  :focus-visible {
-    outline: 2px solid #93c5fd;
-    outline-offset: 2px;
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: var(--font-size-base);
+    line-height: var(--leading-relaxed);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 }

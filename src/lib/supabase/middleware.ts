@@ -1,57 +1,40 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/admin",
-  "/agenda",
-  "/contactos",
-  "/cuidadores",
-  "/estudios",
-  "/legales",
-  "/marketplace",
-  "/medicacion",
-  "/mi-cuenta",
-  "/onboarding",
-  "/persona",
-  "/persona-cuidada",
-  "/planes",
-  "/servicios",
-  "/turnos",
-];
+import type { CurrentUser, RoleCode } from "@/lib/permissions";
+import {
+  canAccessRoute,
+  isPrivateRoute,
+  normalizePath,
+} from "@/lib/permissions";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
-function isProtectedPath(pathname: string) {
-  return PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-}
+type SupabaseCookie = {
+  name: string;
+  value: string;
+  options: CookieOptions;
+};
 
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+type RoleRow = {
+  role: RoleCode;
+};
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anonKey) {
-    if (isProtectedPath(request.nextUrl.pathname)) {
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/login";
-      redirectUrl.searchParams.set("error", "supabase_not_configured");
-      return NextResponse.redirect(redirectUrl);
-    }
-    return response;
-  }
+export async function updateSupabaseSession(
+  request: NextRequest,
+  response: NextResponse,
+): Promise<NextResponse> {
+  const { url, anonKey } = getSupabasePublicEnv();
 
   const supabase = createServerClient(url, anonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet: SupabaseCookie[]) {
         cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value);
         });
-        response = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });
@@ -63,12 +46,50 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && isProtectedPath(request.nextUrl.pathname)) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
+  const pathname = normalizePath(request.nextUrl.pathname);
+
+  if (isPrivateRoute(pathname) && !user) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (isPrivateRoute(pathname) && user) {
+    const currentUser = await fetchCurrentUserForMiddleware(supabase, user.id, user.email ?? "");
+
+    if (!canAccessRoute(currentUser, pathname)) {
+      const forbiddenUrl = request.nextUrl.clone();
+      forbiddenUrl.pathname = "/403";
+      return NextResponse.redirect(forbiddenUrl);
+    }
   }
 
   return response;
+}
+
+async function fetchCurrentUserForMiddleware(
+  supabase: SupabaseClient,
+  userId: string,
+  email: string,
+): Promise<CurrentUser | null> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const { data: roleRows } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId);
+
+  const roles = (roleRows ?? []).map((row: RoleRow) => row.role);
+
+  return {
+    id: userId,
+    email,
+    roles,
+    displayName: profile?.full_name ?? email,
+  };
 }

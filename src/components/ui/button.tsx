@@ -1,61 +1,31 @@
-import Link from "next/link";
-import { MouseEventHandler, ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
-type ButtonSize = "md" | "lg";
+import { cn } from "@/lib/utils";
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary: "bg-care-700 text-white hover:bg-care-800 focus-visible:ring-care-300",
-  secondary:
-    "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 focus-visible:ring-slate-300",
-  ghost: "bg-transparent text-care-800 hover:bg-care-50 focus-visible:ring-care-300",
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary" | "ghost";
 };
 
-const sizeStyles: Record<ButtonSize, string> = {
-  md: "min-h-11 px-4 py-2 text-sm",
-  lg: "min-h-12 px-5 py-3 text-base",
-};
-
-type ButtonProps = {
-  children: ReactNode;
-  href?: string;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  className?: string;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-};
-
-export function Button({
-  children,
-  href,
-  variant = "primary",
-  size = "md",
-  className,
-  type = "button",
-  disabled = false,
-  onClick,
-}: ButtonProps) {
-  const classes = cn(
-    "inline-flex items-center justify-center rounded-xl2 font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60",
-    variantStyles[variant],
-    sizeStyles[size],
-    className
-  );
-
-  if (href) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = "primary", type = "button", ...props }, ref) => {
     return (
-      <Link href={href} className={classes}>
-        {children}
-      </Link>
+      <button
+        ref={ref}
+        type={type}
+        className={cn(
+          "inline-flex min-h-14 items-center justify-center rounded-lg px-6 text-base font-medium transition-colors",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-care-primary",
+          "disabled:cursor-not-allowed disabled:opacity-60",
+          variant === "primary" && "bg-care-primary text-white hover:bg-care-primary/90",
+          variant === "secondary" &&
+            "border border-care-border bg-white text-care-text hover:bg-care-surface",
+          variant === "ghost" && "text-care-primary hover:bg-care-primary/10",
+          className,
+        )}
+        {...props}
+      />
     );
-  }
+  },
+);
 
-  return (
-    <button type={type} className={classes} disabled={disabled} onClick={onClick}>
-      {children}
-    </button>
-  );
-}
+Button.displayName = "Button";

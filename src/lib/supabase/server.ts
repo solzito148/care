@@ -1,31 +1,31 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
-import type { Database } from "@/lib/supabase/types";
 
-export async function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
-  if (!url || !anonKey) {
-    throw new Error(
-      "Faltan NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY en el entorno del servidor."
-    );
-  }
+type SupabaseCookie = {
+  name: string;
+  value: string;
+  options: CookieOptions;
+};
 
+export async function createSupabaseServerClient(): Promise<SupabaseClient> {
   const cookieStore = await cookies();
+  const { url, anonKey } = getSupabasePublicEnv();
 
-  return createServerClient<Database>(url, anonKey, {
+  return createServerClient(url, anonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet: SupabaseCookie[]) {
         try {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
           });
         } catch {
-          // Server Components no pueden setear cookies; el middleware se ocupa del refresh.
+          // Server Component without cookie mutation
         }
       },
     },

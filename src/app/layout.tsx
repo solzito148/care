@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CARE - Cuidado de personas mayores",
-  description: "Plataforma web para gestion integral del cuidado de personas mayores.",
+  title: "Care",
+  description: "Plataforma de cuidado con accesibilidad y permisos por rol",
 };
 
 export default function RootLayout({
