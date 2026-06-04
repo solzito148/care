@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #1a1a1a;
+  --care-primary: #1e4d8c;
+  --care-text: #1a1a1a;
+  --care-muted: #4a4a4a;
+  --care-surface: #f8fafc;
+  --care-border: #cbd5e1;
+}
+
+@theme inline {
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --leading-relaxed: 1.875;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-care-primary: var(--care-primary);
+  --color-care-text: var(--care-text);
+  --color-care-muted: var(--care-muted);
+  --color-care-surface: var(--care-surface);
+  --color-care-border: var(--care-border);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: var(--font-size-base);
+    line-height: var(--leading-relaxed);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

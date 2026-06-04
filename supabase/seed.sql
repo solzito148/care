@@ -1,0 +1,9 @@
+-- Development seed: assign roles after creating test users in Supabase Auth.
+-- Example (run in SQL editor after users exist):
+--
+-- insert into user_roles (user_id, role) values
+--   ('<tutor-uuid>', 'tutor'),
+--   ('<caregiver-uuid>', 'caregiver'),
+--   ('<professional-uuid>', 'professional'),
+--   ('<legal-admin-uuid>', 'legal_admin'),
+--   ('<provider-uuid>', 'provider');
