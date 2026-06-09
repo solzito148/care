@@ -1,10 +1,14 @@
-import { SectionPage } from "@/components/sections/section-page";
+import { redirect } from "next/navigation";
 
-export default function EstudiosPage() {
-  return (
-    <SectionPage
-      title="Estudios"
-      description="Registro de estudios medicos, resultados y documentos asociados de forma ordenada."
-    />
-  );
+import { EstudiosClient } from "@/app/(app)/estudios/estudios-client";
+import { ensureCareContext } from "@/lib/data/care-context";
+import { loadStudies } from "@/lib/data/estudios";
+
+export default async function EstudiosPage() {
+  const ctx = await ensureCareContext();
+  if (!ctx) redirect("/login");
+
+  const studies = await loadStudies(ctx.careRecipientId);
+
+  return <EstudiosClient studies={studies} />;
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useTransition } from "react";
+import { submitRecommendationAction } from "@/actions/cuidadores";
 import { CheckboxField } from "@/components/forms/checkbox-field";
 import { FormMessage } from "@/components/forms/form-message";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,9 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
     autorizaContactoReferencia: false,
   }));
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [pending, startTransition] = useTransition();
 
   const updateField =
     (key: keyof FormState) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -84,9 +87,18 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!validate()) return;
-    setMessage(
-      "Recomendacion registrada en modo borrador. La persistencia en base de datos de recomendaciones se agregara con una tabla dedicada."
-    );
+    startTransition(async () => {
+      const res = await submitRecommendationAction(form);
+      if (res.ok) {
+        setMessageType("success");
+        setMessage(
+          "Recomendacion enviada. Queda pendiente de revision por el equipo CARE."
+        );
+      } else {
+        setMessageType("error");
+        setMessage(res.error ?? "No se pudo enviar la recomendacion.");
+      }
+    });
   };
 
   return (
@@ -171,11 +183,13 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
           </div>
 
           <div className="sm:col-span-2">
-            <Button type="submit">Enviar recomendacion</Button>
+            <Button type="submit" disabled={pending}>
+              Enviar recomendacion
+            </Button>
           </div>
         </form>
         <div className="mt-3">
-          <FormMessage message={message} type="success" />
+          <FormMessage message={message} type={messageType} />
         </div>
       </Card>
 

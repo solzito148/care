@@ -60,6 +60,19 @@ Las instalaciones nuevas pueden ejecutar `schema.sql` (ya incluye la funcion
 `is_household_member` corregida para incluir al owner del hogar) y luego
 `phase2.sql` para columnas/tablas adicionales.
 
+### Fase 3 (estudios, alta de cuidadores y recomendaciones)
+
+Ejecutar **una vez** el script `supabase/phase3.sql` en SQL Editor (despues de
+`schema.sql` y `phase2.sql`). Agrega:
+
+- Politica de INSERT en `caregiver_profiles` para que un usuario autenticado
+  cree su propio perfil de cuidador (`/cuidadores/alta`).
+- Tabla `caregiver_recommendations` + RLS (persistencia de
+  `/cuidadores/recomendar`; estados `pendiente-revision` / `aprobada` / `rechazada`).
+- Bucket privado de Storage `estudios` con politicas por hogar para los adjuntos
+  de `/estudios` (paths `{care_recipient_id}/{uuid}-{archivo}`; la app genera
+  signed URLs de 30 minutos para descargar).
+
 ## 4. Configurar Auth en Supabase
 
 En el dashboard, **Authentication > Providers**:
