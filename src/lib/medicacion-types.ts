@@ -7,6 +7,8 @@ export type MedicationState =
 
 export type DailyMedication = {
   id: string;
+  /** id de medication_schedules; permite registrar la toma desde la UI */
+  scheduleId?: string;
   nombre: string;
   dosis: string;
   horario: string;

@@ -1,34 +1,23 @@
+import { redirect } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { ensureCareContext } from "@/lib/data/care-context";
+import { loadDashboardData } from "@/lib/data/dashboard";
 
-export default function DashboardPage() {
-  const summaryCards = [
-    { title: "Personas cuidadas asociadas", value: "3", detail: "2 activas ahora" },
-    { title: "Medicacion pendiente de hoy", value: "5", detail: "2 sin confirmar" },
-    { title: "Turnos medicos proximos", value: "4", detail: "1 manana 09:30" },
-    { title: "Estudios medicos proximos", value: "2", detail: "1 con preparacion previa" },
-    { title: "Alertas sin confirmar", value: "6", detail: "3 urgentes" },
-    { title: "Cuidadores asignados", value: "4", detail: "1 sin confirmar asistencia" },
-    { title: "Proximos vencimientos", value: "3", detail: "receta y CUD incluidos" },
-    { title: "Contactos rapidos", value: "7", detail: "familiares y emergencias" },
-  ];
+export default async function DashboardPage() {
+  const ctx = await ensureCareContext();
+  if (!ctx) redirect("/login");
 
-  const importantAlerts = [
-    { text: "Medicacion no confirmada", status: "urgente" as const },
-    { text: "Turno medico manana", status: "alerta" as const },
-    { text: "Estudio con preparacion previa", status: "pendiente" as const },
-    { text: "Cuidador no confirmo asistencia", status: "alerta" as const },
-    { text: "Receta por vencer", status: "pendiente" as const },
-    { text: "CUD por vencer", status: "urgente" as const },
-  ];
+  const { summaryCards, alerts } = await loadDashboardData(ctx);
 
   const quickActions = [
     { label: "Agregar medicamento", href: "/medicacion" },
-    { label: "Agregar turno medico", href: "/turnos" },
-    { label: "Agregar estudio", href: "/estudios" },
+    { label: "Agregar turno medico", href: "/agenda" },
+    { label: "Gestionar turnos", href: "/turnos" },
     { label: "Agregar cuidador", href: "/cuidadores" },
-    { label: "Agregar contacto", href: "/contactos" },
+    { label: "Editar persona cuidada", href: "/persona-cuidada" },
     { label: "Cambiar a vista persona cuidada", href: "/persona" },
   ];
 
@@ -44,7 +33,7 @@ export default function DashboardPage() {
         </p>
       </Card>
 
-      <section aria-label="Resumen principal" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Resumen principal" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {summaryCards.map((card) => (
           <Card key={card.title} className="p-6">
             <p className="text-base font-semibold text-slate-900">{card.title}</p>
@@ -58,15 +47,21 @@ export default function DashboardPage() {
         <Card className="p-6 sm:p-7">
           <h2 className="text-xl font-semibold text-slate-900">Alertas importantes</h2>
           <div className="mt-4 space-y-3">
-            {importantAlerts.map((alert) => (
-              <article
-                key={alert.text}
-                className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4"
-              >
-                <p className="text-base font-medium text-slate-800">{alert.text}</p>
-                <StatusBadge status={alert.status} />
-              </article>
-            ))}
+            {alerts.length === 0 ? (
+              <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-base text-slate-700">
+                Sin alertas pendientes. Todo al dia.
+              </p>
+            ) : (
+              alerts.map((alert) => (
+                <article
+                  key={alert.text}
+                  className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4"
+                >
+                  <p className="text-base font-medium text-slate-800">{alert.text}</p>
+                  <StatusBadge status={alert.status} />
+                </article>
+              ))
+            )}
           </div>
         </Card>
 

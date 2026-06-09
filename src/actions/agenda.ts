@@ -68,5 +68,43 @@ export async function createAppointmentAction(
   }
 
   revalidatePath("/agenda");
+  revalidatePath("/turnos");
+  return { ok: true };
+}
+
+export type AppointmentStatus = "scheduled" | "confirmed" | "done" | "cancelled";
+
+const APPOINTMENT_STATUSES: AppointmentStatus[] = [
+  "scheduled",
+  "confirmed",
+  "done",
+  "cancelled",
+];
+
+export async function updateAppointmentStatusAction(
+  appointmentId: string,
+  status: AppointmentStatus
+): Promise<{ ok: boolean; error?: string }> {
+  const ctx = await ensureCareContext();
+  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!APPOINTMENT_STATUSES.includes(status)) {
+    return { ok: false, error: "Estado invalido." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("appointments")
+    .update({ status })
+    .eq("id", appointmentId)
+    .eq("care_recipient_id", ctx.careRecipientId);
+
+  if (error) {
+    console.error("updateAppointmentStatus", error);
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/agenda");
+  revalidatePath("/turnos");
+  revalidatePath("/dashboard");
   return { ok: true };
 }

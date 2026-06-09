@@ -55,6 +55,14 @@ function rowToItem(row: AppointmentRow): AgendaServerItem {
   };
 }
 
+/** Items de agenda + timestamp del server para clasificar pasado/futuro sin Date.now() en render. */
+export async function loadTurnosData(
+  careRecipientId: string
+): Promise<{ items: AgendaServerItem[]; nowMs: number }> {
+  const items = await loadAgendaItems(careRecipientId);
+  return { items, nowMs: Date.now() };
+}
+
 export async function loadAgendaItems(careRecipientId: string): Promise<AgendaServerItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

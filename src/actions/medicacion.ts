@@ -88,6 +88,37 @@ export async function upsertMedicationAction(form: ActiveMedication): Promise<{ 
   return { ok: true };
 }
 
+export async function registerIntakeAction(
+  scheduleId: string,
+  status: "taken" | "skipped"
+): Promise<{ ok: boolean; error?: string }> {
+  const ctx = await ensureCareContext();
+  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!isUuid(scheduleId)) return { ok: false, error: "Horario invalido." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error } = await supabase.from("medication_intakes").insert({
+    schedule_id: scheduleId,
+    status,
+    taken_at: status === "taken" ? new Date().toISOString() : null,
+    created_by: user?.id ?? null,
+  });
+
+  if (error) {
+    console.error("registerIntake", error);
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/medicacion");
+  revalidatePath("/persona");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
 export async function setMedicationActiveAction(
   medicationId: string,
   activo: boolean

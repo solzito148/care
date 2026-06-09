@@ -7,7 +7,8 @@ export type CareStatus =
   | "urgente"
   | "actualizado"
   | "recomendado"
-  | "proximo";
+  | "proximo"
+  | "completado";
 
 type StatusBadgeProps = {
   status: CareStatus;
@@ -21,6 +22,7 @@ const statusMap: Record<CareStatus, { label: string; tone: "warning" | "success"
   actualizado: { label: "Actualizado", tone: "info" },
   recomendado: { label: "Recomendado", tone: "success" },
   proximo: { label: "Proximo", tone: "info" },
+  completado: { label: "Completado", tone: "success" },
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {

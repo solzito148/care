@@ -179,6 +179,7 @@ export async function loadMedicationData(careRecipientId: string): Promise<{
           : undefined;
       daily.push({
         id: last?.id ?? `${m.id}-${s.id}-${today}`,
+        scheduleId: s.id,
         nombre: meta?.nombre ?? m.name,
         dosis: meta?.dosis ?? m.dosage,
         horario: formatTime(s.time_of_day),
