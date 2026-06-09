@@ -1,0 +1,19 @@
+-- Development seed: assign roles after creating test users in Supabase Auth.
+-- The canonical schema (supabase/schema.sql) uses user_roles(user_id, role_id)
+-- with role_id referencing public.roles. Example (run in SQL editor after the
+-- test users exist):
+--
+-- insert into public.user_roles (user_id, role_id)
+-- select '<tutor-uuid>', id from public.roles where code = 'tutor';
+--
+-- insert into public.user_roles (user_id, role_id)
+-- select '<caregiver-uuid>', id from public.roles where code = 'caregiver';
+--
+-- insert into public.user_roles (user_id, role_id)
+-- select '<professional-uuid>', id from public.roles where code = 'professional';
+--
+-- insert into public.user_roles (user_id, role_id)
+-- select '<legal-admin-uuid>', id from public.roles where code = 'legal_admin';
+--
+-- insert into public.user_roles (user_id, role_id)
+-- select '<provider-uuid>', id from public.roles where code = 'provider';
