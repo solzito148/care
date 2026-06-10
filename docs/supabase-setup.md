@@ -34,6 +34,29 @@ en SSR o scripts. En produccion debe ser la URL real (`https://care.tudominio.co
 
 `SUPABASE_SERVICE_ROLE_KEY` queda reservada para scripts y tareas admin server-side.
 
+## 2.1 Variables en Vercel (produccion)
+
+En Vercel > Project > Settings > Environment Variables, cargar para
+**Production** (y Preview si vas a probar):
+
+| Variable | Requerida | Uso |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | si | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | si | anon key (cliente) |
+| `NEXT_PUBLIC_SITE_URL` | si | origen real, ej. `https://care-two-eta.vercel.app` |
+| `SUPABASE_SERVICE_ROLE_KEY` | si (webhook MP) | activa suscripciones desde el webhook (ignora RLS) |
+| `MERCADOPAGO_ACCESS_TOKEN` | opcional | sin esto, los planes pagos quedan `pendiente-pago` (activacion manual desde `/admin`) |
+| `MERCADOPAGO_WEBHOOK_SECRET` | opcional | verifica la firma `x-signature` del webhook |
+| `EMAIL_PROVIDER_API_KEY` | opcional | Resend; sin esto el email se simula en consola |
+| `EMAIL_FROM_ADDRESS` | opcional | remitente, ej. `CARE <no-reply@care.app>` |
+| `WHATSAPP_API_TOKEN` | opcional | WhatsApp Cloud API; sin esto se simula en consola |
+| `WHATSAPP_PHONE_NUMBER_ID` | opcional | id del numero de WhatsApp |
+| `SENTRY_DSN` | opcional | observabilidad; sin esto `captureError` solo loguea |
+
+> Las variables `NEXT_PUBLIC_*` se exponen al browser: solo el anon key, nunca
+> el `service_role`. Tras cambiar envs en Vercel hay que **redeploy** para que
+> tomen efecto.
+
 ## 3. Aplicar el esquema SQL
 
 En el dashboard Supabase abrir **SQL Editor** y ejecutar el contenido de
@@ -100,18 +123,39 @@ Ejecutar **una vez** el script `supabase/phase5.sql` en SQL Editor. Agrega:
   `info`, `warning`, `urgent`, `billing`), visibles en `/mi-cuenta` con
   marcar-como-leida.
 
-### Aplicar fases 4 y 5 en produccion
+### Fase 6 (panel admin, contactos y documentos legales)
 
-En el proyecto Supabase real (SQL Editor), ejecutar en orden:
+Ejecutar **una vez** el script `supabase/phase6.sql` en SQL Editor (despues de
+las fases anteriores). Agrega:
 
-1. `supabase/phase4.sql` — tablas `services` y `marketplace_items`.
-2. `supabase/phase5.sql` — tablas `subscriptions` y `notifications`.
+- Funcion `public.is_admin()` (`security definer`) + politicas RLS de moderacion
+  para el rol `admin` sobre `caregiver_recommendations`, `caregiver_profiles`,
+  `services`, `marketplace_items`, `subscriptions`, `notifications` y `audit_logs`
+  (alimentan `/admin`).
+- Politica para que el cuidador actualice su propio `caregiver_profile`.
+- Tabla `contacts` + RLS por hogar (modulo `/contactos`: red de apoyo).
+- Tabla `legal_documents` + RLS por hogar (modulo `/legales`).
+
+### Aplicar migraciones en produccion (forma recomendada: un solo paste)
+
+Para evitar errores de orden, hay un script consolidado e idempotente que une
+`schema.sql` + `phase2..6` en orden:
+
+```bash
+node scripts/build-migration.mjs   # regenera supabase/migrate-all.sql
+```
+
+En el proyecto Supabase real abrir **SQL Editor**, pegar **todo** el contenido de
+`supabase/migrate-all.sql` y ejecutar una sola vez. Es seguro re-ejecutarlo
+(`create ... if not exists`, `drop policy if exists`, `create or replace`).
+
+Alternativa archivo por archivo (mismo resultado), en orden:
+`schema.sql -> phase2.sql -> phase3.sql -> phase4.sql -> phase5.sql -> phase6.sql`.
 
 Con Supabase CLI (tras `supabase login` y `supabase link --project-ref <ref>`):
 
 ```bash
-npx supabase db execute -f supabase/phase4.sql
-npx supabase db execute -f supabase/phase5.sql
+npx supabase db execute -f supabase/migrate-all.sql
 ```
 
 ## 4. Configurar Auth en Supabase
