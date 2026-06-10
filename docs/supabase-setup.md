@@ -100,6 +100,20 @@ Ejecutar **una vez** el script `supabase/phase5.sql` en SQL Editor. Agrega:
   `info`, `warning`, `urgent`, `billing`), visibles en `/mi-cuenta` con
   marcar-como-leida.
 
+### Aplicar fases 4 y 5 en produccion
+
+En el proyecto Supabase real (SQL Editor), ejecutar en orden:
+
+1. `supabase/phase4.sql` — tablas `services` y `marketplace_items`.
+2. `supabase/phase5.sql` — tablas `subscriptions` y `notifications`.
+
+Con Supabase CLI (tras `supabase login` y `supabase link --project-ref <ref>`):
+
+```bash
+npx supabase db execute -f supabase/phase4.sql
+npx supabase db execute -f supabase/phase5.sql
+```
+
 ## 4. Configurar Auth en Supabase
 
 En el dashboard, **Authentication > Providers**:
@@ -110,12 +124,16 @@ En el dashboard, **Authentication > Providers**:
 
 En **Authentication > URL Configuration**:
 
-- **Site URL**: `http://localhost:3000` (en desarrollo) y la URL real en prod.
+- **Site URL** (desarrollo): `http://localhost:3000`
+- **Site URL** (produccion Vercel): `https://care-two-eta.vercel.app`
 - **Redirect URLs**: agregar como minimo:
   - `http://localhost:3000/auth/callback`
   - `http://localhost:3000/auth/callback?type=recovery`
   - `http://localhost:3000/**`
-  - Las URLs equivalentes de prod cuando deployes.
+  - `https://care-two-eta.vercel.app/auth/callback`
+  - `https://care-two-eta.vercel.app/auth/callback?type=recovery`
+  - `https://care-two-eta.vercel.app/**`
+  - Cada preview de Vercel (`https://*-solzito148s-projects.vercel.app/**`) si vas a probar auth en PRs.
 
 CARE expone un **route handler** en `src/app/auth/callback/route.ts` que hace
 `exchangeCodeForSession` y redirige:
