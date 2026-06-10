@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { signOutAction } from "@/app/actions/auth";
+import { setActiveCareRecipientAction } from "@/actions/care-recipients";
+import type { CareRecipientsState } from "@/lib/data/care-recipients";
 import { appNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/cn";
 
@@ -18,11 +20,21 @@ const logoutButtonClasses =
 type PrivateHeaderProps = {
   userDisplayName: string;
   userEmail: string;
+  careRecipients: CareRecipientsState;
 };
 
-export function PrivateHeader({ userDisplayName, userEmail }: PrivateHeaderProps) {
+export function PrivateHeader({ userDisplayName, userEmail, careRecipients }: PrivateHeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [openMenu, setOpenMenu] = useState(false);
+  const [, startTransition] = useTransition();
+
+  const onSelectRecipient = (id: string) => {
+    startTransition(async () => {
+      const res = await setActiveCareRecipientAction(id);
+      if (res.ok) router.refresh();
+    });
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -34,10 +46,27 @@ export function PrivateHeader({ userDisplayName, userEmail }: PrivateHeaderProps
             </span>
             <span className="hidden text-lg font-semibold text-slate-900 sm:block">CARE</span>
           </Link>
-          {/* Persona cuidada activa: pendiente Fase 3 (vendra de un selector de care_recipients) */}
-          <p className="rounded-full bg-care-50 px-2 py-1 text-xs font-semibold text-care-800 sm:px-3">
-            Persona cuidada: pendiente
-          </p>
+          {careRecipients.recipients.length > 1 ? (
+            <label className="flex items-center gap-1 text-xs font-semibold text-care-800">
+              <span className="hidden sm:inline">Persona cuidada:</span>
+              <select
+                value={careRecipients.activeId}
+                onChange={(event) => onSelectRecipient(event.target.value)}
+                className="rounded-full bg-care-50 px-2 py-1 text-xs font-semibold text-care-800"
+                aria-label="Persona cuidada activa"
+              >
+                {careRecipients.recipients.map((recipient) => (
+                  <option key={recipient.id} value={recipient.id}>
+                    {recipient.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : careRecipients.recipients.length === 1 ? (
+            <p className="rounded-full bg-care-50 px-2 py-1 text-xs font-semibold text-care-800 sm:px-3">
+              Persona cuidada: {careRecipients.recipients[0].name}
+            </p>
+          ) : null}
         </div>
 
         <div className="hidden items-center gap-2 lg:flex">

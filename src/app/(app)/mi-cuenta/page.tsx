@@ -42,7 +42,7 @@ export default async function MiCuentaPage() {
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Mi cuenta</h1>
         <p className="mt-2 text-slate-700">
-          Datos personales, tipo de cuenta y suscripcion. Pagos aun no integrados.
+          Datos personales, tipo de cuenta y suscripcion.
         </p>
       </Card>
 
@@ -104,9 +104,11 @@ export default async function MiCuentaPage() {
                 <strong>Proximo vencimiento:</strong> {subscription.next_due_date}
               </p>
             ) : null}
-            <p className="mt-2 text-sm text-slate-600">
-              Preparado para integrar cobros y renovaciones automaticas con Mercado Pago.
-            </p>
+            {subscription.status === "pendiente-pago" ? (
+              <p className="mt-2 text-sm text-slate-600">
+                Suscripcion pendiente de pago. Completala desde Planes.
+              </p>
+            ) : null}
           </>
         ) : (
           <>

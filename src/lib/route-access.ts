@@ -3,6 +3,7 @@ import type { RoleCode } from "@/lib/supabase/types";
 /** null = cualquier usuario autenticado; undefined = sin restriccion declarada */
 export const ROUTE_ACCESS: Record<string, RoleCode[] | null> = {
   "/dashboard": null,
+  "/admin": ["admin"],
   "/persona-cuidada": ["tutor", "caregiver", "professional"],
   "/agenda": ["tutor", "caregiver"],
   "/medicacion": ["tutor", "caregiver", "professional"],
@@ -10,6 +11,7 @@ export const ROUTE_ACCESS: Record<string, RoleCode[] | null> = {
   "/estudios": ["tutor", "professional"],
   "/contactos": ["tutor", "caregiver", "professional"],
   "/cuidadores": ["tutor"],
+  "/cuidadores/admin-actualizacion": ["admin"],
   "/servicios": ["tutor", "provider"],
   "/marketplace": ["tutor", "provider"],
   "/planes": ["tutor"],

@@ -26,8 +26,8 @@ const requiredFiles = [
   "src/components/layout/bottom-nav.tsx",
   "src/components/auth/protected-route.tsx",
   "src/lib/permissions.ts",
-  "src/middleware.ts",
-  "src/app/(private)/layout.tsx",
+  "src/proxy.ts",
+  "src/app/(app)/layout.tsx",
   "e2e/auth-and-routes.spec.ts",
   "e2e/accessibility.spec.ts",
 ];
@@ -39,8 +39,6 @@ const requiredDeps = [
   "typescript",
   "@supabase/ssr",
   "zod",
-  "react-hook-form",
-  "lucide-react",
 ];
 
 const fileResults = Object.fromEntries(

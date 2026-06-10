@@ -103,6 +103,12 @@ export const appNavItems: NavItem[] = [
     shortLabel: "Cuenta",
     allowedRoles: rolesForNav("/mi-cuenta"),
   },
+  {
+    href: "/admin",
+    label: "Administracion",
+    shortLabel: "Admin",
+    allowedRoles: rolesForNav("/admin"),
+  },
 ];
 
 export function canSeeNavItem(roles: RoleCode[], item: NavItem): boolean {

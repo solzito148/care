@@ -26,6 +26,8 @@ export function profileRowToSearchItem(row: ProfileRow): CaregiverSearchItem {
     estadoActualizacionPerfil: row.profile_status,
     altaDisponibilidad: row.high_availability,
     ultimaActualizacion: row.last_profile_update ?? row.updated_at.slice(0, 10),
+    recomendacionesCount: 0,
+    recomendacionesPromedio: 0,
   };
 }
 

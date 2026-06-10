@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
+import { recordAuditLog } from "@/lib/audit";
+import { createNotification } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 
 export type CreateCaregiverProfileInput = {
@@ -164,5 +166,82 @@ export async function submitRecommendationAction(
 
   revalidatePath("/cuidadores");
   revalidatePath(`/cuidadores/${form.caregiverId}`);
+  return { ok: true };
+}
+
+/**
+ * El cuidador (dueno del perfil) confirma que sus datos estan vigentes.
+ * Persiste la fecha y deja traza de auditoria. Solo el propio cuidador puede.
+ */
+export async function confirmCaregiverDataUpdatedAction(
+  caregiverId: string
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sesion requerida." };
+
+  const { data, error } = await supabase
+    .from("caregiver_profiles")
+    .update({
+      data_updated: true,
+      profile_status: "datos-actualizados",
+      last_profile_update: new Date().toISOString().slice(0, 10),
+    })
+    .eq("id", caregiverId)
+    .eq("linked_user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    console.error("confirmCaregiverDataUpdated", error);
+    return { ok: false, error: error.message };
+  }
+  if (!data) {
+    return { ok: false, error: "Solo el cuidador dueno del perfil puede confirmar sus datos." };
+  }
+
+  await recordAuditLog({
+    entityType: "caregiver_profile",
+    entityId: caregiverId,
+    action: "caregiver_data_confirmed",
+  });
+
+  revalidatePath(`/cuidadores/${caregiverId}`);
+  revalidatePath("/cuidadores");
+  return { ok: true };
+}
+
+/**
+ * Un tutor solicita contacto o entrevista con un cuidador. Como el contacto se
+ * media a traves de CARE (no exponemos telefonos directos), registramos la
+ * solicitud y notificamos al tutor que quedo encolada.
+ */
+export async function requestCaregiverContactAction(
+  caregiverId: string,
+  kind: "entrevista" | "contacto"
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sesion requerida." };
+
+  await recordAuditLog({
+    entityType: "caregiver_profile",
+    entityId: caregiverId,
+    action: kind === "entrevista" ? "caregiver_interview_requested" : "caregiver_contact_requested",
+  });
+
+  await createNotification({
+    userId: user.id,
+    title: kind === "entrevista" ? "Solicitud de entrevista enviada" : "Solicitud de contacto enviada",
+    body: "El equipo CARE coordina el contacto con el cuidador y te avisa por este medio.",
+    kind: "info",
+    href: `/cuidadores/${caregiverId}`,
+  });
+
+  revalidatePath(`/cuidadores/${caregiverId}`);
   return { ok: true };
 }

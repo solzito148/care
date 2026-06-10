@@ -17,6 +17,20 @@ export type CaregiverSearchItem = {
   estadoActualizacionPerfil: "datos-actualizados" | "pendiente-actualizacion" | "datos-vencidos" | "perfil-pausado";
   altaDisponibilidad: boolean;
   ultimaActualizacion: string;
+  /** Recomendaciones aprobadas y publicas (alimentan el ranking). */
+  recomendacionesCount: number;
+  recomendacionesPromedio: number;
+};
+
+export type CaregiverApprovedRecommendation = {
+  id: string;
+  personaQueRecomienda: string;
+  zonaServicio: string;
+  modalidadServicio: string;
+  tareasRealizadas: string;
+  calificacionGeneral: number;
+  comentario: string;
+  loVolveriaAContratar: boolean;
 };
 
 export type CaregiverReferencePublic = {

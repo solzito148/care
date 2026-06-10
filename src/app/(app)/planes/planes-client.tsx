@@ -21,9 +21,10 @@ const stateTone = {
 type Props = {
   plans: PlanItem[];
   subscription: SubscriptionRow | null;
+  paymentsEnabled: boolean;
 };
 
-export function PlanesClient({ plans, subscription }: Props) {
+export function PlanesClient({ plans, subscription, paymentsEnabled }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
@@ -33,6 +34,10 @@ export function PlanesClient({ plans, subscription }: Props) {
     startTransition(async () => {
       const res = await selectPlanAction(plan.id);
       if (res.ok) {
+        if (res.checkoutUrl) {
+          window.location.assign(res.checkoutUrl);
+          return;
+        }
         setMessageType("success");
         setMessage(
           plan.precioMensual === "$0"
@@ -82,8 +87,9 @@ export function PlanesClient({ plans, subscription }: Props) {
           ) : null}
           {subscription.status === "pendiente-pago" ? (
             <p className="mt-2 text-sm text-slate-600">
-              El cobro online (Mercado Pago) se integra en la proxima fase. El equipo CARE
-              activara tu plan manualmente mientras tanto.
+              {paymentsEnabled
+                ? "Tu pago esta pendiente de confirmacion. En cuanto Mercado Pago lo acredite, el plan se activa automaticamente."
+                : "El cobro online (Mercado Pago) todavia no esta habilitado en este entorno. El equipo CARE activara tu plan manualmente."}
             </p>
           ) : null}
           <div className="mt-4">

@@ -524,6 +524,80 @@ export type Database = {
         Update: Partial<Omit<Database["public"]["Tables"]["notifications"]["Insert"], "user_id">>;
         Relationships: [];
       };
+      contacts: {
+        Row: {
+          id: string;
+          household_id: string;
+          full_name: string;
+          relationship: string;
+          category: "familia" | "medico" | "emergencia" | "servicio" | "otro";
+          phone: string;
+          email: string;
+          notes: string;
+          is_primary: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          household_id: string;
+          full_name: string;
+          relationship?: string;
+          category?: "familia" | "medico" | "emergencia" | "servicio" | "otro";
+          phone?: string;
+          email?: string;
+          notes?: string;
+          is_primary?: boolean;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["contacts"]["Insert"], "household_id">>;
+        Relationships: [];
+      };
+      legal_documents: {
+        Row: {
+          id: string;
+          household_id: string;
+          title: string;
+          doc_type: "poder" | "directiva-anticipada" | "curatela" | "tramite" | "seguro" | "otro";
+          status: "pendiente" | "en-tramite" | "vigente" | "vencido";
+          responsible: string;
+          due_date: string | null;
+          notes: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          household_id: string;
+          title: string;
+          doc_type?: "poder" | "directiva-anticipada" | "curatela" | "tramite" | "seguro" | "otro";
+          status?: "pendiente" | "en-tramite" | "vigente" | "vencido";
+          responsible?: string;
+          due_date?: string | null;
+          notes?: string;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["legal_documents"]["Insert"], "household_id">>;
+        Relationships: [];
+      };
+      audit_logs: {
+        Row: {
+          id: string;
+          actor_user_id: string | null;
+          entity_type: string;
+          entity_id: string | null;
+          action: string;
+          payload: Json;
+          created_at: string;
+        };
+        Insert: {
+          actor_user_id?: string | null;
+          entity_type: string;
+          entity_id?: string | null;
+          action: string;
+          payload?: Json;
+        };
+        Update: never;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

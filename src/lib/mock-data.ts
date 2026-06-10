@@ -118,6 +118,8 @@ export const careMockData: CareMockData = {
         estadoActualizacionPerfil: "datos-actualizados",
         altaDisponibilidad: true,
         ultimaActualizacion: "2026-05-01",
+        recomendacionesCount: 0,
+        recomendacionesPromedio: 0,
       },
       {
         id: "c-2",
@@ -138,6 +140,8 @@ export const careMockData: CareMockData = {
         estadoActualizacionPerfil: "pendiente-actualizacion",
         altaDisponibilidad: false,
         ultimaActualizacion: "2026-04-22",
+        recomendacionesCount: 0,
+        recomendacionesPromedio: 0,
       },
       {
         id: "c-3",
@@ -158,6 +162,8 @@ export const careMockData: CareMockData = {
         estadoActualizacionPerfil: "datos-vencidos",
         altaDisponibilidad: true,
         ultimaActualizacion: "2026-03-10",
+        recomendacionesCount: 0,
+        recomendacionesPromedio: 0,
       },
     ],
     recomendaciones: [

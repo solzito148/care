@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { ensureCareContext } from "@/lib/data/care-context";
+import { createNotification } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 
 export type CreateAppointmentInput = {
@@ -52,9 +53,14 @@ export async function createAppointmentAction(
   }
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const title = form.titulo.trim() || "Turno";
   const { error } = await supabase.from("appointments").insert({
     care_recipient_id: ctx.careRecipientId,
-    title: form.titulo.trim() || "Turno",
+    title,
     provider_name: form.profesional.trim() || null,
     location: form.lugar.trim() || null,
     starts_at: starts.toISOString(),
@@ -65,6 +71,18 @@ export async function createAppointmentAction(
   if (error) {
     console.error("createAppointment", error);
     return { ok: false, error: error.message };
+  }
+
+  if (user) {
+    const whenLabel = starts.toLocaleString("es-AR", { dateStyle: "full", timeStyle: "short" });
+    await createNotification({
+      userId: user.id,
+      title: `Turno agendado: ${title}`,
+      body: `Quedo registrado para el ${whenLabel}.`,
+      kind: "info",
+      href: "/turnos",
+      channels: user.email ? { email: user.email } : undefined,
+    });
   }
 
   revalidatePath("/agenda");

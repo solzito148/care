@@ -1,9 +1,22 @@
+import { cookies } from "next/headers";
+
 import { createClient } from "@/lib/supabase/server";
+
+export const ACTIVE_RECIPIENT_COOKIE = "care_recipient_id";
 
 export type CareContext = {
   householdId: string;
   careRecipientId: string;
 };
+
+async function readActiveRecipientCookie(): Promise<string | null> {
+  try {
+    const store = await cookies();
+    return store.get(ACTIVE_RECIPIENT_COOKIE)?.value ?? null;
+  } catch {
+    return null;
+  }
+}
 
 type SupabaseSrv = Awaited<ReturnType<typeof createClient>>;
 
@@ -121,16 +134,18 @@ async function ensureRecipientForHousehold(
     .from("care_recipients")
     .select("id")
     .eq("household_id", householdId)
-    .order("created_at", { ascending: true })
-    .limit(1);
+    .order("created_at", { ascending: true });
 
   if (lookupErr) {
     console.error("ensureRecipientForHousehold: lookup", lookupErr);
     return null;
   }
 
-  if (existing?.[0]?.id) {
-    return { householdId, careRecipientId: existing[0].id };
+  if (existing?.length) {
+    const ids = existing.map((row) => row.id);
+    const preferred = await readActiveRecipientCookie();
+    const careRecipientId = preferred && ids.includes(preferred) ? preferred : ids[0];
+    return { householdId, careRecipientId };
   }
 
   const { data: inserted, error } = await supabase

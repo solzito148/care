@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { PlanesClient } from "@/app/(app)/planes/planes-client";
 import { Card } from "@/components/ui/card";
 import { loadCurrentSubscription } from "@/lib/data/planes";
-import { monetizationPlansMock } from "@/lib/monetizacion-mock";
+import { isMercadoPagoEnabled } from "@/lib/payments/mercadopago";
+import { PLAN_CATALOG } from "@/lib/plans";
 import { getCurrentUser } from "@/lib/permissions";
 
 export default async function PlanesPage() {
@@ -22,7 +23,11 @@ export default async function PlanesPage() {
         </p>
       </Card>
 
-      <PlanesClient plans={monetizationPlansMock} subscription={subscription} />
+      <PlanesClient
+        plans={PLAN_CATALOG}
+        subscription={subscription}
+        paymentsEnabled={isMercadoPagoEnabled()}
+      />
     </section>
   );
 }

@@ -5,15 +5,12 @@ export type PermissionSubject = {
   roles: RoleCode[];
 };
 
-const PERMISSION_ROLES = [
-  "tutor",
-  "caregiver",
-  "professional",
-  "legal_admin",
-  "provider",
-] as const satisfies readonly RoleCode[];
-
-type PermissionRole = (typeof PERMISSION_ROLES)[number];
+type PermissionRole =
+  | "tutor"
+  | "caregiver"
+  | "professional"
+  | "legal_admin"
+  | "provider";
 
 export const PERMISSION_MAP: Record<PermissionRole, Set<string>> = {
   tutor: new Set([
