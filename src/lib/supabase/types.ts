@@ -465,6 +465,65 @@ export type Database = {
         Update: Partial<Omit<Database["public"]["Tables"]["marketplace_items"]["Insert"], "owner_user_id">>;
         Relationships: [];
       };
+      subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan_id: string;
+          plan_name: string;
+          line:
+            | "planes-familiares"
+            | "profesionales"
+            | "proveedores-marketplace"
+            | "servicios"
+            | "legales-administrativos"
+            | "intercambio-donaciones";
+          status: "activa" | "pendiente-pago" | "vencida" | "cancelada";
+          amount: string;
+          billing_cycle: string;
+          next_due_date: string | null;
+          payment_external_ref: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          plan_id: string;
+          plan_name: string;
+          line: Database["public"]["Tables"]["subscriptions"]["Row"]["line"];
+          status?: "activa" | "pendiente-pago" | "vencida" | "cancelada";
+          amount?: string;
+          billing_cycle?: string;
+          next_due_date?: string | null;
+          payment_external_ref?: string | null;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["subscriptions"]["Insert"], "user_id">>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          body: string;
+          kind: "info" | "warning" | "urgent" | "billing";
+          href: string | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          body?: string;
+          kind?: "info" | "warning" | "urgent" | "billing";
+          href?: string | null;
+          read_at?: string | null;
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["notifications"]["Insert"], "user_id">>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

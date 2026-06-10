@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+import { NotificationsCard } from "@/components/notifications/notifications-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { currentSubscriptionMock } from "@/lib/monetizacion-mock";
+import { loadNotifications } from "@/lib/data/notifications";
+import { loadCurrentSubscription } from "@/lib/data/planes";
 import { ACCOUNT_TYPE_LABELS, getCurrentUser } from "@/lib/permissions";
 
 const stateTone = {
@@ -25,6 +27,11 @@ const ROLE_LABEL: Record<string, string> = {
 export default async function MiCuentaPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+
+  const [subscription, notifications] = await Promise.all([
+    loadCurrentSubscription(),
+    loadNotifications(),
+  ]);
 
   const accountTypeLabel = user.profile?.account_type
     ? ACCOUNT_TYPE_LABELS[user.profile.account_type] ?? user.profile.account_type
@@ -78,35 +85,43 @@ export default async function MiCuentaPage() {
       </Card>
 
       <Card className="p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-semibold text-slate-900">
-            {currentSubscriptionMock.planNombre}
-          </h2>
-          <Badge tone={stateTone[currentSubscriptionMock.estado]}>
-            {currentSubscriptionMock.estado}
-          </Badge>
-        </div>
-        <p className="mt-3 text-sm text-slate-700">
-          <strong>Cuenta:</strong> {currentSubscriptionMock.cuenta}
-        </p>
-        <p className="text-sm text-slate-700">
-          <strong>Monto:</strong> {currentSubscriptionMock.monto}
-        </p>
-        <p className="text-sm text-slate-700">
-          <strong>Ciclo:</strong> {currentSubscriptionMock.cicloFacturacion}
-        </p>
-        <p className="text-sm text-slate-700">
-          <strong>Proximo vencimiento:</strong> {currentSubscriptionMock.proximoVencimiento}
-        </p>
-        <p className="mt-2 text-sm text-slate-600">
-          {currentSubscriptionMock.notaIntegracion}
-        </p>
+        {subscription ? (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-xl font-semibold text-slate-900">
+                {subscription.plan_name}
+              </h2>
+              <Badge tone={stateTone[subscription.status]}>{subscription.status}</Badge>
+            </div>
+            <p className="mt-3 text-sm text-slate-700">
+              <strong>Monto:</strong> {subscription.amount}
+            </p>
+            <p className="text-sm text-slate-700">
+              <strong>Ciclo:</strong> {subscription.billing_cycle}
+            </p>
+            {subscription.next_due_date ? (
+              <p className="text-sm text-slate-700">
+                <strong>Proximo vencimiento:</strong> {subscription.next_due_date}
+              </p>
+            ) : null}
+            <p className="mt-2 text-sm text-slate-600">
+              Preparado para integrar cobros y renovaciones automaticas con Mercado Pago.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-xl font-semibold text-slate-900">Sin plan activo</h2>
+            <p className="mt-2 text-sm text-slate-700">
+              Todavia no elegiste un plan CARE. Podes empezar con el plan gratuito.
+            </p>
+          </>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button href="/planes">Ver planes</Button>
-          <Button variant="secondary">Cambiar plan</Button>
-          <Button variant="secondary">Cancelar suscripcion</Button>
+          <Button href="/planes">{subscription ? "Cambiar plan" : "Ver planes"}</Button>
         </div>
       </Card>
+
+      <NotificationsCard notifications={notifications} />
     </section>
   );
 }

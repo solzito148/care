@@ -88,6 +88,18 @@ las fases anteriores). Agrega:
 - Estados de publicacion: `publicado`, `pausado` (el dueno puede pausar y
   reactivar desde la UI) y `bloqueado` (reservado para moderacion admin).
 
+### Fase 5 (suscripciones y notificaciones)
+
+Ejecutar **una vez** el script `supabase/phase5.sql` en SQL Editor. Agrega:
+
+- Tabla `subscriptions` + RLS: seleccion de plan desde `/planes`. Los planes
+  pagos quedan `pendiente-pago` hasta integrar Mercado Pago (el usuario solo
+  puede cancelar; la activacion queda para el service role / webhook futuro,
+  campo `payment_external_ref` reservado para el `preapproval_id`).
+- Tabla `notifications` + RLS: notificaciones in-app por usuario (tipos
+  `info`, `warning`, `urgent`, `billing`), visibles en `/mi-cuenta` con
+  marcar-como-leida.
+
 ## 4. Configurar Auth en Supabase
 
 En el dashboard, **Authentication > Providers**:
