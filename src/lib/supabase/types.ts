@@ -396,6 +396,75 @@ export type Database = {
         Update: Partial<Omit<Database["public"]["Tables"]["medical_studies"]["Insert"], "care_recipient_id">>;
         Relationships: [];
       };
+      services: {
+        Row: {
+          id: string;
+          owner_user_id: string | null;
+          provider_name: string;
+          category:
+            | "traslados-y-acompanamiento"
+            | "desarme-y-organizacion-del-hogar"
+            | "adaptacion-del-hogar"
+            | "tramites-y-gestiones"
+            | "servicios-domiciliarios-complementarios";
+          description: string;
+          coverage_zone: string;
+          availability: string;
+          phone_whatsapp: string;
+          email: string;
+          plan: "Basico" | "Destacado" | "Premium";
+          featured: boolean;
+          status: "publicado" | "pausado" | "bloqueado";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_user_id?: string | null;
+          provider_name: string;
+          category: Database["public"]["Tables"]["services"]["Row"]["category"];
+          description?: string;
+          coverage_zone?: string;
+          availability?: string;
+          phone_whatsapp?: string;
+          email?: string;
+          plan?: "Basico" | "Destacado" | "Premium";
+          featured?: boolean;
+          status?: "publicado" | "pausado" | "bloqueado";
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["services"]["Insert"], "owner_user_id">>;
+        Relationships: [];
+      };
+      marketplace_items: {
+        Row: {
+          id: string;
+          owner_user_id: string | null;
+          title: string;
+          category: string;
+          zone: string;
+          condition: string;
+          price: string | null;
+          listing_type: "venta" | "alquiler" | "intercambio" | "donaciones";
+          contact_phone: string;
+          status: "publicado" | "pausado" | "bloqueado";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_user_id?: string | null;
+          title: string;
+          category?: string;
+          zone?: string;
+          condition?: string;
+          price?: string | null;
+          listing_type: "venta" | "alquiler" | "intercambio" | "donaciones";
+          contact_phone?: string;
+          status?: "publicado" | "pausado" | "bloqueado";
+        };
+        Update: Partial<Omit<Database["public"]["Tables"]["marketplace_items"]["Insert"], "owner_user_id">>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

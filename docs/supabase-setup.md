@@ -73,6 +73,21 @@ Ejecutar **una vez** el script `supabase/phase3.sql` en SQL Editor (despues de
   de `/estudios` (paths `{care_recipient_id}/{uuid}-{archivo}`; la app genera
   signed URLs de 30 minutos para descargar).
 
+### Fase 4 (servicios y marketplace)
+
+Ejecutar **una vez** el script `supabase/phase4.sql` en SQL Editor (despues de
+las fases anteriores). Agrega:
+
+- Tabla `services` + RLS: publicaciones de servicios complementarios
+  (`/servicios`). Lectura de todo lo `publicado` para usuarios autenticados;
+  insert/update/delete solo del dueno (`owner_user_id`). Incluye seed con las
+  publicaciones de ejemplo.
+- Tabla `marketplace_items` + RLS: publicaciones de venta, alquiler,
+  intercambio y donaciones (`/marketplace`), con las mismas reglas de
+  visibilidad y propiedad. Incluye seed de ejemplo.
+- Estados de publicacion: `publicado`, `pausado` (el dueno puede pausar y
+  reactivar desde la UI) y `bloqueado` (reservado para moderacion admin).
+
 ## 4. Configurar Auth en Supabase
 
 En el dashboard, **Authentication > Providers**:
