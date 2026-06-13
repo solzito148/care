@@ -4,6 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import type { MarketplaceTab } from "@/lib/marketplace-types";
 import { createClient } from "@/lib/supabase/server";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import {
+  marketplaceItemStatusSchema,
+  publishMarketplaceItemSchema,
+} from "@/lib/validations/marketplace-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type PublishItemInput = {
   title: string;
@@ -15,13 +21,6 @@ export type PublishItemInput = {
   contactPhone: string;
 };
 
-const LISTING_TYPES: MarketplaceTab[] = [
-  "venta",
-  "alquiler",
-  "intercambio",
-  "donaciones",
-];
-
 export async function publishMarketplaceItemAction(
   form: PublishItemInput
 ): Promise<{ ok: boolean; error?: string }> {
@@ -31,14 +30,12 @@ export async function publishMarketplaceItemAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const title = form.title.trim();
-  if (title.length < 3) return { ok: false, error: "Indica un titulo (minimo 3 caracteres)." };
-  if (!LISTING_TYPES.includes(form.listingType)) {
-    return { ok: false, error: "Seccion invalida." };
-  }
+  const parsed = parseInput(publishMarketplaceItemSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
-  const isPaidSection = form.listingType === "venta" || form.listingType === "alquiler";
-  const price = form.price.trim();
+  const isPaidSection = input.listingType === "venta" || input.listingType === "alquiler";
+  const price = input.price;
   if (!isPaidSection && price) {
     return {
       ok: false,
@@ -48,13 +45,13 @@ export async function publishMarketplaceItemAction(
 
   const { error } = await supabase.from("marketplace_items").insert({
     owner_user_id: user.id,
-    title,
-    category: form.category.trim(),
-    zone: form.zone.trim(),
-    condition: form.condition.trim(),
+    title: input.title,
+    category: input.category,
+    zone: input.zone,
+    condition: input.condition,
     price: isPaidSection ? price || null : null,
-    listing_type: form.listingType,
-    contact_phone: form.contactPhone.trim(),
+    listing_type: input.listingType,
+    contact_phone: input.contactPhone,
   });
 
   if (error) {
@@ -81,10 +78,15 @@ export async function setMarketplaceItemStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, itemId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(marketplaceItemStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
+
   const { error } = await supabase
     .from("marketplace_items")
-    .update({ status })
-    .eq("id", itemId)
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data)
     .eq("owner_user_id", user.id);
 
   if (error) {

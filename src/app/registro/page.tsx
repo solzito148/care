@@ -139,6 +139,9 @@ export default function RegisterPage() {
             error={errors.password}
             autoComplete="new-password"
           />
+          <p className="sm:col-span-2 -mt-2 text-xs text-slate-500">
+            Minimo 10 caracteres, con mayuscula, minuscula y numero.
+          </p>
           <Input
             type="password"
             label="Confirmar contrasena"

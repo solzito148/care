@@ -6,6 +6,7 @@
     "dev": "next dev",
     "dev:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next dev",
     "build": "next build",
+    "build:verify": "next build && node scripts/verify-production-bundle.mjs",
     "build:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next build",
     "start": "next start",
     "start:doh": "NODE_OPTIONS='--require ./scripts/doh-resolver.js' next start",

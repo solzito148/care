@@ -6,7 +6,8 @@ import { ensureCareContext } from "@/lib/data/care-context";
 import type { StudyStatus } from "@/lib/data/estudios";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
-import { createStudySchema } from "@/lib/validations/estudio-schema";
+import { createStudySchema, studyStatusSchema } from "@/lib/validations/estudio-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
 import { parseInput } from "@/lib/validations/parse";
 
 export type CreateStudyInput = {
@@ -19,14 +20,6 @@ export type CreateStudyInput = {
   /** new Date().getTimezoneOffset() en el cliente */
   tzOffsetMinutes: number;
 };
-
-const STUDY_STATUSES: StudyStatus[] = [
-  "pending",
-  "scheduled",
-  "in_progress",
-  "completed",
-  "cancelled",
-];
 
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 
@@ -106,15 +99,17 @@ export async function updateStudyStatusAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
-  if (!STUDY_STATUSES.includes(status)) {
-    return { ok: false, error: "Estado invalido." };
-  }
+
+  const idParsed = parseInput(uuidSchema, studyId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(studyStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
 
   const supabase = await createClient();
   const update: Database["public"]["Tables"]["medical_studies"]["Update"] = {
-    status,
+    status: statusParsed.data,
   };
-  if (status === "completed") {
+  if (statusParsed.data === "completed") {
     update.completed_at = new Date().toISOString();
   }
   if (resultSummary !== undefined) {
@@ -124,7 +119,7 @@ export async function updateStudyStatusAction(
   const { error } = await supabase
     .from("medical_studies")
     .update(update)
-    .eq("id", studyId)
+    .eq("id", idParsed.data)
     .eq("care_recipient_id", ctx.careRecipientId);
 
   if (error) {
@@ -146,9 +141,8 @@ export async function uploadStudyAttachmentAction(
   const studyId = formData.get("studyId");
   const file = formData.get("file");
 
-  if (typeof studyId !== "string" || !studyId) {
-    return { ok: false, error: "Estudio invalido." };
-  }
+  const idParsed = parseInput(uuidSchema, studyId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "Selecciona un archivo." };
   }
@@ -179,7 +173,7 @@ export async function uploadStudyAttachmentAction(
   const { error: updateErr } = await supabase
     .from("medical_studies")
     .update({ attachment_url: path })
-    .eq("id", studyId)
+    .eq("id", idParsed.data)
     .eq("care_recipient_id", ctx.careRecipientId);
 
   if (updateErr) {

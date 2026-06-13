@@ -4,6 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 import type { ServiceCategory, ServicePlan } from "@/lib/servicios-types";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
+import {
+  publishServiceSchema,
+  serviceStatusSchema,
+} from "@/lib/validations/servicios-schema";
 
 export type PublishServiceInput = {
   providerName: string;
@@ -16,16 +22,6 @@ export type PublishServiceInput = {
   plan: ServicePlan;
 };
 
-const CATEGORIES: ServiceCategory[] = [
-  "traslados-y-acompanamiento",
-  "desarme-y-organizacion-del-hogar",
-  "adaptacion-del-hogar",
-  "tramites-y-gestiones",
-  "servicios-domiciliarios-complementarios",
-];
-
-const PLANS: ServicePlan[] = ["Basico", "Destacado", "Premium"];
-
 export async function publishServiceAction(
   form: PublishServiceInput
 ): Promise<{ ok: boolean; error?: string }> {
@@ -35,22 +31,21 @@ export async function publishServiceAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const providerName = form.providerName.trim();
-  if (providerName.length < 2) return { ok: false, error: "Indica el nombre del proveedor." };
-  if (!CATEGORIES.includes(form.category)) return { ok: false, error: "Categoria invalida." };
-  const plan = PLANS.includes(form.plan) ? form.plan : "Basico";
+  const parsed = parseInput(publishServiceSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
   const { error } = await supabase.from("services").insert({
     owner_user_id: user.id,
-    provider_name: providerName,
-    category: form.category,
-    description: form.description.trim(),
-    coverage_zone: form.coverageZone.trim(),
-    availability: form.availability.trim(),
-    phone_whatsapp: form.phoneWhatsapp.trim(),
-    email: form.email.trim(),
-    plan,
-    featured: plan !== "Basico",
+    provider_name: input.providerName,
+    category: input.category,
+    description: input.description,
+    coverage_zone: input.coverageZone,
+    availability: input.availability,
+    phone_whatsapp: input.phoneWhatsapp,
+    email: input.email,
+    plan: input.plan,
+    featured: input.plan !== "Basico",
   });
 
   if (error) {
@@ -77,10 +72,15 @@ export async function setServiceStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, serviceId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(serviceStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
+
   const { error } = await supabase
     .from("services")
-    .update({ status })
-    .eq("id", serviceId)
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data)
     .eq("owner_user_id", user.id);
 
   if (error) {

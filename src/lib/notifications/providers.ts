@@ -15,12 +15,18 @@ type OutboundMessage = {
   body: string;
 };
 
+function devSimulateLog(channel: string, message: OutboundMessage) {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(`[${channel}:dev] -> ${message.to} :: ${message.subject}`);
+  }
+}
+
 export async function sendEmail(message: OutboundMessage): Promise<DispatchResult> {
   const apiKey = process.env.EMAIL_PROVIDER_API_KEY;
   const from = process.env.EMAIL_FROM_ADDRESS ?? "CARE <no-reply@care.app>";
 
   if (!apiKey) {
-    console.info(`[email:dev] -> ${message.to} :: ${message.subject}`);
+    devSimulateLog("email", message);
     return {
       channel: "email",
       ok: true,
@@ -64,7 +70,7 @@ export async function sendWhatsApp(message: OutboundMessage): Promise<DispatchRe
   const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
   if (!token || !phoneId) {
-    console.info(`[whatsapp:dev] -> ${message.to} :: ${message.subject}`);
+    devSimulateLog("whatsapp", message);
     return {
       channel: "whatsapp",
       ok: true,

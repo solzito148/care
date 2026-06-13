@@ -5,6 +5,12 @@ import { revalidatePath } from "next/cache";
 import { ensureCareContext } from "@/lib/data/care-context";
 import type { LegalDocStatus, LegalDocType } from "@/lib/legales-types";
 import { createClient } from "@/lib/supabase/server";
+import {
+  legalDocStatusSchema,
+  legalDocumentSchema,
+} from "@/lib/validations/legal-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type LegalDocumentInput = {
   title: string;
@@ -14,16 +20,6 @@ export type LegalDocumentInput = {
   dueDate: string;
   notes: string;
 };
-
-const DOC_TYPES: LegalDocType[] = [
-  "poder",
-  "directiva-anticipada",
-  "curatela",
-  "tramite",
-  "seguro",
-  "otro",
-];
-const STATUSES: LegalDocStatus[] = ["pendiente", "en-tramite", "vigente", "vencido"];
 
 function dateOrNull(value: string): string | null {
   return /^\d{4}-\d{2}-\d{2}$/.test(value.trim()) ? value.trim() : null;
@@ -35,18 +31,19 @@ export async function addLegalDocumentAction(
   const context = await ensureCareContext();
   if (!context) return { ok: false, error: "No se pudo determinar el hogar." };
 
-  const title = form.title.trim();
-  if (title.length < 2) return { ok: false, error: "Indica un titulo para el documento." };
+  const parsed = parseInput(legalDocumentSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
   const supabase = await createClient();
   const { error } = await supabase.from("legal_documents").insert({
     household_id: context.householdId,
-    title,
-    doc_type: DOC_TYPES.includes(form.docType) ? form.docType : "otro",
-    status: STATUSES.includes(form.status) ? form.status : "pendiente",
-    responsible: form.responsible.trim(),
-    due_date: dateOrNull(form.dueDate),
-    notes: form.notes.trim(),
+    title: input.title,
+    doc_type: input.docType,
+    status: input.status,
+    responsible: input.responsible,
+    due_date: dateOrNull(input.dueDate),
+    notes: input.notes,
   });
 
   if (error) {
@@ -73,12 +70,15 @@ export async function setLegalDocumentStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  if (!STATUSES.includes(status)) return { ok: false, error: "Estado invalido." };
+  const idParsed = parseInput(uuidSchema, documentId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(legalDocStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
 
   const { error } = await supabase
     .from("legal_documents")
-    .update({ status })
-    .eq("id", documentId);
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data);
 
   if (error) {
     console.error("setLegalDocumentStatus", error);
@@ -98,7 +98,10 @@ export async function deleteLegalDocumentAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const { error } = await supabase.from("legal_documents").delete().eq("id", documentId);
+  const idParsed = parseInput(uuidSchema, documentId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
+  const { error } = await supabase.from("legal_documents").delete().eq("id", idParsed.data);
   if (error) {
     console.error("deleteLegalDocument", error);
     return { ok: false, error: error.message };

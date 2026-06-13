@@ -7,6 +7,9 @@ import { createNotification } from "@/lib/notify";
 import { createCheckoutPreference, isMercadoPagoEnabled } from "@/lib/payments/mercadopago";
 import { findPlan, isFreePlan } from "@/lib/plans";
 import { createClient } from "@/lib/supabase/server";
+import { planIdSchema } from "@/lib/validations/admin-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type SelectPlanResult = {
   ok: boolean;
@@ -29,7 +32,10 @@ export async function selectPlanAction(planId: string): Promise<SelectPlanResult
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const plan = findPlan(planId);
+  const planParsed = parseInput(planIdSchema, planId);
+  if (!planParsed.ok) return { ok: false, error: planParsed.error };
+
+  const plan = findPlan(planParsed.data);
   if (!plan) return { ok: false, error: "Plan inexistente." };
 
   const free = isFreePlan(plan);
@@ -107,10 +113,13 @@ export async function cancelSubscriptionAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, subscriptionId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const { error } = await supabase
     .from("subscriptions")
     .update({ status: "cancelada" })
-    .eq("id", subscriptionId)
+    .eq("id", idParsed.data)
     .eq("user_id", user.id);
 
   if (error) {
@@ -120,7 +129,7 @@ export async function cancelSubscriptionAction(
 
   await recordAuditLog({
     entityType: "subscription",
-    entityId: subscriptionId,
+    entityId: idParsed.data,
     action: "subscription_cancelled",
   });
 

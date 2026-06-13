@@ -6,6 +6,7 @@ import { ensureCareContext } from "@/lib/data/care-context";
 import type { ContactCategory } from "@/lib/contactos-types";
 import { createClient } from "@/lib/supabase/server";
 import { contactSchema } from "@/lib/validations/contacto-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
 import { parseInput } from "@/lib/validations/parse";
 
 export type ContactInput = {
@@ -59,7 +60,10 @@ export async function deleteContactAction(contactId: string): Promise<{ ok: bool
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const { error } = await supabase.from("contacts").delete().eq("id", contactId);
+  const idParsed = parseInput(uuidSchema, contactId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
+  const { error } = await supabase.from("contacts").delete().eq("id", idParsed.data);
   if (error) {
     console.error("deleteContact", error);
     return { ok: false, error: error.message };

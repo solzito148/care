@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ACTIVE_RECIPIENT_COOKIE, ensureCareContext } from "@/lib/data/care-context";
 import { createClient } from "@/lib/supabase/server";
 import { addCareRecipientSchema } from "@/lib/validations/care-recipient-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
 import { parseInput } from "@/lib/validations/parse";
 
 export type AddCareRecipientInput = {
@@ -59,11 +60,14 @@ export async function setActiveCareRecipientAction(
   const context = await ensureCareContext();
   if (!context) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, recipientId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("care_recipients")
     .select("id")
-    .eq("id", recipientId)
+    .eq("id", idParsed.data)
     .eq("household_id", context.householdId)
     .maybeSingle();
 
@@ -72,7 +76,7 @@ export async function setActiveCareRecipientAction(
   }
 
   const store = await cookies();
-  store.set(ACTIVE_RECIPIENT_COOKIE, recipientId, {
+  store.set(ACTIVE_RECIPIENT_COOKIE, idParsed.data, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

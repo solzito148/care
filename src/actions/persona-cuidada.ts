@@ -6,6 +6,8 @@ import { personaToCareRecipientUpdate } from "@/lib/data/persona-map";
 import { ensureCareContext } from "@/lib/data/care-context";
 import type { PersonaCuidada } from "@/lib/persona-cuidada-types";
 import { createClient } from "@/lib/supabase/server";
+import { parseInput } from "@/lib/validations/parse";
+import { savePersonaCuidadaSchema } from "@/lib/validations/persona-cuidada-schema";
 
 export async function savePersonaCuidada(form: PersonaCuidada): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
@@ -13,8 +15,11 @@ export async function savePersonaCuidada(form: PersonaCuidada): Promise<{ ok: bo
     return { ok: false, error: "Sesion requerida." };
   }
 
+  const parsed = parseInput(savePersonaCuidadaSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+
   const supabase = await createClient();
-  const payload = personaToCareRecipientUpdate(form);
+  const payload = personaToCareRecipientUpdate(parsed.data as PersonaCuidada);
 
   const { error } = await supabase.from("care_recipients").update(payload).eq("id", ctx.careRecipientId);
 

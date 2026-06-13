@@ -13,14 +13,25 @@ CARE es **Next.js 16 con bundler SWC/Turbopack**. No usa `webpack.config.js`,
 
 ## Lo que configuramos explicitamente (`next.config.ts`)
 
+| Opcion | Efecto en produccion |
+|--------|----------------------|
+| SWC minify (default) | Minifica JS/CSS, elimina comentarios, acorta nombres locales |
+| `compiler.removeConsole` | Quita `console.log/info/debug` del bundle del browser |
+| `compiler.reactRemoveProperties` | Quita atributos `data-test*` del HTML renderizado |
+| `productionBrowserSourceMaps: false` | No publica `.map` del browser |
+| `experimental.optimizePackageImports` | Tree-shaking mas agresivo en Supabase y Zod |
+| `poweredByHeader: false` | Oculta `X-Powered-By: Next.js` |
+| `compress: true` | Compresion gzip en el servidor |
+
 ```ts
 compiler: {
-  // Quita console.log/info/debug del bundle del navegador en produccion.
-  // Mantiene console.error y console.warn para diagnostico.
   removeConsole: isDev ? false : { exclude: ["error", "warn"] },
+  reactRemoveProperties: isDev ? false : { properties: ["^data-test"] },
 },
-// No exponer source maps del browser en produccion.
 productionBrowserSourceMaps: false,
+experimental: {
+  optimizePackageImports: ["@supabase/ssr", "@supabase/supabase-js", "zod"],
+},
 ```
 
 Tambien se aplican headers de seguridad (CSP, HSTS, X-Frame-Options, etc.) en el
@@ -54,9 +65,14 @@ una **Server Action / API route** (servidor), no en el bundle del navegador.
 ## Verificacion
 
 ```bash
-npm run build      # genera el build de produccion minificado
+npm run build          # genera el build de produccion minificado
+npm run build:verify   # build + chequeo automatico de console.log y source maps
 ```
 
-Para confirmar que no quedan `console.log`: inspeccionar el bundle servido en
-`/_next/static/chunks/*.js` en produccion y buscar `console.log` (no deberia
-aparecer; `console.error`/`console.warn` si pueden quedar).
+El script `scripts/verify-production-bundle.mjs` revisa:
+
+1. Que `src/` no tenga `console.log/debug/info` (falla si encuentra).
+2. Que no existan `.map` del browser en `.next/static` (falla si encuentra).
+3. Avisa si chunks de **terceros** (p. ej. `@supabase/supabase-js`) aun traen
+   `console.log` — eso no lo controla `removeConsole`, que solo aplica al codigo
+   de CARE.

@@ -7,6 +7,12 @@ import { ensureCareContext } from "@/lib/data/care-context";
 import type { ActiveMedication } from "@/lib/medicacion-types";
 import { createClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import {
+  medicationIntakeStatusSchema,
+  upsertMedicationSchema,
+} from "@/lib/validations/medicacion-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 function parseHorarios(horarios: string): string[] {
   const raw = horarios
@@ -26,29 +32,33 @@ export async function upsertMedicationAction(form: ActiveMedication): Promise<{ 
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
 
+  const parsed = parseInput(upsertMedicationSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
+
   const supabase = await createClient();
-  const metadata = { ui: { ...form } } as Json;
+  const metadata = { ui: { ...input } } as Json;
   const insertRow = {
     care_recipient_id: ctx.careRecipientId,
-    name: form.nombre,
-    dosage: form.dosis,
-    instructions: form.indicaciones || null,
-    active: form.activo,
+    name: input.nombre,
+    dosage: input.dosis,
+    instructions: input.indicaciones || null,
+    active: input.activo,
     metadata,
   };
 
   const updateRow = {
-    name: form.nombre,
-    dosage: form.dosis,
-    instructions: form.indicaciones || null,
-    active: form.activo,
+    name: input.nombre,
+    dosage: input.dosis,
+    instructions: input.indicaciones || null,
+    active: input.activo,
     metadata,
   };
 
-  let medId = form.id;
+  let medId = input.id;
 
-  if (isUuid(form.id)) {
-    const { error } = await supabase.from("medications").update(updateRow).eq("id", form.id);
+  if (isUuid(input.id)) {
+    const { error } = await supabase.from("medications").update(updateRow).eq("id", input.id);
     if (error) {
       console.error("upsertMedication update", error);
       return { ok: false, error: error.message };
@@ -64,13 +74,13 @@ export async function upsertMedicationAction(form: ActiveMedication): Promise<{ 
 
   await supabase.from("medication_schedules").delete().eq("medication_id", medId);
 
-  const times = parseHorarios(form.horarios);
-  const start = form.fechaInicio || new Date().toISOString().slice(0, 10);
-  const end = form.fechaFin?.trim() ? form.fechaFin : null;
+  const times = parseHorarios(input.horarios);
+  const start = input.fechaInicio || new Date().toISOString().slice(0, 10);
+  const end = input.fechaFin?.trim() ? input.fechaFin : null;
 
   const rows = times.map((time_of_day) => ({
     medication_id: medId,
-    frequency: form.frecuencia || "diaria",
+    frequency: input.frecuencia || "diaria",
     time_of_day,
     start_date: start,
     end_date: end,
@@ -94,7 +104,11 @@ export async function registerIntakeAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
-  if (!isUuid(scheduleId)) return { ok: false, error: "Horario invalido." };
+
+  const scheduleParsed = parseInput(uuidSchema, scheduleId);
+  if (!scheduleParsed.ok) return { ok: false, error: scheduleParsed.error };
+  const statusParsed = parseInput(medicationIntakeStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
 
   const supabase = await createClient();
   const {
@@ -102,9 +116,9 @@ export async function registerIntakeAction(
   } = await supabase.auth.getUser();
 
   const { error } = await supabase.from("medication_intakes").insert({
-    schedule_id: scheduleId,
-    status,
-    taken_at: status === "taken" ? new Date().toISOString() : null,
+    schedule_id: scheduleParsed.data,
+    status: statusParsed.data,
+    taken_at: statusParsed.data === "taken" ? new Date().toISOString() : null,
     created_by: user?.id ?? null,
   });
 
@@ -125,10 +139,15 @@ export async function setMedicationActiveAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
-  if (!isUuid(medicationId)) return { ok: false, error: "Id invalido." };
+
+  const idParsed = parseInput(uuidSchema, medicationId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("medications").update({ active: activo }).eq("id", medicationId);
+  const { error } = await supabase
+    .from("medications")
+    .update({ active: activo })
+    .eq("id", idParsed.data);
 
   if (error) return { ok: false, error: error.message };
   revalidatePath("/medicacion");

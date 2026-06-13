@@ -5,6 +5,13 @@ import { revalidatePath } from "next/cache";
 import { ensureCareContext } from "@/lib/data/care-context";
 import { createNotification } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
+import {
+  appointmentStatusSchema,
+  createAppointmentSchema,
+} from "@/lib/validations/agenda-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
+import type { z } from "zod";
 
 export type CreateAppointmentInput = {
   titulo: string;
@@ -27,24 +34,18 @@ export async function createAppointmentAction(
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
 
-  const fecha = form.fecha.trim();
-  const hora = form.hora.trim();
-  if (!fecha || !hora) {
-    return { ok: false, error: "Indica fecha y hora." };
-  }
+  const parsed = parseInput(createAppointmentSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
-  const dateMatch = fecha.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const timeMatch = hora.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-  if (!dateMatch || !timeMatch) {
-    return { ok: false, error: "Fecha u hora invalida." };
-  }
-
-  const [, yyyy, mm, dd] = dateMatch;
-  const [, hh, mi] = timeMatch;
-  const tzOffset = Number.isFinite(form.tzOffsetMinutes) ? form.tzOffsetMinutes : 0;
+  const [, yyyy, mm, dd] = input.fecha.match(/^(\d{4})-(\d{2})-(\d{2})$/)!;
+  const timeMatch = input.hora.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  const hh = timeMatch ? Number(timeMatch[1]) : 0;
+  const mi = timeMatch ? Number(timeMatch[2]) : 0;
+  const tzOffset = input.tzOffsetMinutes;
 
   const utcMs =
-    Date.UTC(Number(yyyy), Number(mm) - 1, Number(dd), Number(hh), Number(mi)) +
+    Date.UTC(Number(yyyy), Number(mm) - 1, Number(dd), hh, mi) +
     tzOffset * 60 * 1000;
   const starts = new Date(utcMs);
 
@@ -57,15 +58,15 @@ export async function createAppointmentAction(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const title = form.titulo.trim() || "Turno";
+  const title = input.titulo || "Turno";
   const { error } = await supabase.from("appointments").insert({
     care_recipient_id: ctx.careRecipientId,
     title,
-    provider_name: form.profesional.trim() || null,
-    location: form.lugar.trim() || null,
+    provider_name: input.profesional || null,
+    location: input.lugar || null,
     starts_at: starts.toISOString(),
     status: "scheduled",
-    notes: form.notas.trim() || null,
+    notes: input.notas || null,
   });
 
   if (error) {
@@ -90,14 +91,7 @@ export async function createAppointmentAction(
   return { ok: true };
 }
 
-export type AppointmentStatus = "scheduled" | "confirmed" | "done" | "cancelled";
-
-const APPOINTMENT_STATUSES: AppointmentStatus[] = [
-  "scheduled",
-  "confirmed",
-  "done",
-  "cancelled",
-];
+export type AppointmentStatus = z.infer<typeof appointmentStatusSchema>;
 
 export async function updateAppointmentStatusAction(
   appointmentId: string,
@@ -105,15 +99,17 @@ export async function updateAppointmentStatusAction(
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
-  if (!APPOINTMENT_STATUSES.includes(status)) {
-    return { ok: false, error: "Estado invalido." };
-  }
+
+  const idParsed = parseInput(uuidSchema, appointmentId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(appointmentStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("appointments")
-    .update({ status })
-    .eq("id", appointmentId)
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data)
     .eq("care_recipient_id", ctx.careRecipientId);
 
   if (error) {

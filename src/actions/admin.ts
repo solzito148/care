@@ -6,6 +6,13 @@ import { recordAuditLog } from "@/lib/audit";
 import { createNotification } from "@/lib/notify";
 import { getCurrentUser } from "@/lib/permissions";
 import { createClient } from "@/lib/supabase/server";
+import {
+  moderationStatusSchema,
+  reviewDecisionSchema,
+} from "@/lib/validations/admin-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
+import type { z } from "zod";
 
 type ActionResult = { ok: boolean; error?: string };
 
@@ -16,7 +23,7 @@ async function requireAdmin(): Promise<{ ok: true } | { ok: false; error: string
   return { ok: true };
 }
 
-type ModerationStatus = "publicado" | "pausado" | "bloqueado";
+type ModerationStatus = z.infer<typeof moderationStatusSchema>;
 
 export async function reviewRecommendationAction(
   recommendationId: string,
@@ -25,11 +32,16 @@ export async function reviewRecommendationAction(
   const guard = await requireAdmin();
   if (!guard.ok) return guard;
 
+  const idParsed = parseInput(uuidSchema, recommendationId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const decisionParsed = parseInput(reviewDecisionSchema, decision);
+  if (!decisionParsed.ok) return { ok: false, error: decisionParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("caregiver_recommendations")
-    .update({ status: decision })
-    .eq("id", recommendationId)
+    .update({ status: decisionParsed.data })
+    .eq("id", idParsed.data)
     .select("recommender_user_id, caregiver_profile_id")
     .single();
 
@@ -40,16 +52,19 @@ export async function reviewRecommendationAction(
 
   await recordAuditLog({
     entityType: "caregiver_recommendation",
-    entityId: recommendationId,
-    action: `recommendation_${decision}`,
+    entityId: idParsed.data,
+    action: `recommendation_${decisionParsed.data}`,
   });
 
   if (data?.recommender_user_id) {
     await createNotification({
       userId: data.recommender_user_id,
-      title: decision === "aprobada" ? "Tu recomendacion fue aprobada" : "Tu recomendacion fue revisada",
+      title:
+        decisionParsed.data === "aprobada"
+          ? "Tu recomendacion fue aprobada"
+          : "Tu recomendacion fue revisada",
       body:
-        decision === "aprobada"
+        decisionParsed.data === "aprobada"
           ? "Gracias. Tu recomendacion ya es visible en el perfil del cuidador."
           : "Tu recomendacion no fue publicada. Podes enviar otra si lo deseas.",
       kind: "info",
@@ -70,11 +85,16 @@ export async function moderateServiceAction(
   const guard = await requireAdmin();
   if (!guard.ok) return guard;
 
+  const idParsed = parseInput(uuidSchema, serviceId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(moderationStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("services")
-    .update({ status })
-    .eq("id", serviceId)
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data)
     .select("owner_user_id, provider_name")
     .single();
 
@@ -85,11 +105,11 @@ export async function moderateServiceAction(
 
   await recordAuditLog({
     entityType: "service",
-    entityId: serviceId,
-    action: `service_${status}`,
+    entityId: idParsed.data,
+    action: `service_${statusParsed.data}`,
   });
 
-  if (status === "bloqueado" && data?.owner_user_id) {
+  if (statusParsed.data === "bloqueado" && data?.owner_user_id) {
     await createNotification({
       userId: data.owner_user_id,
       title: "Tu servicio fue bloqueado",
@@ -111,11 +131,16 @@ export async function moderateMarketplaceItemAction(
   const guard = await requireAdmin();
   if (!guard.ok) return guard;
 
+  const idParsed = parseInput(uuidSchema, itemId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const statusParsed = parseInput(moderationStatusSchema, status);
+  if (!statusParsed.ok) return { ok: false, error: statusParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("marketplace_items")
-    .update({ status })
-    .eq("id", itemId)
+    .update({ status: statusParsed.data })
+    .eq("id", idParsed.data)
     .select("owner_user_id, title")
     .single();
 
@@ -126,11 +151,11 @@ export async function moderateMarketplaceItemAction(
 
   await recordAuditLog({
     entityType: "marketplace_item",
-    entityId: itemId,
-    action: `item_${status}`,
+    entityId: idParsed.data,
+    action: `item_${statusParsed.data}`,
   });
 
-  if (status === "bloqueado" && data?.owner_user_id) {
+  if (statusParsed.data === "bloqueado" && data?.owner_user_id) {
     await createNotification({
       userId: data.owner_user_id,
       title: "Tu publicacion fue bloqueada",
@@ -151,11 +176,14 @@ export async function sendCaregiverUpdateReminderAction(
   const guard = await requireAdmin();
   if (!guard.ok) return guard;
 
+  const idParsed = parseInput(uuidSchema, caregiverId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("caregiver_profiles")
     .select("id, full_name, linked_user_id")
-    .eq("id", caregiverId)
+    .eq("id", idParsed.data)
     .maybeSingle();
 
   if (error) {
@@ -166,7 +194,7 @@ export async function sendCaregiverUpdateReminderAction(
 
   await recordAuditLog({
     entityType: "caregiver_profile",
-    entityId: caregiverId,
+    entityId: idParsed.data,
     action: "caregiver_update_reminder_sent",
   });
 
@@ -183,7 +211,7 @@ export async function sendCaregiverUpdateReminderAction(
     title: "Actualiza tus datos en CARE",
     body: "Para mantener tu perfil visible y recomendado, confirma o actualiza tus datos este mes.",
     kind: "warning",
-    href: `/cuidadores/${caregiverId}`,
+    href: `/cuidadores/${idParsed.data}`,
   });
 
   revalidatePath("/cuidadores/admin-actualizacion");
@@ -194,11 +222,14 @@ export async function activateSubscriptionAction(subscriptionId: string): Promis
   const guard = await requireAdmin();
   if (!guard.ok) return guard;
 
+  const idParsed = parseInput(uuidSchema, subscriptionId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("subscriptions")
     .update({ status: "activa" })
-    .eq("id", subscriptionId)
+    .eq("id", idParsed.data)
     .select("user_id, plan_name")
     .single();
 
@@ -209,7 +240,7 @@ export async function activateSubscriptionAction(subscriptionId: string): Promis
 
   await recordAuditLog({
     entityType: "subscription",
-    entityId: subscriptionId,
+    entityId: idParsed.data,
     action: "subscription_activated_admin",
   });
 

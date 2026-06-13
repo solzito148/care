@@ -5,6 +5,13 @@ import { revalidatePath } from "next/cache";
 import { recordAuditLog } from "@/lib/audit";
 import { createNotification } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
+import {
+  caregiverContactKindSchema,
+  caregiverProfileSchema,
+  recommendationSchema,
+} from "@/lib/validations/caregiver-profile-schema";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type CreateCaregiverProfileInput = {
   fullName: string;
@@ -44,31 +51,29 @@ export async function createCaregiverProfileAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  const fullName = form.fullName.trim();
-  if (fullName.length < 2) return { ok: false, error: "Indica el nombre completo." };
+  const parsed = parseInput(caregiverProfileSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
-  const locality = form.locality.trim();
-  if (!locality) return { ok: false, error: "Indica la localidad." };
-
-  const zones = splitList(form.zones);
-  const modalities = splitList(form.modalities);
-  const tasks = splitList(form.tasks);
-  const experienceYears = Math.max(0, Math.min(60, Number(form.experienceYears) || 0));
+  const zones = splitList(input.zones);
+  const modalities = splitList(input.modalities);
+  const tasks = splitList(input.tasks);
+  const experienceYears = Math.max(0, Math.min(60, Number(input.experienceYears) || 0));
 
   const { data, error } = await supabase
     .from("caregiver_profiles")
     .insert({
-      display_initials: initialsOf(fullName),
-      full_name: fullName,
+      display_initials: initialsOf(input.fullName),
+      full_name: input.fullName,
       zones,
-      locality,
+      locality: input.locality,
       modalities,
-      availability_special: splitList(form.availabilitySpecial),
+      availability_special: splitList(input.availabilitySpecial),
       experience_years: experienceYears,
       tasks,
       profile_complete: Boolean(zones.length && modalities.length && tasks.length),
       profile_status: "datos-actualizados",
-      high_availability: form.highAvailability,
+      high_availability: input.highAvailability,
       last_profile_update: new Date().toISOString().slice(0, 10),
       linked_user_id: user.id,
     })
@@ -128,29 +133,29 @@ export async function submitRecommendationAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
-  if (!form.caregiverId) return { ok: false, error: "Selecciona un cuidador." };
-  const recommenderName = form.personaQueRecomienda.trim();
-  if (!recommenderName) return { ok: false, error: "Indica quien recomienda." };
+  const parsed = parseInput(recommendationSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
   const { error } = await supabase.from("caregiver_recommendations").insert({
-    caregiver_profile_id: form.caregiverId,
+    caregiver_profile_id: input.caregiverId,
     recommender_user_id: user.id,
-    recommender_name: recommenderName,
-    period_from: dateOrNull(form.periodoDesde),
-    period_to: dateOrNull(form.periodoHasta),
-    zone: form.zonaServicio.trim() || null,
-    modality: form.modalidadServicio.trim() || null,
-    tasks_summary: form.tareasRealizadas.trim() || null,
-    score_general: score(form.calificacionGeneral),
-    score_punctuality: score(form.puntualidad),
-    score_treatment: score(form.tratoHumano),
-    score_responsibility: score(form.responsabilidad),
-    score_communication: score(form.comunicacion),
-    score_reliability: score(form.confiabilidad),
-    comment: form.comentario.trim() || null,
-    would_rehire: form.loVolveriaAContratar,
-    allow_public: form.autorizaMostrarRecomendacion,
-    allow_contact: form.autorizaContactoReferencia,
+    recommender_name: input.personaQueRecomienda,
+    period_from: dateOrNull(input.periodoDesde),
+    period_to: dateOrNull(input.periodoHasta),
+    zone: input.zonaServicio || null,
+    modality: input.modalidadServicio || null,
+    tasks_summary: input.tareasRealizadas || null,
+    score_general: score(input.calificacionGeneral),
+    score_punctuality: score(input.puntualidad),
+    score_treatment: score(input.tratoHumano),
+    score_responsibility: score(input.responsabilidad),
+    score_communication: score(input.comunicacion),
+    score_reliability: score(input.confiabilidad),
+    comment: input.comentario || null,
+    would_rehire: input.loVolveriaAContratar,
+    allow_public: input.autorizaMostrarRecomendacion,
+    allow_contact: input.autorizaContactoReferencia,
   });
 
   if (error) {
@@ -165,7 +170,7 @@ export async function submitRecommendationAction(
   }
 
   revalidatePath("/cuidadores");
-  revalidatePath(`/cuidadores/${form.caregiverId}`);
+  revalidatePath(`/cuidadores/${input.caregiverId}`);
   return { ok: true };
 }
 
@@ -182,6 +187,9 @@ export async function confirmCaregiverDataUpdatedAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, caregiverId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const { data, error } = await supabase
     .from("caregiver_profiles")
     .update({
@@ -189,7 +197,7 @@ export async function confirmCaregiverDataUpdatedAction(
       profile_status: "datos-actualizados",
       last_profile_update: new Date().toISOString().slice(0, 10),
     })
-    .eq("id", caregiverId)
+    .eq("id", idParsed.data)
     .eq("linked_user_id", user.id)
     .select("id")
     .maybeSingle();
@@ -204,11 +212,11 @@ export async function confirmCaregiverDataUpdatedAction(
 
   await recordAuditLog({
     entityType: "caregiver_profile",
-    entityId: caregiverId,
+    entityId: idParsed.data,
     action: "caregiver_data_confirmed",
   });
 
-  revalidatePath(`/cuidadores/${caregiverId}`);
+  revalidatePath(`/cuidadores/${idParsed.data}`);
   revalidatePath("/cuidadores");
   return { ok: true };
 }
@@ -228,20 +236,31 @@ export async function requestCaregiverContactAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, caregiverId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+  const kindParsed = parseInput(caregiverContactKindSchema, kind);
+  if (!kindParsed.ok) return { ok: false, error: kindParsed.error };
+
   await recordAuditLog({
     entityType: "caregiver_profile",
-    entityId: caregiverId,
-    action: kind === "entrevista" ? "caregiver_interview_requested" : "caregiver_contact_requested",
+    entityId: idParsed.data,
+    action:
+      kindParsed.data === "entrevista"
+        ? "caregiver_interview_requested"
+        : "caregiver_contact_requested",
   });
 
   await createNotification({
     userId: user.id,
-    title: kind === "entrevista" ? "Solicitud de entrevista enviada" : "Solicitud de contacto enviada",
+    title:
+      kindParsed.data === "entrevista"
+        ? "Solicitud de entrevista enviada"
+        : "Solicitud de contacto enviada",
     body: "El equipo CARE coordina el contacto con el cuidador y te avisa por este medio.",
     kind: "info",
-    href: `/cuidadores/${caregiverId}`,
+    href: `/cuidadores/${idParsed.data}`,
   });
 
-  revalidatePath(`/cuidadores/${caregiverId}`);
+  revalidatePath(`/cuidadores/${idParsed.data}`);
   return { ok: true };
 }

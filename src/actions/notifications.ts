@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
+import { uuidSchema } from "@/lib/validations/common-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export async function markNotificationReadAction(
   notificationId: string
@@ -13,10 +15,13 @@ export async function markNotificationReadAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const idParsed = parseInput(uuidSchema, notificationId);
+  if (!idParsed.ok) return { ok: false, error: idParsed.error };
+
   const { error } = await supabase
     .from("notifications")
     .update({ read_at: new Date().toISOString() })
-    .eq("id", notificationId)
+    .eq("id", idParsed.data)
     .eq("user_id", user.id);
 
   if (error) {

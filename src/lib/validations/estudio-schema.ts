@@ -11,3 +11,11 @@ export const createStudySchema = z.object({
 });
 
 export type CreateStudySchema = z.infer<typeof createStudySchema>;
+
+export const studyStatusSchema = z.enum([
+  "pending",
+  "scheduled",
+  "in_progress",
+  "completed",
+  "cancelled",
+]);

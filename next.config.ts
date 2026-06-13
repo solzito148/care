@@ -36,14 +36,29 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // En produccion Next.js (SWC) ya minifica, hace tree-shaking y elimina
-  // comentarios. Ademas, aca quitamos los console.* (salvo error/warn) para no
-  // filtrar informacion de desarrollo en el bundle del navegador.
+  // Oculta el header X-Powered-By: Next.js en respuestas HTTP.
+  poweredByHeader: false,
+  // Compresion gzip/brotli en el servidor de Next (Vercel tambien comprime).
+  compress: true,
+  reactStrictMode: true,
+
+  // En produccion SWC minifica JS/CSS, elimina comentarios, acorta nombres
+  // locales (mangle) y hace tree-shaking. Ademas quitamos console.log/info/
+  // debug del bundle del navegador (mantiene error/warn para diagnostico).
   compiler: {
     removeConsole: isDev ? false : { exclude: ["error", "warn"] },
+    // Quita atributos de test del DOM en produccion (menor superficie en HTML).
+    reactRemoveProperties: isDev ? false : { properties: ["^data-test"] },
   },
-  // No publicar source maps del browser en produccion (dificulta el reversing).
+
+  // Sin source maps del browser: evita "des-minificar" el bundle en DevTools.
   productionBrowserSourceMaps: false,
+
+  // Tree-shaking mas agresivo en paquetes con muchos exports.
+  experimental: {
+    optimizePackageImports: ["@supabase/ssr", "@supabase/supabase-js", "zod"],
+  },
+
   async headers() {
     return [
       {
