@@ -13,9 +13,9 @@ import { signUpWithPassword } from "@/lib/auth";
 import { AccountType } from "@/lib/auth-types";
 import {
   validateEmail,
-  validatePassword,
   validatePhone,
   validateRequired,
+  validateStrongPassword,
 } from "@/lib/form-validation";
 
 export default function RegisterPage() {
@@ -41,7 +41,7 @@ export default function RegisterPage() {
       lastName: validateRequired(lastName, "El apellido"),
       email: validateEmail(email),
       phone: validatePhone(phone),
-      password: validatePassword(password),
+      password: validateStrongPassword(password),
       confirmPassword:
         password === confirmPassword ? "" : "Las contrasenas no coinciden.",
       terms: termsAccepted ? "" : "Debes aceptar terminos y condiciones.",
@@ -151,11 +151,22 @@ export default function RegisterPage() {
           <div className="sm:col-span-2">
             <CheckboxField
               id="terms"
-              label="Acepto terminos y condiciones de CARE."
+              label="Acepto los terminos y condiciones de CARE."
               checked={termsAccepted}
               onChange={setTermsAccepted}
               error={errors.terms}
             />
+            <p className="mt-1 text-xs text-slate-500">
+              Lee los{" "}
+              <Link href="/terminos" className="font-medium text-care-700 hover:text-care-800">
+                terminos y condiciones
+              </Link>{" "}
+              y la{" "}
+              <Link href="/privacidad" className="font-medium text-care-700 hover:text-care-800">
+                politica de privacidad
+              </Link>
+              .
+            </p>
           </div>
           <div className="sm:col-span-2">
             <FormMessage message={formError} />

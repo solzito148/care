@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { updatePassword } from "@/lib/auth";
-import { validatePassword } from "@/lib/form-validation";
+import { validateStrongPassword } from "@/lib/form-validation";
 
 export default function UpdatePasswordPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function UpdatePasswordPage() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const nextErrors: { password?: string; confirmPassword?: string } = {
-      password: validatePassword(password),
+      password: validateStrongPassword(password),
       confirmPassword:
         password === confirmPassword ? "" : "Las contrasenas no coinciden.",
     };

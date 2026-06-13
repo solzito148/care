@@ -138,7 +138,7 @@ export default function LandingPage() {
         </section>
 
         <section>
-          <Card className="rounded-3xl bg-care-700 p-6 text-white sm:p-8">
+          <div className="rounded-3xl border border-care-700 bg-care-700 p-6 text-white shadow-soft sm:p-8">
             <h2 className="text-2xl font-bold">Empeza a organizar el cuidado hoy</h2>
             <p className="mt-3 max-w-2xl text-care-100">
               Centraliza informacion, evita olvidos y mejora la coordinacion diaria entre familia,
@@ -157,7 +157,7 @@ export default function LandingPage() {
                 Ingresar
               </Button>
             </div>
-          </Card>
+          </div>
         </section>
       </main>
     </div>

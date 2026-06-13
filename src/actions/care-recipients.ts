@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 
 import { ACTIVE_RECIPIENT_COOKIE, ensureCareContext } from "@/lib/data/care-context";
 import { createClient } from "@/lib/supabase/server";
+import { addCareRecipientSchema } from "@/lib/validations/care-recipient-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type AddCareRecipientInput = {
   fullName: string;
@@ -23,18 +25,19 @@ export async function addCareRecipientAction(
   const context = await ensureCareContext();
   if (!context) return { ok: false, error: "No se pudo determinar el hogar." };
 
-  const fullName = form.fullName.trim();
-  if (fullName.length < 2) return { ok: false, error: "Indica el nombre de la persona cuidada." };
+  const parsed = parseInput(addCareRecipientSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("care_recipients")
     .insert({
       household_id: context.householdId,
-      full_name: fullName,
-      preferred_name: form.preferredName.trim() || null,
-      birth_date: dateOrNull(form.birthDate),
-      emergency_notes: form.emergencyNotes.trim() || null,
+      full_name: input.fullName,
+      preferred_name: input.preferredName || null,
+      birth_date: dateOrNull(input.birthDate),
+      emergency_notes: input.emergencyNotes || null,
     })
     .select("id")
     .single();
@@ -71,6 +74,7 @@ export async function setActiveCareRecipientAction(
   const store = await cookies();
   store.set(ACTIVE_RECIPIENT_COOKIE, recipientId, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365,

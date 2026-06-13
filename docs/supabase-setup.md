@@ -260,7 +260,32 @@ Para sumar una nueva ruta protegida:
 1. Crear el directorio dentro de `src/app/(app)/<ruta>/`.
 2. Agregar el prefijo en `PROTECTED_PREFIXES` de
    `src/lib/supabase/middleware.ts`.
-## 9. Troubleshooting
+## 9. Verificar RLS en produccion (SEC-18)
+
+La seguridad de CARE depende de que las policies RLS esten aplicadas en la base
+cloud. Sin RLS, la `anon`/`auth` key expone datos de todos los hogares.
+
+Despues de pegar `supabase/migrate-all.sql`, ejecutar tambien
+`supabase/verify-rls.sql` en el SQL Editor y confirmar:
+
+1. El bloque 1 (tablas **sin** RLS) devuelve **0 filas**.
+2. El bloque 2 (RLS **sin** policies) devuelve **0 filas**.
+3. En el inventario (bloque 3), toda tabla con datos de usuario tiene
+   `rls_habilitado = true` y `policies >= 1`.
+4. El bucket `estudios` aparece con `es_publico = false`.
+
+Si alguna verificacion falla, volver a aplicar la fase correspondiente antes de
+exponer la app a usuarios reales.
+
+### Variables de entorno minimas en Vercel (produccion)
+
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (solo server; nunca `NEXT_PUBLIC_*`)
+- `NEXT_PUBLIC_APP_URL` (dominio de produccion, para back_urls de pago)
+- `MERCADOPAGO_ACCESS_TOKEN` y `MERCADOPAGO_WEBHOOK_SECRET`
+  (sin el secret en produccion el webhook responde 503 — fail-closed, SEC-10)
+
+## 10. Troubleshooting
 
 - **`Faltan NEXT_PUBLIC_SUPABASE_URL...`**: confirmar que `.env.local` existe y
   reiniciar `npm run dev`.

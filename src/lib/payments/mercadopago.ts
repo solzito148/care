@@ -66,7 +66,9 @@ export async function createCheckoutPreference(
     });
 
     if (!res.ok) {
-      console.error("createCheckoutPreference", await res.text());
+      // PCI: no volcar el body de la respuesta de MP (puede traer metadata
+      // sensible). Solo el status alcanza para diagnosticar.
+      console.error("createCheckoutPreference failed", { status: res.status });
       return null;
     }
 

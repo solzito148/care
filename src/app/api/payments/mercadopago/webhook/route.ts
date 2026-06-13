@@ -7,32 +7,35 @@ import { createServiceClient } from "@/lib/supabase/service";
 
 export const runtime = "nodejs";
 
+type SignatureResult = "valid" | "invalid" | "missing-secret";
+
 /**
  * Verifica la firma `x-signature` de Mercado Pago segun el esquema ts/v1.
- * Si no hay secreto configurado, no se exige firma (modo dev / sandbox).
+ * Sin secreto configurado devuelve "missing-secret": el caller decide
+ * (fail-closed en produccion, fail-open solo fuera de produccion para sandbox).
  */
-function verifySignature(request: Request, dataId: string): boolean {
+function verifySignature(request: Request, dataId: string): SignatureResult {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-  if (!secret) return true;
+  if (!secret) return "missing-secret";
 
   const signature = request.headers.get("x-signature");
   const requestId = request.headers.get("x-request-id");
-  if (!signature) return false;
+  if (!signature) return "invalid";
 
   const parts = Object.fromEntries(
     signature.split(",").map((kv) => kv.split("=").map((s) => s.trim()) as [string, string])
   );
   const ts = parts.ts;
   const v1 = parts.v1;
-  if (!ts || !v1) return false;
+  if (!ts || !v1) return "invalid";
 
   const manifest = `id:${dataId};request-id:${requestId};ts:${ts};`;
   const expected = createHmac("sha256", secret).update(manifest).digest("hex");
 
   try {
-    return timingSafeEqual(Buffer.from(expected), Buffer.from(v1));
+    return timingSafeEqual(Buffer.from(expected), Buffer.from(v1)) ? "valid" : "invalid";
   } catch {
-    return false;
+    return "invalid";
   }
 }
 
@@ -51,7 +54,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, ignored: true });
   }
 
-  if (!verifySignature(request, String(paymentId))) {
+  const signatureResult = verifySignature(request, String(paymentId));
+  if (signatureResult === "missing-secret") {
+    // Fail-closed en produccion: sin secreto no se puede verificar el origen,
+    // por lo que un atacante podria activar suscripciones falsas. Fuera de
+    // produccion se permite para pruebas en sandbox.
+    if (process.env.NODE_ENV === "production") {
+      console.error("mercadopago webhook: missing MERCADOPAGO_WEBHOOK_SECRET in production");
+      return NextResponse.json({ ok: false, error: "Webhook not configured" }, { status: 503 });
+    }
+  } else if (signatureResult === "invalid") {
     return NextResponse.json({ ok: false, error: "Invalid signature" }, { status: 401 });
   }
 

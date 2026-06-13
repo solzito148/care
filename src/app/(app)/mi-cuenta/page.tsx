@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { DeleteAccountCard } from "@/app/(app)/mi-cuenta/delete-account-card";
 import { NotificationsCard } from "@/components/notifications/notifications-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -124,6 +125,8 @@ export default async function MiCuentaPage() {
       </Card>
 
       <NotificationsCard notifications={notifications} />
+
+      <DeleteAccountCard />
     </section>
   );
 }

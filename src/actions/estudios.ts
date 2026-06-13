@@ -6,6 +6,8 @@ import { ensureCareContext } from "@/lib/data/care-context";
 import type { StudyStatus } from "@/lib/data/estudios";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
+import { createStudySchema } from "@/lib/validations/estudio-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type CreateStudyInput = {
   title: string;
@@ -27,6 +29,22 @@ const STUDY_STATUSES: StudyStatus[] = [
 ];
 
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+// Whitelist de adjuntos de estudios: documentos e imagenes medicas. Se valida
+// tanto el MIME declarado como la extension para rechazar ejecutables.
+const ALLOWED_ATTACHMENT_TYPES: Record<string, string[]> = {
+  "application/pdf": [".pdf"],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
+  "image/webp": [".webp"],
+};
+
+function isAllowedAttachment(file: File): boolean {
+  const allowedExts = ALLOWED_ATTACHMENT_TYPES[file.type];
+  if (!allowedExts) return false;
+  const lowerName = file.name.toLowerCase();
+  return allowedExts.some((ext) => lowerName.endsWith(ext));
+}
 
 function buildScheduledAt(
   fecha: string,
@@ -52,21 +70,22 @@ export async function createStudyAction(
   const ctx = await ensureCareContext();
   if (!ctx) return { ok: false, error: "Sesion requerida." };
 
-  const title = form.title.trim();
-  if (!title) return { ok: false, error: "Indica el nombre del estudio." };
+  const parsed = parseInput(createStudySchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
-  const scheduledAt = form.fecha.trim()
-    ? buildScheduledAt(form.fecha, form.hora, form.tzOffsetMinutes)
+  const scheduledAt = input.fecha
+    ? buildScheduledAt(input.fecha, input.hora, input.tzOffsetMinutes)
     : null;
 
   const supabase = await createClient();
   const { error } = await supabase.from("medical_studies").insert({
     care_recipient_id: ctx.careRecipientId,
-    title,
-    study_type: form.studyType.trim() || null,
-    prescribing_doctor: form.doctor.trim() || null,
+    title: input.title,
+    study_type: input.studyType || null,
+    prescribing_doctor: input.doctor || null,
     scheduled_at: scheduledAt,
-    preparation_notes: form.preparationNotes.trim() || null,
+    preparation_notes: input.preparationNotes || null,
     status: scheduledAt ? "scheduled" : "pending",
   });
 
@@ -136,6 +155,9 @@ export async function uploadStudyAttachmentAction(
   if (file.size > MAX_ATTACHMENT_BYTES) {
     return { ok: false, error: "El archivo supera los 10 MB." };
   }
+  if (!isAllowedAttachment(file)) {
+    return { ok: false, error: "Formato no permitido. Sube un PDF o una imagen (JPG, PNG, WEBP)." };
+  }
 
   const safeName = file.name.replace(/[^\w.\-]+/g, "_").slice(-80);
   const path = `${ctx.careRecipientId}/${crypto.randomUUID()}-${safeName}`;
@@ -143,7 +165,7 @@ export async function uploadStudyAttachmentAction(
   const supabase = await createClient();
   const { error: uploadErr } = await supabase.storage
     .from("estudios")
-    .upload(path, file, { contentType: file.type || "application/octet-stream" });
+    .upload(path, file, { contentType: file.type });
 
   if (uploadErr) {
     console.error("uploadStudyAttachment", uploadErr);

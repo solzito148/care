@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { ensureCareContext } from "@/lib/data/care-context";
 import type { ContactCategory } from "@/lib/contactos-types";
 import { createClient } from "@/lib/supabase/server";
+import { contactSchema } from "@/lib/validations/contacto-schema";
+import { parseInput } from "@/lib/validations/parse";
 
 export type ContactInput = {
   fullName: string;
@@ -16,26 +18,24 @@ export type ContactInput = {
   isPrimary: boolean;
 };
 
-const CATEGORIES: ContactCategory[] = ["familia", "medico", "emergencia", "servicio", "otro"];
-
 export async function addContactAction(form: ContactInput): Promise<{ ok: boolean; error?: string }> {
   const context = await ensureCareContext();
   if (!context) return { ok: false, error: "No se pudo determinar el hogar." };
 
-  const fullName = form.fullName.trim();
-  if (fullName.length < 2) return { ok: false, error: "Indica el nombre del contacto." };
-  const category = CATEGORIES.includes(form.category) ? form.category : "otro";
+  const parsed = parseInput(contactSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const input = parsed.data;
 
   const supabase = await createClient();
   const { error } = await supabase.from("contacts").insert({
     household_id: context.householdId,
-    full_name: fullName,
-    relationship: form.relationship.trim(),
-    category,
-    phone: form.phone.trim(),
-    email: form.email.trim(),
-    notes: form.notes.trim(),
-    is_primary: form.isPrimary,
+    full_name: input.fullName,
+    relationship: input.relationship,
+    category: input.category,
+    phone: input.phone,
+    email: input.email,
+    notes: input.notes,
+    is_primary: input.isPrimary,
   });
 
   if (error) {
