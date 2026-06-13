@@ -67,7 +67,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "recomendaciones", label: "Recomendaciones", count: overview.pendingRecommendations },
     { id: "servicios", label: "Servicios", count: services.length },
-    { id: "marketplace", label: "Marketplace", count: items.length },
+    { id: "marketplace", label: "Publicaciones", count: items.length },
     { id: "suscripciones", label: "Suscripciones", count: subscriptions.length },
   ];
 
@@ -179,7 +179,9 @@ export function AdminClient({ overview, recommendations, services, items, subscr
 
       {tab === "marketplace" ? (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Publicaciones de marketplace</h2>
+          <h2 className="text-xl font-semibold text-slate-900">
+            Publicaciones (venta, alquiler, intercambio, donaciones)
+          </h2>
           <div className="mt-4 space-y-3">
             {items.length === 0 ? (
               <p className="text-sm text-slate-600">No hay publicaciones cargadas.</p>

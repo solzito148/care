@@ -30,7 +30,7 @@ export default async function AdminPage() {
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Administracion CARE</h1>
         <p className="mt-2 text-slate-700">
-          Moderacion de recomendaciones, servicios y marketplace, y gestion de suscripciones.
+          Moderacion de recomendaciones, servicios y publicaciones, y gestion de suscripciones.
         </p>
       </Card>
 

@@ -16,6 +16,6 @@ export const accountTypeOptions: AccountTypeOption[] = [
   { value: "cuidador", label: "Cuidador" },
   { value: "profesional-salud", label: "Profesional de salud" },
   { value: "profesional-legal-administrativo", label: "Profesional legal o administrativo" },
-  { value: "proveedor-marketplace", label: "Proveedor de marketplace" },
+  { value: "proveedor-marketplace", label: "Proveedor de productos" },
   { value: "proveedor-servicios", label: "Proveedor de servicios" },
 ];

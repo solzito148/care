@@ -43,7 +43,7 @@ export const ACCOUNT_TYPE_LABELS: Record<AccountTypeCode, string> = {
   cuidador: "Cuidador",
   "profesional-salud": "Profesional de salud",
   "profesional-legal-administrativo": "Profesional legal o administrativo",
-  "proveedor-marketplace": "Proveedor de marketplace",
+  "proveedor-marketplace": "Proveedor de productos",
   "proveedor-servicios": "Proveedor de servicios",
 };
 

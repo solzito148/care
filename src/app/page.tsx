@@ -31,11 +31,10 @@ const features = [
   "Turnos",
   "Cuidadores",
   "Servicios",
-  "Marketplace",
   "Legales y administrativos",
 ];
 
-const marketplaceAndServices = [
+const serviceOfferings = [
   "Venta",
   "Alquiler",
   "Intercambio y donaciones",
@@ -126,9 +125,9 @@ export default function LandingPage() {
 
         <section>
           <Card className="p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold text-slate-900">Marketplace y servicios</h2>
+            <h2 className="text-2xl font-semibold text-slate-900">Servicios</h2>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {marketplaceAndServices.map((item) => (
+              {serviceOfferings.map((item) => (
                 <article key={item} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <p className="font-medium text-slate-800">{item}</p>
                 </article>

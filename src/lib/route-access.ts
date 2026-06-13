@@ -13,7 +13,6 @@ export const ROUTE_ACCESS: Record<string, RoleCode[] | null> = {
   "/cuidadores": ["tutor"],
   "/cuidadores/admin-actualizacion": ["admin"],
   "/servicios": ["tutor", "provider"],
-  "/marketplace": ["tutor", "provider"],
   "/planes": ["tutor"],
   "/legales": ["legal_admin"],
   "/mi-cuenta": null,

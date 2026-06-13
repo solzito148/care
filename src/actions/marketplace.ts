@@ -59,12 +59,12 @@ export async function publishMarketplaceItemAction(
     return {
       ok: false,
       error: error.message.includes("marketplace_items")
-        ? "Falta la tabla de marketplace. Ejecuta supabase/phase4.sql."
+        ? "Falta la tabla de publicaciones. Ejecuta supabase/phase4.sql."
         : error.message,
     };
   }
 
-  revalidatePath("/marketplace");
+  revalidatePath("/servicios");
   return { ok: true };
 }
 
@@ -94,6 +94,6 @@ export async function setMarketplaceItemStatusAction(
     return { ok: false, error: error.message };
   }
 
-  revalidatePath("/marketplace");
+  revalidatePath("/servicios");
   return { ok: true };
 }

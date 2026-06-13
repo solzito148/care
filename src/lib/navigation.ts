@@ -80,12 +80,6 @@ export const appNavItems: NavItem[] = [
     allowedRoles: rolesForNav("/servicios"),
   },
   {
-    href: "/marketplace",
-    label: "Marketplace",
-    shortLabel: "Market",
-    allowedRoles: rolesForNav("/marketplace"),
-  },
-  {
     href: "/planes",
     label: "Planes",
     shortLabel: "Planes",

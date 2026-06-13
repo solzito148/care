@@ -16,67 +16,65 @@ import { Input } from "@/components/ui/input";
 import type { MarketplaceListItem } from "@/lib/data/marketplace";
 import type { MarketplaceTab } from "@/lib/marketplace-types";
 
-const tabs: { id: MarketplaceTab; label: string; description: string }[] = [
-  {
-    id: "venta",
+const sections: Record<MarketplaceTab, { label: string; description: string }> = {
+  venta: {
     label: "Venta",
     description:
       "Productos fisicos pagos publicados por proveedores o usuarios autorizados.",
   },
-  {
-    id: "alquiler",
+  alquiler: {
     label: "Alquiler",
     description:
       "Alquiler de camas ortopedicas, sillas de ruedas, andadores, gruas, oxigeno y mas.",
   },
-  {
-    id: "intercambio",
+  intercambio: {
     label: "Intercambio",
     description:
       "Intercambio de articulos o servicios sin dinero entre usuarios de CARE.",
   },
-  {
-    id: "donaciones",
+  donaciones: {
     label: "Donaciones",
     description:
       "Donar o solicitar articulos gratuitamente, sin comision ni pagos entre partes.",
   },
-];
-
-const initialForm: PublishItemInput = {
-  title: "",
-  category: "",
-  zone: "",
-  condition: "",
-  price: "",
-  listingType: "venta",
-  contactPhone: "",
 };
+
+const sectionOptions = Object.entries(sections) as [
+  MarketplaceTab,
+  { label: string; description: string },
+][];
 
 type Props = {
   items: MarketplaceListItem[];
+  listingType: MarketplaceTab;
 };
 
-export function MarketplaceClient({ items }: Props) {
+export function PublicacionesSection({ items, listingType }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [activeTab, setActiveTab] = useState<MarketplaceTab>("venta");
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState<PublishItemInput>({
+    title: "",
+    category: "",
+    zone: "",
+    condition: "",
+    price: "",
+    listingType,
+    contactPhone: "",
+  });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error">("success");
-
-  const activeConfig = tabs.find((tab) => tab.id === activeTab);
 
   const visibleItems = useMemo(
     () =>
       items.filter(
         (item) =>
-          item.tipo === activeTab && (item.status === "publicado" || item.own)
+          item.tipo === listingType && (item.status === "publicado" || item.own)
       ),
-    [items, activeTab]
+    [items, listingType]
   );
 
   const isPaidSection = form.listingType === "venta" || form.listingType === "alquiler";
+  const isFreeSection = listingType === "intercambio" || listingType === "donaciones";
 
   const updateField =
     (key: keyof PublishItemInput) =>
@@ -90,7 +88,15 @@ export function MarketplaceClient({ items }: Props) {
     startTransition(async () => {
       const res = await publishMarketplaceItemAction(form);
       if (res.ok) {
-        setForm(initialForm);
+        setForm({
+          title: "",
+          category: "",
+          zone: "",
+          condition: "",
+          price: "",
+          listingType,
+          contactPhone: "",
+        });
         setMessageType("success");
         setMessage("Publicacion creada.");
         router.refresh();
@@ -117,35 +123,12 @@ export function MarketplaceClient({ items }: Props) {
   };
 
   return (
-    <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Marketplace CARE</h1>
-        <p className="mt-2 text-slate-700">
-          Secciones disponibles: Venta, Alquiler, Intercambio y Donaciones.
-        </p>
-      </Card>
-
+    <>
       <Card className="p-6">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`min-h-11 rounded-xl px-3 text-sm font-semibold transition ${
-                activeTab === tab.id
-                  ? "bg-care-700 text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-3 text-sm text-slate-600">{activeConfig?.description}</p>
+        <p className="text-sm text-slate-600">{sections[listingType].description}</p>
       </Card>
 
-      {activeTab === "intercambio" || activeTab === "donaciones" ? (
+      {isFreeSection ? (
         <Card className="border-warning-100 bg-warning-100/40 p-5">
           <p className="text-sm font-semibold text-warning-700">
             Esta seccion es gratuita. No se permite cobrar dinero ni pedir pagos encubiertos.
@@ -210,7 +193,7 @@ export function MarketplaceClient({ items }: Props) {
       ) : null}
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Publicar en el marketplace</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Publicar articulo</h2>
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onPublish}>
           <div className="sm:col-span-2">
             <Input label="Titulo" value={form.title} onChange={updateField("title")} />
@@ -222,9 +205,9 @@ export function MarketplaceClient({ items }: Props) {
               onChange={updateField("listingType")}
               className="mt-2 min-h-12 w-full rounded-xl2 border border-slate-300 px-4"
             >
-              {tabs.map((tab) => (
-                <option key={tab.id} value={tab.id}>
-                  {tab.label}
+              {sectionOptions.map(([id, config]) => (
+                <option key={id} value={id}>
+                  {config.label}
                 </option>
               ))}
             </select>
@@ -265,6 +248,6 @@ export function MarketplaceClient({ items }: Props) {
           <FormMessage message={message} type={messageType} />
         </div>
       </Card>
-    </section>
+    </>
   );
 }

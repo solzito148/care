@@ -20,10 +20,10 @@ describe("navigation", () => {
     expect(canSeeNavItem(["caregiver"], legales)).toBe(false);
   });
 
-  it("provider ve marketplace y servicios", () => {
+  it("provider ve servicios y no marketplace", () => {
     const items = filterNavItemsByRoles(appNavItems, ["provider"]);
-    expect(items.some((item) => item.href === "/marketplace")).toBe(true);
     expect(items.some((item) => item.href === "/servicios")).toBe(true);
+    expect(items.some((item) => item.href === "/marketplace")).toBe(false);
     expect(items.some((item) => item.href === "/cuidadores")).toBe(false);
   });
 

@@ -161,12 +161,12 @@ export async function moderateMarketplaceItemAction(
       title: "Tu publicacion fue bloqueada",
       body: `La publicacion "${data.title}" fue bloqueada por moderacion.`,
       kind: "warning",
-      href: "/marketplace",
+      href: "/servicios?seccion=venta",
     });
   }
 
   revalidatePath("/admin");
-  revalidatePath("/marketplace");
+  revalidatePath("/servicios");
   return { ok: true };
 }
 
