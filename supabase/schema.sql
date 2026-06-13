@@ -532,7 +532,6 @@ declare
   v_last_name text := coalesce(new.raw_user_meta_data->>'last_name', '');
   v_full_name text := trim(both ' ' from concat_ws(' ', nullif(v_first_name, ''), nullif(v_last_name, '')));
   v_phone text := nullif(coalesce(new.raw_user_meta_data->>'phone', ''), '');
-  v_role_code text;
 begin
   insert into public.profiles (id, full_name, phone, account_type)
   values (new.id, nullif(v_full_name, ''), v_phone, v_account_type)
@@ -541,6 +540,53 @@ begin
         phone = coalesce(excluded.phone, public.profiles.phone),
         account_type = coalesce(excluded.account_type, public.profiles.account_type),
         updated_at = now();
+
+  -- Los roles RBAC se asignan al completar onboarding via
+  -- public.sync_user_role_from_account_type(), no desde metadata editable
+  -- del cliente en el signup (evita escalacion de privilegios).
+
+  return new;
+end;
+$$;
+
+-- Impide cambiar account_type despues del alta (fijado en signup).
+create or replace function public.protect_profile_account_type()
+returns trigger
+language plpgsql
+as $$
+begin
+  if tg_op = 'UPDATE'
+     and old.account_type is not null
+     and new.account_type is distinct from old.account_type then
+    new.account_type := old.account_type;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_protect_profile_account_type on public.profiles;
+create trigger trg_protect_profile_account_type
+before update on public.profiles
+for each row execute function public.protect_profile_account_type();
+
+-- Asigna rol segun profiles.account_type. Solo el propio usuario (o admin en fase 6+).
+create or replace function public.sync_user_role_from_account_type(p_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_account_type text;
+  v_role_code text;
+begin
+  if auth.uid() is distinct from p_user_id then
+    raise exception 'No autorizado para asignar roles.';
+  end if;
+
+  select account_type into v_account_type
+  from public.profiles
+  where id = p_user_id;
 
   v_role_code := case v_account_type
     when 'tutor-familiar-encargado' then 'tutor'
@@ -554,15 +600,16 @@ begin
 
   if v_role_code is not null then
     insert into public.user_roles (user_id, role_id)
-    select new.id, r.id
+    select p_user_id, r.id
     from public.roles r
     where r.code = v_role_code
     on conflict (user_id, role_id) do nothing;
   end if;
-
-  return new;
 end;
 $$;
+
+revoke all on function public.sync_user_role_from_account_type(uuid) from public;
+grant execute on function public.sync_user_role_from_account_type(uuid) to authenticated;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created

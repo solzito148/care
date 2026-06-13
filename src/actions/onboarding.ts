@@ -51,6 +51,22 @@ export async function completeOnboardingAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sesion requerida." };
 
+  const { data: profile, error: profileReadError } = await supabase
+    .from("profiles")
+    .select("account_type")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (profileReadError) {
+    console.error("completeOnboarding: profile read", profileReadError);
+    return { ok: false, error: profileReadError.message };
+  }
+  if (!profile?.account_type) {
+    return { ok: false, error: "Falta el tipo de cuenta. Volve a registrarte." };
+  }
+  if (input.accountType !== profile.account_type) {
+    return { ok: false, error: "El tipo de cuenta no coincide con tu registro." };
+  }
+
   const { error: profileError } = await supabase
     .from("profiles")
     .update({ full_name: input.fullName, phone: input.phone || null })
@@ -60,7 +76,20 @@ export async function completeOnboardingAction(
     return { ok: false, error: profileError.message };
   }
 
-  if (input.accountType === "tutor-familiar-encargado") {
+  const { error: roleError } = await supabase.rpc("sync_user_role_from_account_type", {
+    p_user_id: user.id,
+  });
+  if (roleError) {
+    console.error("completeOnboarding: role sync", roleError);
+    return {
+      ok: false,
+      error: roleError.message.includes("sync_user_role_from_account_type")
+        ? "Falta la funcion de roles en Supabase. Ejecuta supabase/migrate-all.sql."
+        : roleError.message,
+    };
+  }
+
+  if (profile.account_type === "tutor-familiar-encargado") {
     const context = await ensureCareContext();
     if (context && input.recipientName) {
       const { error } = await supabase
@@ -76,7 +105,7 @@ export async function completeOnboardingAction(
     }
   }
 
-  if (input.accountType === "cuidador") {
+  if (profile.account_type === "cuidador") {
     const { data: existing } = await supabase
       .from("caregiver_profiles")
       .select("id")
@@ -101,7 +130,7 @@ export async function completeOnboardingAction(
   await recordAuditLog({
     entityType: "onboarding",
     action: "onboarding_completed",
-    payload: { account_type: input.accountType },
+    payload: { account_type: profile.account_type },
   });
 
   revalidatePath("/dashboard");

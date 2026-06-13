@@ -213,10 +213,14 @@ El trigger `on_auth_user_created` lee esa metadata desde
 
 1. Crea o actualiza la fila en `public.profiles` con `full_name`, `phone`,
    `account_type`.
-2. Mapea `account_type` al rol RBAC correspondiente y lo inserta en
-   `public.user_roles`.
+2. **No asigna roles RBAC en el signup** (evita escalacion si alguien manipula
+   metadata). Los roles se asignan al completar onboarding via la funcion
+   `public.sync_user_role_from_account_type()` (solo el propio usuario).
 
-Mapping aplicado:
+`account_type` queda fijado en el perfil: un trigger impide cambiarlo despues
+del alta.
+
+Mapping de roles (aplicado en onboarding):
 
 | account_type                              | role        |
 | ----------------------------------------- | ----------- |

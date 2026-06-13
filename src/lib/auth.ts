@@ -57,6 +57,8 @@ export async function signUpWithPassword(
     options: {
       emailRedirectTo,
       data: {
+        // account_type queda en el perfil (trigger); el rol RBAC se asigna
+        // al completar onboarding via sync_user_role_from_account_type.
         account_type: payload.accountType,
         first_name: payload.firstName,
         last_name: payload.lastName,
