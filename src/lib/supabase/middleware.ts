@@ -38,14 +38,23 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const user = data?.claims
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const pathname = request.nextUrl.pathname
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/registro') ||
+    pathname.startsWith('/recuperar-password') ||
+    pathname.startsWith('/actualizar-password') ||
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/onboarding/') ||
+    pathname.startsWith('/terminos') ||
+    pathname.startsWith('/privacidad') ||
+    pathname === '/403'
+
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/login'
+    url.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(url)
   }
 
