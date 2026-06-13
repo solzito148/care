@@ -26,7 +26,7 @@ export function LoginForm() {
       : "/dashboard";
   const initialError =
     searchParams.get("error") === "supabase_not_configured"
-      ? "Supabase no esta configurado. Revisa las variables NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY."
+      ? "Supabase no esta configurado. Revisa NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY."
       : "";
 
   const [email, setEmail] = useState("");

@@ -9,8 +9,8 @@ const buildEnv = {
   ...process.env,
   NEXT_PUBLIC_SUPABASE_URL:
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://example.supabase.co",
-  NEXT_PUBLIC_SUPABASE_ANON_KEY:
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "test-anon-key",
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "test-publishable-key",
 };
 
 const requiredFiles = [
