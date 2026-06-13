@@ -101,7 +101,7 @@ export function LegalesClient({ documents }: Props) {
       <section className="grid gap-4 md:grid-cols-2">
         {documents.length === 0 ? (
           <Card className="p-6 text-sm text-slate-600 md:col-span-2">
-            Todavia no hay documentos cargados.
+            Todavía no hay documentos cargados.
           </Card>
         ) : (
           documents.map((doc) => (
@@ -151,7 +151,7 @@ export function LegalesClient({ documents }: Props) {
         <h2 className="text-xl font-semibold text-slate-900">Agregar documento</h2>
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onAdd}>
           <div className="sm:col-span-2">
-            <Input label="Titulo" value={form.title} onChange={updateField("title")} />
+            <Input label="Título" value={form.title} onChange={updateField("title")} />
           </div>
           <label className="block text-sm font-medium text-slate-800">
             Tipo

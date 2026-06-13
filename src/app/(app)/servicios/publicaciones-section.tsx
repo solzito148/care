@@ -20,22 +20,22 @@ const sections: Record<MarketplaceTab, { label: string; description: string }> =
   venta: {
     label: "Venta",
     description:
-      "Productos fisicos pagos publicados por proveedores o usuarios autorizados.",
+      "Productos físicos pagos publicados por proveedores o usuarios autorizados.",
   },
   alquiler: {
     label: "Alquiler",
     description:
-      "Alquiler de camas ortopedicas, sillas de ruedas, andadores, gruas, oxigeno y mas.",
+      "Alquiler de camas ortopédicas, sillas de ruedas, andadores, grúas, oxígeno y más.",
   },
   intercambio: {
     label: "Intercambio",
     description:
-      "Intercambio de articulos o servicios sin dinero entre usuarios de CARE.",
+      "Intercambio de artículos o servicios sin dinero entre usuarios de CARE.",
   },
   donaciones: {
     label: "Donaciones",
     description:
-      "Donar o solicitar articulos gratuitamente, sin comision ni pagos entre partes.",
+      "Donar o solicitar artículos gratuitamente, sin comisión ni pagos entre partes.",
   },
 };
 
@@ -98,7 +98,7 @@ export function PublicacionesSection({ items, listingType }: Props) {
           contactPhone: "",
         });
         setMessageType("success");
-        setMessage("Publicacion creada.");
+        setMessage("Publicación creada.");
         router.refresh();
       } else {
         setMessageType("error");
@@ -131,7 +131,7 @@ export function PublicacionesSection({ items, listingType }: Props) {
       {isFreeSection ? (
         <Card className="border-warning-100 bg-warning-100/40 p-5">
           <p className="text-sm font-semibold text-warning-700">
-            Esta seccion es gratuita. No se permite cobrar dinero ni pedir pagos encubiertos.
+            Esta sección es gratuita. No se permite cobrar dinero ni pedir pagos encubiertos.
           </p>
         </Card>
       ) : null}
@@ -149,7 +149,7 @@ export function PublicacionesSection({ items, listingType }: Props) {
             </div>
             <h2 className="mt-3 text-lg font-semibold text-slate-900">{item.titulo}</h2>
             <p className="mt-1 text-sm text-slate-700">
-              <strong>Categoria:</strong> {item.categoria}
+              <strong>Categoría:</strong> {item.categoria}
             </p>
             <p className="text-sm text-slate-700">
               <strong>Zona:</strong> {item.zona}
@@ -179,7 +179,7 @@ export function PublicacionesSection({ items, listingType }: Props) {
                   disabled={pending}
                   onClick={() => onToggleStatus(item)}
                 >
-                  {item.status === "publicado" ? "Pausar publicacion" : "Reactivar publicacion"}
+                  {item.status === "publicado" ? "Pausar publicación" : "Reactivar publicación"}
                 </Button>
               ) : null}
             </div>
@@ -188,18 +188,18 @@ export function PublicacionesSection({ items, listingType }: Props) {
       </section>
       {visibleItems.length === 0 ? (
         <Card className="p-6 text-sm text-slate-600">
-          No hay publicaciones en esta seccion todavia.
+          No hay publicaciones en esta sección todavía.
         </Card>
       ) : null}
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Publicar articulo</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Publicar artículo</h2>
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onPublish}>
           <div className="sm:col-span-2">
-            <Input label="Titulo" value={form.title} onChange={updateField("title")} />
+            <Input label="Título" value={form.title} onChange={updateField("title")} />
           </div>
           <label>
-            <span className="text-sm font-medium text-slate-800">Seccion</span>
+            <span className="text-sm font-medium text-slate-800">Sección</span>
             <select
               value={form.listingType}
               onChange={updateField("listingType")}
@@ -213,14 +213,14 @@ export function PublicacionesSection({ items, listingType }: Props) {
             </select>
           </label>
           <Input
-            label="Categoria"
+            label="Categoría"
             hint="Ej: movilidad, descanso, insumos"
             value={form.category}
             onChange={updateField("category")}
           />
           <Input label="Zona" value={form.zone} onChange={updateField("zone")} />
           <Input
-            label="Estado del articulo"
+            label="Estado del artículo"
             hint="Ej: Nuevo, Muy bueno"
             value={form.condition}
             onChange={updateField("condition")}
@@ -234,7 +234,7 @@ export function PublicacionesSection({ items, listingType }: Props) {
             />
           ) : null}
           <Input
-            label="Telefono / WhatsApp de contacto"
+            label="Teléfono / WhatsApp de contacto"
             value={form.contactPhone}
             onChange={updateField("contactPhone")}
           />

@@ -18,14 +18,14 @@ const modalityFilters = [
   "Reemplazos",
 ];
 
-const availabilityFilters = ["Sabados", "Domingos", "Feriados"];
+const availabilityFilters = ["Sábados", "Domingos", "Feriados"];
 const taskFilters = [
   "Adultos mayores",
   "Alzheimer/demencia",
   "Movilidad reducida",
   "Higiene personal",
-  "Administracion de medicacion",
-  "Preparacion de comidas",
+  "Administración de medicación",
+  "Preparación de comidas",
 ];
 
 type Props = {
@@ -71,12 +71,12 @@ export function CuidadoresClient({ caregivers }: Props) {
       <Card className="p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Busqueda de Cuidadores</h1>
-            <p className="mt-2 text-slate-700">Filtra por cobertura, modalidad, disponibilidad, experiencia y calidad de perfil.</p>
+            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Búsqueda de Cuidadores</h1>
+            <p className="mt-2 text-slate-700">Filtrá por cobertura, modalidad, disponibilidad, experiencia y calidad de perfil.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button href="/cuidadores/admin-actualizacion" variant="secondary">
-              Admin actualizacion
+              Admin actualización
             </Button>
             <Button href="/cuidadores/recomendar" variant="secondary">
               Recomendar cuidador
@@ -94,7 +94,7 @@ export function CuidadoresClient({ caregivers }: Props) {
           <Input label="Zona de cobertura" value={zona} onChange={(e) => setZona(e.target.value)} />
           <Input label="Localidad/barrio" value={localidad} onChange={(e) => setLocalidad(e.target.value)} />
           <Input
-            label="Calificacion minima"
+            label="Calificación mínima"
             type="number"
             min="0"
             max="5"
@@ -178,7 +178,7 @@ export function CuidadoresClient({ caregivers }: Props) {
                 <p className="text-sm text-slate-600">
                   {item.localidad} - {item.zonasTrabajo.join(", ")}
                 </p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">Calificacion: {item.calificacion.toFixed(1)}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">Calificación: {item.calificacion.toFixed(1)}</p>
               </div>
             </div>
 
@@ -195,7 +195,7 @@ export function CuidadoresClient({ caregivers }: Props) {
               {item.referenciasVerificadas ? <Badge tone="success">Referencias verificadas</Badge> : null}
               {item.recomendadoCare ? <Badge tone="success">Recomendado CARE</Badge> : null}
               {item.datosActualizados ? <Badge tone="info">Datos actualizados</Badge> : null}
-              {item.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualizacion</Badge> : null}
+              {item.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualización</Badge> : null}
               {item.estadoActualizacionPerfil === "datos-vencidos" ? <Badge tone="danger">Datos vencidos</Badge> : null}
               {item.estadoActualizacionPerfil === "perfil-pausado" ? <Badge tone="danger">Perfil pausado</Badge> : null}
               {item.altaDisponibilidad ? <Badge tone="warning">Alta disponibilidad</Badge> : null}

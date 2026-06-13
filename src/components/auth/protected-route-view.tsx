@@ -25,7 +25,7 @@ export function ProtectedRouteView({
       >
         <h2 className="text-xl font-semibold text-slate-900">Acceso denegado</h2>
         <p className="mt-2 text-slate-600">
-          No tenes permiso para ver esta seccion con tu rol actual.
+          No tenés permiso para ver esta sección con tu rol actual.
         </p>
       </section>
     );

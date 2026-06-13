@@ -36,15 +36,15 @@ export default function RegisterPage() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const nextErrors: Record<string, string> = {
-      accountType: accountType ? "" : "Selecciona un tipo de cuenta.",
+      accountType: accountType ? "" : "Seleccioná un tipo de cuenta.",
       firstName: validateRequired(firstName, "El nombre"),
       lastName: validateRequired(lastName, "El apellido"),
       email: validateEmail(email),
       phone: validatePhone(phone),
       password: validateStrongPassword(password),
       confirmPassword:
-        password === confirmPassword ? "" : "Las contrasenas no coinciden.",
-      terms: termsAccepted ? "" : "Debes aceptar terminos y condiciones.",
+        password === confirmPassword ? "" : "Las contraseñas no coinciden.",
+      terms: termsAccepted ? "" : "Debés aceptar términos y condiciones.",
     };
 
     setErrors(nextErrors);
@@ -66,7 +66,7 @@ export default function RegisterPage() {
 
       if (result.requiresEmailConfirmation) {
         setSuccessMessage(
-          "Te enviamos un email para confirmar tu cuenta. Revisá tu casilla y volvé a iniciar sesion."
+          "Te enviamos un email para confirmar tu cuenta. Revisá tu casilla y volvé a iniciar sesión."
         );
         return;
       }
@@ -84,10 +84,10 @@ export default function RegisterPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <Card className="w-full max-w-2xl p-6">
+      <Card className="w-full max-w-2xl">
         <h1 className="text-2xl font-semibold text-slate-900">Crear cuenta en CARE</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Al registrarte, se te redirige al onboarding segun tu tipo de cuenta.
+          Al registrarte, se te redirige al onboarding según tu tipo de cuenta.
         </p>
         <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
           <div className="sm:col-span-2">
@@ -123,7 +123,7 @@ export default function RegisterPage() {
             autoComplete="email"
           />
           <Input
-            label="Telefono"
+            label="Teléfono"
             className="sm:col-span-1"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
@@ -132,7 +132,7 @@ export default function RegisterPage() {
           />
           <Input
             type="password"
-            label="Contrasena"
+            label="Contraseña"
             className="sm:col-span-1"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -140,11 +140,11 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
           <p className="sm:col-span-2 -mt-2 text-xs text-slate-500">
-            Minimo 10 caracteres, con mayuscula, minuscula y numero.
+            Mínimo 10 caracteres, con mayúscula, minúscula y número.
           </p>
           <Input
             type="password"
-            label="Confirmar contrasena"
+            label="Confirmar contraseña"
             className="sm:col-span-1"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
@@ -154,19 +154,19 @@ export default function RegisterPage() {
           <div className="sm:col-span-2">
             <CheckboxField
               id="terms"
-              label="Acepto los terminos y condiciones de CARE."
+              label="Acepto los términos y condiciones de CARE."
               checked={termsAccepted}
               onChange={setTermsAccepted}
               error={errors.terms}
             />
             <p className="mt-1 text-xs text-slate-500">
-              Lee los{" "}
+              Leé los{" "}
               <Link href="/terminos" className="font-medium text-care-700 hover:text-care-800">
-                terminos y condiciones
+                términos y condiciones
               </Link>{" "}
               y la{" "}
               <Link href="/privacidad" className="font-medium text-care-700 hover:text-care-800">
-                politica de privacidad
+                política de privacidad
               </Link>
               .
             </p>
@@ -184,7 +184,7 @@ export default function RegisterPage() {
           </Button>
         </form>
         <p className="mt-4 text-sm text-slate-600">
-          Ya tenes cuenta?{" "}
+          ¿Ya tenés cuenta?{" "}
           <Link href="/login" className="font-medium text-care-700">
             Ingresar
           </Link>

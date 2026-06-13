@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import type { CaregiverSearchItem, RecommendationStatus } from "@/lib/cuidadores-types";
 
 const statusLabels: Record<RecommendationStatus, string> = {
-  "pendiente-revision": "Pendiente de revision",
+  "pendiente-revision": "Pendiente de revisión",
   aprobada: "Aprobada",
   rechazada: "Rechazada",
 };
@@ -72,7 +72,7 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-    if (!form.caregiverId) nextErrors.caregiverId = "Selecciona cuidador.";
+    if (!form.caregiverId) nextErrors.caregiverId = "Seleccioná cuidador.";
     if (!form.personaQueRecomienda) nextErrors.personaQueRecomienda = "Dato obligatorio.";
     if (!form.periodoDesde) nextErrors.periodoDesde = "Dato obligatorio.";
     if (!form.periodoHasta) nextErrors.periodoHasta = "Dato obligatorio.";
@@ -92,11 +92,11 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
       if (res.ok) {
         setMessageType("success");
         setMessage(
-          "Recomendacion enviada. Queda pendiente de revision por el equipo CARE."
+          "Recomendación enviada. Queda pendiente de revisión por el equipo CARE."
         );
       } else {
         setMessageType("error");
-        setMessage(res.error ?? "No se pudo enviar la recomendacion.");
+        setMessage(res.error ?? "No se pudo enviar la recomendación.");
       }
     });
   };
@@ -144,11 +144,11 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
           <Input label="Modalidad del servicio" value={form.modalidadServicio} onChange={updateField("modalidadServicio")} error={errors.modalidadServicio} />
           <Input label="Tareas realizadas" value={form.tareasRealizadas} onChange={updateField("tareasRealizadas")} error={errors.tareasRealizadas} />
 
-          <Input type="number" min="1" max="5" label="Calificacion general (1-5)" value={form.calificacionGeneral} onChange={updateField("calificacionGeneral")} />
+          <Input type="number" min="1" max="5" label="Calificación general (1-5)" value={form.calificacionGeneral} onChange={updateField("calificacionGeneral")} />
           <Input type="number" min="1" max="5" label="Puntualidad (1-5)" value={form.puntualidad} onChange={updateField("puntualidad")} />
           <Input type="number" min="1" max="5" label="Trato humano (1-5)" value={form.tratoHumano} onChange={updateField("tratoHumano")} />
           <Input type="number" min="1" max="5" label="Responsabilidad (1-5)" value={form.responsabilidad} onChange={updateField("responsabilidad")} />
-          <Input type="number" min="1" max="5" label="Comunicacion (1-5)" value={form.comunicacion} onChange={updateField("comunicacion")} />
+          <Input type="number" min="1" max="5" label="Comunicación (1-5)" value={form.comunicacion} onChange={updateField("comunicacion")} />
           <Input type="number" min="1" max="5" label="Confiabilidad (1-5)" value={form.confiabilidad} onChange={updateField("confiabilidad")} />
 
           <label className="sm:col-span-2">
@@ -164,13 +164,13 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
           <div className="sm:col-span-2 space-y-2">
             <CheckboxField
               id="volveria-contratar"
-              label="Lo volveria a contratar"
+              label="Lo volvería a contratar"
               checked={form.loVolveriaAContratar}
               onChange={(value) => setForm((prev) => ({ ...prev, loVolveriaAContratar: value }))}
             />
             <CheckboxField
               id="autoriza-mostrar"
-              label="Autoriza mostrar recomendacion"
+              label="Autoriza mostrar recomendación"
               checked={form.autorizaMostrarRecomendacion}
               onChange={(value) => setForm((prev) => ({ ...prev, autorizaMostrarRecomendacion: value }))}
             />
@@ -184,7 +184,7 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
 
           <div className="sm:col-span-2">
             <Button type="submit" disabled={pending}>
-              Enviar recomendacion
+              Enviar recomendación
             </Button>
           </div>
         </form>
@@ -194,7 +194,7 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Estados de recomendacion</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Estados de recomendación</h2>
         <ul className="mt-3 space-y-1 text-sm text-slate-700">
           {Object.entries(statusLabels).map(([value, label]) => (
             <li key={value}>- {label}</li>

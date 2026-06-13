@@ -28,7 +28,7 @@ export async function publishMarketplaceItemAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(publishMarketplaceItemSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -59,7 +59,7 @@ export async function publishMarketplaceItemAction(
     return {
       ok: false,
       error: error.message.includes("marketplace_items")
-        ? "Falta la tabla de publicaciones. Ejecuta supabase/phase4.sql."
+        ? "Falta la tabla de publicaciones. Ejecutá supabase/phase4.sql."
         : error.message,
     };
   }
@@ -76,7 +76,7 @@ export async function setMarketplaceItemStatusAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, itemId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

@@ -7,6 +7,7 @@ import {
   confirmCaregiverDataUpdatedAction,
   requestCaregiverContactAction,
 } from "@/actions/cuidadores";
+import { assignCaregiverFromDirectoryAction } from "@/actions/relaciones";
 import { FormMessage } from "@/components/forms/form-message";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
         router.refresh();
       } else {
         setMessageType("error");
-        setMessage(res.error ?? "No se pudo completar la accion.");
+        setMessage(res.error ?? "No se pudo completar la acción.");
       }
     });
   };
@@ -55,8 +56,8 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{caregiver.nombre}</h1>
-            <p className="text-sm text-slate-600">Ultima actualizacion: {caregiver.ultimaActualizacion}</p>
-            <p className="mt-1 text-sm font-semibold text-slate-800">Calificacion: {caregiver.calificacion.toFixed(1)}</p>
+            <p className="text-sm text-slate-600">Última actualización: {caregiver.ultimaActualizacion}</p>
+            <p className="mt-1 text-sm font-semibold text-slate-800">Calificación: {caregiver.calificacion.toFixed(1)}</p>
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -64,21 +65,21 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
           {caregiver.referenciasVerificadas ? (
             <Badge tone="success">Referencias verificadas</Badge>
           ) : (
-            <Badge tone="warning">Referencias en revision</Badge>
+            <Badge tone="warning">Referencias en revisión</Badge>
           )}
           {caregiver.datosActualizados ? <Badge tone="info">Datos actualizados</Badge> : null}
-          {caregiver.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualizacion</Badge> : null}
+          {caregiver.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualización</Badge> : null}
           {caregiver.estadoActualizacionPerfil === "datos-vencidos" ? <Badge tone="danger">Datos vencidos</Badge> : null}
           {caregiver.estadoActualizacionPerfil === "perfil-pausado" ? <Badge tone="danger">Perfil pausado</Badge> : null}
         </div>
-        <p className="mt-3 text-sm text-slate-700">Ultima actualizacion del perfil: {caregiver.ultimaActualizacion}</p>
+        <p className="mt-3 text-sm text-slate-700">Última actualización del perfil: {caregiver.ultimaActualizacion}</p>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-slate-900">Datos generales</h2>
           <p className="mt-2 text-sm text-slate-700">Zona principal: {caregiver.localidad}</p>
-          <p className="mt-1 text-sm text-slate-700">Experiencia: {caregiver.experiencia} anios</p>
+          <p className="mt-1 text-sm text-slate-700">Experiencia: {caregiver.experiencia} años</p>
           <p className="mt-1 text-sm text-slate-700">Zonas donde trabaja: {caregiver.zonasTrabajo.join(", ")}</p>
           <p className="mt-1 text-sm text-slate-700">Modalidades aceptadas: {caregiver.modalidades.join(", ")}</p>
           <p className="mt-1 text-sm text-slate-700">Disponibilidad especial: {caregiver.disponibilidadEspecial.join(", ")}</p>
@@ -109,7 +110,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
                 <p className="text-sm text-slate-700">Modalidad: {ref.modalidad}</p>
                 <p className="text-sm text-slate-700">Tareas: {ref.tareas}</p>
                 <p className="mt-1 text-sm font-medium text-slate-700">
-                  Telefono: {isAuthorizedTutor ? ref.telefono : "Visible solo para tutores autorizados"}
+                  Teléfono: {isAuthorizedTutor ? ref.telefono : "Visible solo para tutores autorizados"}
                 </p>
               </article>
             ))
@@ -129,7 +130,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
         <div className="mt-4 space-y-3">
           {recommendations.length === 0 ? (
             <p className="text-sm text-slate-600">
-              Este cuidador todavia no tiene recomendaciones aprobadas.
+              Este cuidador todavía no tiene recomendaciones aprobadas.
             </p>
           ) : (
             recommendations.map((rec) => (
@@ -145,7 +146,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
                 ) : null}
                 {rec.comentario ? <p className="mt-1 text-sm text-slate-700">{rec.comentario}</p> : null}
                 {rec.loVolveriaAContratar ? (
-                  <p className="mt-1 text-sm font-medium text-success-700">Lo volveria a contratar</p>
+                  <p className="mt-1 text-sm font-medium text-success-700">Lo volvería a contratar</p>
                 ) : null}
               </article>
             ))
@@ -157,6 +158,18 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
         <h2 className="text-xl font-semibold text-slate-900">Acciones</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
+            disabled={pending}
+            onClick={() =>
+              run(
+                () => assignCaregiverFromDirectoryAction(caregiver.id),
+                "Cuidador asignado a tu adulto mayor."
+              )
+            }
+          >
+            Asignar a mi adulto mayor
+          </Button>
+          <Button
+            variant="secondary"
             disabled={pending}
             onClick={() =>
               run(
@@ -189,13 +202,13 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
               )
             }
           >
-            Confirmar que mis datos estan actualizados
+            Confirmar que mis datos están actualizados
           </Button>
           <Button href="/cuidadores/recomendar" variant="secondary">
             Recomendar cuidador
           </Button>
           <Button href="/cuidadores" variant="ghost">
-            Volver a busqueda
+            Volver a búsqueda
           </Button>
         </div>
         <div className="mt-3">

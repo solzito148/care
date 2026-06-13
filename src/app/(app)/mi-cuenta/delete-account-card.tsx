@@ -36,7 +36,7 @@ export function DeleteAccountCard() {
     <Card className="border-red-200 p-6">
       <h2 className="text-xl font-semibold text-red-700">Eliminar cuenta</h2>
       <p className="mt-2 text-sm text-slate-700">
-        Esta accion borra tu cuenta y los datos de los hogares que administras de
+        Esta acción borra tu cuenta y los datos de los hogares que administras de
         forma permanente. No se puede deshacer.
       </p>
 
@@ -49,7 +49,7 @@ export function DeleteAccountCard() {
       ) : (
         <div className="mt-4 space-y-3">
           <label className="block text-sm font-medium text-slate-700">
-            Escribi <span className="font-bold">{CONFIRM_WORD}</span> para confirmar.
+            Escribí <span className="font-bold">{CONFIRM_WORD}</span> para confirmar.
             <input
               type="text"
               value={confirmText}

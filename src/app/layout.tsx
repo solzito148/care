@@ -7,7 +7,7 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "CARE - Cuidado de personas mayores",
-  description: "Plataforma web para gestion integral del cuidado de personas mayores.",
+  description: "Plataforma web para gestión integral del cuidado de personas mayores.",
 };
 
 export default function RootLayout({

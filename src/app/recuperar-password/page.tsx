@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "No pudimos enviar el email de recuperacion.";
+          : "No pudimos enviar el email de recuperación.";
       setFormError(message);
     } finally {
       setLoading(false);
@@ -42,15 +42,15 @@ export default function ForgotPasswordPage() {
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <Card className="w-full max-w-md p-6">
         <h1 className="text-2xl font-semibold text-slate-900">
-          Recuperar contrasena
+          Recuperar contraseña
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Te enviamos un email con un enlace seguro para definir una contrasena nueva.
+          Te enviamos un email con un enlace seguro para definir una contraseña nueva.
         </p>
 
         {success ? (
           <div className="mt-6 rounded-xl border border-care-200 bg-care-50 px-4 py-3 text-sm text-care-800">
-            Si la cuenta existe, te llegara un email a <strong>{email}</strong>. Revisá
+            Si la cuenta existe, te llegará un email a <strong>{email}</strong>. Revisá
             tu bandeja y la carpeta de spam.
           </div>
         ) : (
@@ -66,14 +66,14 @@ export default function ForgotPasswordPage() {
             />
             <FormMessage message={formError} />
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Enviando..." : "Enviar email de recuperacion"}
+              {loading ? "Enviando..." : "Enviar email de recuperación"}
             </Button>
           </form>
         )}
 
         <p className="mt-6 text-sm text-slate-600">
           <Link href="/login" className="font-medium text-care-700">
-            Volver a iniciar sesion
+            Volver a iniciar sesión
           </Link>
         </p>
       </Card>

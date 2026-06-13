@@ -58,7 +58,7 @@ export async function setActiveCareRecipientAction(
   recipientId: string
 ): Promise<{ ok: boolean; error?: string }> {
   const context = await ensureCareContext();
-  if (!context) return { ok: false, error: "Sesion requerida." };
+  if (!context) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, recipientId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };
@@ -72,7 +72,7 @@ export async function setActiveCareRecipientAction(
     .maybeSingle();
 
   if (error || !data) {
-    return { ok: false, error: "Persona cuidada invalida." };
+    return { ok: false, error: "Persona cuidada inválida." };
   }
 
   const store = await cookies();

@@ -43,7 +43,7 @@ export default async function MiCuentaPage() {
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Mi cuenta</h1>
         <p className="mt-2 text-slate-700">
-          Datos personales, tipo de cuenta y suscripcion.
+          Datos personales, tipo de cuenta y suscripción.
         </p>
       </Card>
 
@@ -61,7 +61,7 @@ export default async function MiCuentaPage() {
             <dd className="text-slate-900">{user.email ?? "-"}</dd>
           </div>
           <div>
-            <dt className="font-medium text-slate-600">Telefono</dt>
+            <dt className="font-medium text-slate-600">Teléfono</dt>
             <dd className="text-slate-900">{user.profile?.phone ?? "-"}</dd>
           </div>
           <div>
@@ -102,12 +102,12 @@ export default async function MiCuentaPage() {
             </p>
             {subscription.next_due_date ? (
               <p className="text-sm text-slate-700">
-                <strong>Proximo vencimiento:</strong> {subscription.next_due_date}
+                <strong>Próximo vencimiento:</strong> {subscription.next_due_date}
               </p>
             ) : null}
             {subscription.status === "pendiente-pago" ? (
               <p className="mt-2 text-sm text-slate-600">
-                Suscripcion pendiente de pago. Completala desde Planes.
+                Suscripción pendiente de pago. Completala desde Planes.
               </p>
             ) : null}
           </>
@@ -115,7 +115,7 @@ export default async function MiCuentaPage() {
           <>
             <h2 className="text-xl font-semibold text-slate-900">Sin plan activo</h2>
             <p className="mt-2 text-sm text-slate-700">
-              Todavia no elegiste un plan CARE. Podes empezar con el plan gratuito.
+              Todavía no elegiste un plan CARE. Podés empezar con el plan gratuito.
             </p>
           </>
         )}

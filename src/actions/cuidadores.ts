@@ -49,7 +49,7 @@ export async function createCaregiverProfileAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(caregiverProfileSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -131,7 +131,7 @@ export async function submitRecommendationAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(recommendationSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -164,7 +164,7 @@ export async function submitRecommendationAction(
       ok: false,
       error:
         error.message.includes("caregiver_recommendations")
-          ? "Falta la tabla de recomendaciones. Ejecuta supabase/phase3.sql."
+          ? "Falta la tabla de recomendaciones. Ejecutá supabase/phase3.sql."
           : error.message,
     };
   }
@@ -185,7 +185,7 @@ export async function confirmCaregiverDataUpdatedAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, caregiverId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };
@@ -207,7 +207,7 @@ export async function confirmCaregiverDataUpdatedAction(
     return { ok: false, error: error.message };
   }
   if (!data) {
-    return { ok: false, error: "Solo el cuidador dueno del perfil puede confirmar sus datos." };
+    return { ok: false, error: "Solo el cuidador dueño del perfil puede confirmar sus datos." };
   }
 
   await recordAuditLog({
@@ -234,7 +234,7 @@ export async function requestCaregiverContactAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, caregiverId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

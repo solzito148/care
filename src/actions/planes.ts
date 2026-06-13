@@ -30,7 +30,7 @@ export async function selectPlanAction(planId: string): Promise<SelectPlanResult
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const planParsed = parseInput(planIdSchema, planId);
   if (!planParsed.ok) return { ok: false, error: planParsed.error };
@@ -68,7 +68,7 @@ export async function selectPlanAction(planId: string): Promise<SelectPlanResult
     return {
       ok: false,
       error: error.message.includes("subscriptions")
-        ? "Falta la tabla de suscripciones. Ejecuta supabase/phase5.sql."
+        ? "Falta la tabla de suscripciones. Ejecutá supabase/phase5.sql."
         : error.message,
     };
   }
@@ -111,7 +111,7 @@ export async function cancelSubscriptionAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, subscriptionId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

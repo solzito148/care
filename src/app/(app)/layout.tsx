@@ -14,6 +14,13 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
+  // Sin rol = onboarding incompleto. Lo enviamos a completar su tipo de cuenta
+  // (y, si es tutor, a registrar a la persona cuidada) antes de usar la app.
+  if (user.roles.length === 0) {
+    const accountType = user.profile?.account_type;
+    redirect(accountType ? `/onboarding/${accountType}` : "/registro");
+  }
+
   const careRecipients = await loadCareRecipients();
 
   return (

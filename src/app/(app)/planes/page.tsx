@@ -16,7 +16,7 @@ export default async function PlanesPage() {
   return (
     <section className="space-y-4 pb-8">
       <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Planes y monetizacion CARE</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Planes y monetización CARE</h1>
         <p className="mt-2 text-slate-700">
           Comparativa de planes para familias, profesionales y proveedores de servicios.
           Intercambio y donaciones permanece gratuito.

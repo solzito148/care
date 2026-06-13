@@ -1,3 +1,19 @@
+import {
+  Briefcase,
+  CalendarDays,
+  CreditCard,
+  FileText,
+  Home,
+  type LucideIcon,
+  Pill,
+  Scale,
+  Settings,
+  Shield,
+  Stethoscope,
+  UserRound,
+  Users,
+} from "lucide-react";
+
 import { ROUTE_ACCESS } from "@/lib/route-access";
 import type { PermissionSubject } from "@/lib/permission-helpers";
 import type { RoleCode } from "@/lib/supabase/types";
@@ -6,6 +22,7 @@ export type NavItem = {
   href: string;
   label: string;
   shortLabel: string;
+  icon: LucideIcon;
   mobilePrimary?: boolean;
   /** undefined = visible para cualquier usuario autenticado */
   allowedRoles?: RoleCode[];
@@ -24,6 +41,7 @@ export const appNavItems: NavItem[] = [
     href: "/dashboard",
     label: "Dashboard",
     shortLabel: "Inicio",
+    icon: Home,
     mobilePrimary: true,
     allowedRoles: rolesForNav("/dashboard"),
   },
@@ -31,6 +49,7 @@ export const appNavItems: NavItem[] = [
     href: "/persona-cuidada",
     label: "Persona cuidada",
     shortLabel: "Persona",
+    icon: UserRound,
     mobilePrimary: true,
     allowedRoles: rolesForNav("/persona-cuidada"),
   },
@@ -38,13 +57,15 @@ export const appNavItems: NavItem[] = [
     href: "/agenda",
     label: "Agenda",
     shortLabel: "Agenda",
+    icon: CalendarDays,
     mobilePrimary: true,
     allowedRoles: rolesForNav("/agenda"),
   },
   {
     href: "/medicacion",
-    label: "Medicacion",
-    shortLabel: "Meds",
+    label: "Medicación",
+    shortLabel: "Medicación",
+    icon: Pill,
     mobilePrimary: true,
     allowedRoles: rolesForNav("/medicacion"),
   },
@@ -52,55 +73,63 @@ export const appNavItems: NavItem[] = [
     href: "/turnos",
     label: "Turnos",
     shortLabel: "Turnos",
-    mobilePrimary: true,
+    icon: Stethoscope,
     allowedRoles: rolesForNav("/turnos"),
   },
   {
     href: "/estudios",
     label: "Estudios",
     shortLabel: "Estudios",
+    icon: FileText,
     allowedRoles: rolesForNav("/estudios"),
   },
   {
     href: "/contactos",
     label: "Contactos",
     shortLabel: "Contactos",
+    icon: Users,
     allowedRoles: rolesForNav("/contactos"),
   },
   {
     href: "/cuidadores",
     label: "Cuidadores",
     shortLabel: "Cuidadores",
+    icon: Users,
     allowedRoles: rolesForNav("/cuidadores"),
   },
   {
     href: "/servicios",
     label: "Servicios",
     shortLabel: "Servicios",
+    icon: Briefcase,
     allowedRoles: rolesForNav("/servicios"),
   },
   {
     href: "/planes",
     label: "Planes",
     shortLabel: "Planes",
+    icon: CreditCard,
     allowedRoles: rolesForNav("/planes"),
   },
   {
     href: "/legales",
     label: "Legales y administrativos",
     shortLabel: "Legales",
+    icon: Scale,
     allowedRoles: rolesForNav("/legales"),
   },
   {
     href: "/mi-cuenta",
     label: "Mi cuenta",
     shortLabel: "Cuenta",
+    icon: Settings,
     allowedRoles: rolesForNav("/mi-cuenta"),
   },
   {
     href: "/admin",
-    label: "Administracion",
+    label: "Administración",
     shortLabel: "Admin",
+    icon: Shield,
     allowedRoles: rolesForNav("/admin"),
   },
 ];

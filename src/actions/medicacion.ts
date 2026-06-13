@@ -30,7 +30,7 @@ function parseHorarios(horarios: string): string[] {
 
 export async function upsertMedicationAction(form: ActiveMedication): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(upsertMedicationSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -103,7 +103,7 @@ export async function registerIntakeAction(
   status: "taken" | "skipped"
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const scheduleParsed = parseInput(uuidSchema, scheduleId);
   if (!scheduleParsed.ok) return { ok: false, error: scheduleParsed.error };
@@ -138,7 +138,7 @@ export async function setMedicationActiveAction(
   activo: boolean
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, medicationId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

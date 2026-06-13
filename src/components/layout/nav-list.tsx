@@ -20,6 +20,7 @@ export function NavList({ items, pathname, variant }: NavListProps) {
           {items.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const Icon = item.icon;
 
             return (
               <li key={item.href}>
@@ -34,6 +35,7 @@ export function NavList({ items, pathname, variant }: NavListProps) {
                       : "text-slate-800 hover:bg-white",
                   )}
                 >
+                  <Icon className="h-5 w-5 shrink-0" aria-hidden />
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -53,6 +55,7 @@ export function NavList({ items, pathname, variant }: NavListProps) {
         {items.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const Icon = item.icon;
 
           return (
             <li key={item.href} className="flex-1">
@@ -65,6 +68,7 @@ export function NavList({ items, pathname, variant }: NavListProps) {
                   isActive ? "text-care-700" : "text-slate-500",
                 )}
               >
+                <Icon className="h-5 w-5" aria-hidden />
                 <span className="truncate">{item.shortLabel}</span>
               </Link>
             </li>

@@ -5,17 +5,17 @@ import { Card } from "@/components/ui/card";
 
 const solveItems = [
   "Recordatorios de medicamentos",
-  "Avisos de turnos medicos y estudios",
+  "Avisos de turnos médicos y estudios",
   "Vista simple para la persona cuidada",
   "Panel completo para tutores y cuidadores",
-  "Contactos rapidos y emergencias",
+  "Contactos rápidos y emergencias",
 ];
 
 const views = [
   {
     title: "Vista Administrador del Cuidado",
     description:
-      "Permite a familias y tutores gestionar agenda, medicacion, documentos, alertas y tareas en un panel completo.",
+      "Permite a familias y tutores gestionar agenda, medicación, documentos, alertas y tareas en un panel completo.",
   },
   {
     title: "Vista Persona Cuidada",
@@ -26,7 +26,7 @@ const views = [
 
 const features = [
   "Agenda",
-  "Medicacion",
+  "Medicación",
   "Estudios",
   "Turnos",
   "Cuidadores",
@@ -40,7 +40,7 @@ const serviceOfferings = [
   "Intercambio y donaciones",
   "Traslados",
   "Ambulancias",
-  "Desarme y organizacion del hogar",
+  "Desarme y organización del hogar",
 ];
 
 export default function LandingPage() {
@@ -58,7 +58,7 @@ export default function LandingPage() {
             </h1>
             <p className="mt-4 max-w-xl text-lg text-slate-600">
               CARE ayuda a familias, tutores y cuidadores a gestionar medicamentos, turnos
-              medicos, estudios, contactos, cuidadores, servicios y alertas.
+              médicos, estudios, contactos, cuidadores, servicios y alertas.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button href="/registro" size="lg">
@@ -69,8 +69,8 @@ export default function LandingPage() {
               </Button>
             </div>
           </div>
-          <Card className="rounded-3xl p-6 sm:p-8">
-            <h2 className="text-xl font-semibold text-slate-900">Disenada para uso diario</h2>
+          <Card size="lg" className="rounded-3xl">
+            <h2 className="text-xl font-semibold text-slate-900">Diseñada para uso diario</h2>
             <p className="mt-3 text-slate-600">
               Interfaz clara, confiable y accesible para familias y adultos mayores, priorizando
               tareas criticas y lectura comoda.
@@ -85,8 +85,8 @@ export default function LandingPage() {
         </section>
 
         <section>
-          <Card className="p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold text-slate-900">Que resuelve CARE</h2>
+          <Card size="lg">
+            <h2 className="text-2xl font-semibold text-slate-900">Qué resuelve CARE</h2>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {solveItems.map((item) => (
                 <article key={item} className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
@@ -104,7 +104,7 @@ export default function LandingPage() {
           <h2 className="mb-3 text-2xl font-semibold text-slate-900">Dos vistas principales</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {views.map((item) => (
-              <Card key={item.title} className="p-6">
+              <Card key={item.title}>
                 <h3 className="text-xl font-semibold text-slate-900">{item.title}</h3>
                 <p className="mt-3 text-slate-600">{item.description}</p>
               </Card>
@@ -116,7 +116,7 @@ export default function LandingPage() {
           <h2 className="mb-3 text-2xl font-semibold text-slate-900">Funcionalidades principales</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {features.map((feature) => (
-              <Card key={feature} className="p-4">
+              <Card key={feature} size="sm">
                 <p className="text-base font-semibold text-slate-800">{feature}</p>
               </Card>
             ))}
@@ -124,7 +124,7 @@ export default function LandingPage() {
         </section>
 
         <section>
-          <Card className="p-6 sm:p-8">
+          <Card size="lg">
             <h2 className="text-2xl font-semibold text-slate-900">Servicios</h2>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {serviceOfferings.map((item) => (
@@ -138,9 +138,9 @@ export default function LandingPage() {
 
         <section>
           <div className="rounded-3xl border border-care-700 bg-care-700 p-6 text-white shadow-soft sm:p-8">
-            <h2 className="text-2xl font-bold">Empeza a organizar el cuidado hoy</h2>
+            <h2 className="text-2xl font-bold">Empezá a organizar el cuidado hoy</h2>
             <p className="mt-3 max-w-2xl text-care-100">
-              Centraliza informacion, evita olvidos y mejora la coordinacion diaria entre familia,
+              Centralizá información, evitá olvidos y mejorá la coordinación diaria entre familia,
               tutores y cuidadores.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">

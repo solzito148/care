@@ -32,7 +32,7 @@ export async function createAppointmentAction(
   form: CreateAppointmentInput
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(createAppointmentSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -50,7 +50,7 @@ export async function createAppointmentAction(
   const starts = new Date(utcMs);
 
   if (Number.isNaN(starts.getTime())) {
-    return { ok: false, error: "Fecha u hora invalida." };
+    return { ok: false, error: "Fecha u hora inválida." };
   }
 
   const supabase = await createClient();
@@ -79,7 +79,7 @@ export async function createAppointmentAction(
     await createNotification({
       userId: user.id,
       title: `Turno agendado: ${title}`,
-      body: `Quedo registrado para el ${whenLabel}.`,
+      body: `Quedó registrado para el ${whenLabel}.`,
       kind: "info",
       href: "/turnos",
       channels: user.email ? { email: user.email } : undefined,
@@ -98,7 +98,7 @@ export async function updateAppointmentStatusAction(
   status: AppointmentStatus
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, appointmentId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

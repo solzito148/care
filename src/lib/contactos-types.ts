@@ -5,7 +5,7 @@ export type ContactCategory = ContactRow["category"];
 
 export const CONTACT_CATEGORY_LABELS: Record<ContactCategory, string> = {
   familia: "Familia",
-  medico: "Medico / salud",
+  medico: "Médico / salud",
   emergencia: "Emergencia",
   servicio: "Servicio",
   otro: "Otro",

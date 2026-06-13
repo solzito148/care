@@ -175,7 +175,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <Input label="Domicilio" className="sm:col-span-2" value={form.domicilio} onChange={updateField("domicilio")} />
           <Input label="Localidad" value={form.localidad} onChange={updateField("localidad")} />
           <Input label="Provincia" value={form.provincia} onChange={updateField("provincia")} />
-          <Input label="Telefono" className="sm:col-span-2" value={form.telefono} onChange={updateField("telefono")} />
+          <Input label="Teléfono" className="sm:col-span-2" value={form.telefono} onChange={updateField("telefono")} />
           <label className="sm:col-span-2">
             <span className="text-sm font-medium text-slate-800">Observaciones generales</span>
             <textarea
@@ -235,10 +235,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
 
       <SectionCard title="3. Salud">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input label="Medico de cabecera" value={form.medicoCabecera} onChange={updateField("medicoCabecera")} />
+          <Input label="Médico de cabecera" value={form.medicoCabecera} onChange={updateField("medicoCabecera")} />
           <Input label="Movilidad" value={form.movilidad} onChange={updateField("movilidad")} />
           <label className="sm:col-span-2">
-            <span className="text-sm font-medium text-slate-800">Diagnosticos relevantes</span>
+            <span className="text-sm font-medium text-slate-800">Diagnósticos relevantes</span>
             <textarea
               value={form.diagnosticosRelevantes}
               onChange={updateField("diagnosticosRelevantes")}
@@ -250,7 +250,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <div className="sm:col-span-2">
             <CheckboxField
               id="necesita-acompanamiento"
-              label="Necesita acompanamiento"
+              label="Necesita acompañamiento"
               checked={form.necesitaAcompanamiento}
               onChange={(value) => {
                 setForm((prev) => ({ ...prev, necesitaAcompanamiento: value }));
@@ -259,7 +259,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
             />
           </div>
           <label className="sm:col-span-2">
-            <span className="text-sm font-medium text-slate-800">Observaciones medicas</span>
+            <span className="text-sm font-medium text-slate-800">Observaciones médicas</span>
             <textarea
               value={form.observacionesMedicas}
               onChange={updateField("observacionesMedicas")}
@@ -274,8 +274,8 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <Input label="Tipo" value={form.obraSocialTipo} onChange={updateField("obraSocialTipo")} />
           <Input label="Nombre" value={form.obraSocialNombre} onChange={updateField("obraSocialNombre")} />
           <Input label="Plan" value={form.obraSocialPlan} onChange={updateField("obraSocialPlan")} />
-          <Input label="Numero de afiliado" value={form.numeroAfiliado} onChange={updateField("numeroAfiliado")} />
-          <Input label="Telefono util" value={form.telefonoUtil} onChange={updateField("telefonoUtil")} />
+          <Input label="Número de afiliado" value={form.numeroAfiliado} onChange={updateField("numeroAfiliado")} />
+          <Input label="Teléfono útil" value={form.telefonoUtil} onChange={updateField("telefonoUtil")} />
           <Input label="Credencial adjunta" value={form.credencialAdjunta} onChange={updateField("credencialAdjunta")} />
         </div>
       </SectionCard>
@@ -340,12 +340,12 @@ export function PersonaCuidadaClient({ initial }: Props) {
                 onChange={(e) => updateContact(item.id, { nombre: e.target.value })}
               />
               <Input
-                label="Relacion"
+                label="Relación"
                 value={item.relacion}
                 onChange={(e) => updateContact(item.id, { relacion: e.target.value })}
               />
               <Input
-                label="Telefono"
+                label="Teléfono"
                 value={item.telefono}
                 onChange={(e) => updateContact(item.id, { telefono: e.target.value })}
               />
@@ -376,7 +376,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
         </ListEditor>
       </SectionCard>
 
-      <SectionCard title="7. Documentacion">
+      <SectionCard title="7. Documentación">
         <ListEditor
           title="Archivos cargados"
           addLabel="Adjuntar documento"

@@ -22,12 +22,12 @@ export async function deleteAccountAction(): Promise<{ ok: boolean; error?: stri
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const service = createServiceClient();
   if (!service) {
     console.error("deleteAccount: missing SUPABASE_SERVICE_ROLE_KEY");
-    return { ok: false, error: "No se pudo eliminar la cuenta. Intenta mas tarde." };
+    return { ok: false, error: "No se pudo eliminar la cuenta. Intentá más tarde." };
   }
 
   // Auditar antes de borrar: despues el actor ya no existe.
@@ -44,13 +44,13 @@ export async function deleteAccountAction(): Promise<{ ok: boolean; error?: stri
 
   if (householdError) {
     console.error("deleteAccount households", householdError.message);
-    return { ok: false, error: "No se pudo eliminar la cuenta. Intenta mas tarde." };
+    return { ok: false, error: "No se pudo eliminar la cuenta. Intentá más tarde." };
   }
 
   const { error: userError } = await service.auth.admin.deleteUser(user.id);
   if (userError) {
     console.error("deleteAccount user", userError.message);
-    return { ok: false, error: "No se pudo eliminar la cuenta. Intenta mas tarde." };
+    return { ok: false, error: "No se pudo eliminar la cuenta. Intentá más tarde." };
   }
 
   await supabase.auth.signOut();

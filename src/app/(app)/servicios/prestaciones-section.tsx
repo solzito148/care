@@ -105,7 +105,7 @@ export function PrestacionesSection({ services }: Props) {
     <>
       <Card className="p-6">
         <p className="text-sm text-slate-700">
-          Prestaciones complementarias (no productos fisicos). Cada proveedor publica su servicio
+          Prestaciones complementarias (no productos físicos). Cada proveedor publica su servicio
           mediante un plan mensual: Basico, Destacado o Premium.
         </p>
       </Card>
@@ -114,7 +114,7 @@ export function PrestacionesSection({ services }: Props) {
         <h2 className="text-xl font-semibold text-slate-900">Filtros</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <label>
-            <span className="text-sm font-medium text-slate-800">Categoria</span>
+            <span className="text-sm font-medium text-slate-800">Categoría</span>
             <select
               value={selectedCategory}
               onChange={(event) => setSelectedCategory(event.target.value as ServiceCategory | "")}
@@ -166,10 +166,10 @@ export function PrestacionesSection({ services }: Props) {
               </div>
             </div>
             <p className="mt-2 text-sm text-slate-700">
-              <strong>Categoria:</strong> {serviceCategoryLabels[service.categoria]}
+              <strong>Categoría:</strong> {serviceCategoryLabels[service.categoria]}
             </p>
             <p className="mt-1 text-sm text-slate-700">
-              <strong>Descripcion:</strong> {service.descripcion}
+              <strong>Descripción:</strong> {service.descripcion}
             </p>
             <p className="mt-1 text-sm text-slate-700">
               <strong>Zona de cobertura:</strong> {service.zonaCobertura}
@@ -178,7 +178,7 @@ export function PrestacionesSection({ services }: Props) {
               <strong>Disponibilidad:</strong> {service.disponibilidad}
             </p>
             <p className="mt-1 text-sm text-slate-700">
-              <strong>Telefono/WhatsApp:</strong> {service.telefonoWhatsapp}
+              <strong>Teléfono/WhatsApp:</strong> {service.telefonoWhatsapp}
             </p>
             <p className="mt-1 text-sm text-slate-700">
               <strong>Email:</strong> {service.email}
@@ -202,7 +202,7 @@ export function PrestacionesSection({ services }: Props) {
                   disabled={pending}
                   onClick={() => onToggleStatus(service)}
                 >
-                  {service.status === "publicado" ? "Pausar publicacion" : "Reactivar publicacion"}
+                  {service.status === "publicado" ? "Pausar publicación" : "Reactivar publicación"}
                 </Button>
               ) : null}
             </div>
@@ -230,7 +230,7 @@ export function PrestacionesSection({ services }: Props) {
               />
             </div>
             <label>
-              <span className="text-sm font-medium text-slate-800">Categoria</span>
+              <span className="text-sm font-medium text-slate-800">Categoría</span>
               <select
                 value={form.category}
                 onChange={updateField("category")}
@@ -259,10 +259,10 @@ export function PrestacionesSection({ services }: Props) {
             </label>
             <Input label="Zona de cobertura" value={form.coverageZone} onChange={updateField("coverageZone")} />
             <Input label="Disponibilidad" value={form.availability} onChange={updateField("availability")} />
-            <Input label="Telefono / WhatsApp" value={form.phoneWhatsapp} onChange={updateField("phoneWhatsapp")} />
+            <Input label="Teléfono / WhatsApp" value={form.phoneWhatsapp} onChange={updateField("phoneWhatsapp")} />
             <Input type="email" label="Email" value={form.email} onChange={updateField("email")} />
             <label className="sm:col-span-2">
-              <span className="text-sm font-medium text-slate-800">Descripcion</span>
+              <span className="text-sm font-medium text-slate-800">Descripción</span>
               <textarea
                 value={form.description}
                 onChange={updateField("description")}

@@ -18,9 +18,9 @@ const kindTone = {
 
 const kindLabel = {
   info: "Info",
-  warning: "Atencion",
+  warning: "Atención",
   urgent: "Urgente",
-  billing: "Facturacion",
+  billing: "Facturación",
 } as const;
 
 type Props = {
@@ -44,7 +44,7 @@ export function NotificationsCard({ notifications }: Props) {
       <div className="mt-4 space-y-3">
         {notifications.length === 0 ? (
           <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-base text-slate-700">
-            No tenes notificaciones.
+            No tenés notificaciones.
           </p>
         ) : (
           notifications.map((n) => (
@@ -62,7 +62,7 @@ export function NotificationsCard({ notifications }: Props) {
               <div className="mt-3 flex flex-wrap gap-2">
                 {n.href ? (
                   <Button variant="ghost" href={n.href}>
-                    Ver mas
+                    Ver más
                   </Button>
                 ) : null}
                 {!n.read_at ? (

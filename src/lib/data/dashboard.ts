@@ -161,7 +161,7 @@ export async function loadDashboardData(ctx: CareContext): Promise<DashboardData
   const next = upcoming[0];
   const nextLabel = next
     ? `${new Intl.DateTimeFormat("es-AR", { weekday: "short", day: "2-digit", month: "short" }).format(new Date(next.startsAt))} ${timeFmt.format(new Date(next.startsAt))}`
-    : "Sin turnos proximos";
+    : "Sin turnos próximos";
   const unconfirmed = upcoming.filter((it) => it.estado === "pendiente");
 
   const lowStock = meds.active.filter(
@@ -177,19 +177,19 @@ export async function loadDashboardData(ctx: CareContext): Promise<DashboardData
       detail: persona.displayName,
     },
     {
-      title: "Medicacion de hoy",
+      title: "Medicación de hoy",
       value: String(meds.daily.length),
       detail: pendingToday.length
         ? `${pendingToday.length} sin confirmar`
         : "Todo confirmado",
     },
     {
-      title: "Turnos proximos",
+      title: "Turnos próximos",
       value: String(upcoming.length),
       detail: nextLabel,
     },
     {
-      title: "Estudios medicos",
+      title: "Estudios médicos",
       value: String(studiesCount),
       detail: studiesCount ? "Ver historial en Estudios" : "Sin estudios cargados",
     },
@@ -208,7 +208,7 @@ export async function loadDashboardData(ctx: CareContext): Promise<DashboardData
   const alerts: DashboardAlert[] = [];
   for (const d of overdueToday) {
     alerts.push({
-      text: `Medicacion no confirmada: ${d.nombre} (${d.horario})`,
+      text: `Medicación no confirmada: ${d.nombre} (${d.horario})`,
       status: "urgente",
     });
   }
@@ -278,7 +278,7 @@ export async function loadPersonaViewData(ctx: CareContext): Promise<PersonaView
     .map((it) => {
       const dt = new Date(it.startsAt);
       const prep = it.notas ? ` (${it.notas})` : "";
-      return `Manana ${timeFmt.format(dt)} - ${it.titulo}${prep}`;
+      return `Mañana ${timeFmt.format(dt)} - ${it.titulo}${prep}`;
     });
 
   const tutorPhone =

@@ -74,8 +74,8 @@ export function TurnosClient({ items, nowMs }: Props) {
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Turnos</h1>
         <p className="mt-2 text-slate-700">
-          Gestion de turnos medicos: confirmaciones, asistencia y cancelaciones. Para crear un
-          turno nuevo usa la Agenda.
+          Gestión de turnos médicos: confirmaciones, asistencia y cancelaciones. Para crear un
+          turno nuevo usá la Agenda.
         </p>
         <div className="mt-4">
           <Button href="/agenda" variant="secondary">
@@ -85,11 +85,11 @@ export function TurnosClient({ items, nowMs }: Props) {
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Proximos turnos</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Próximos turnos</h2>
         <div className="mt-4 space-y-3">
           {upcoming.length === 0 ? (
             <p className="text-sm text-slate-600">
-              No hay turnos proximos. Crea uno desde la Agenda.
+              No hay turnos próximos. Creá uno desde la Agenda.
             </p>
           ) : (
             upcoming.map((turno) => (

@@ -13,7 +13,7 @@ export async function markNotificationReadAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, notificationId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

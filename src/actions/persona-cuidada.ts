@@ -12,7 +12,7 @@ import { savePersonaCuidadaSchema } from "@/lib/validations/persona-cuidada-sche
 export async function savePersonaCuidada(form: PersonaCuidada): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
   if (!ctx) {
-    return { ok: false, error: "Sesion requerida." };
+    return { ok: false, error: "Sesión requerida." };
   }
 
   const parsed = parseInput(savePersonaCuidadaSchema, form);

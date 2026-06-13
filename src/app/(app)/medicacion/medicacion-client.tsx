@@ -117,9 +117,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
   return (
     <section className="space-y-4 pb-8">
       <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Modulo Medicacion</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Módulo Medicación</h1>
         <p className="mt-2 text-slate-700">
-          Gestion de medicamentos activos, cumplimiento, recordatorios y alertas para tutor o cuidador autorizado.
+          Gestión de medicamentos activos, cumplimiento, recordatorios y alertas para tutor o cuidador autorizado.
         </p>
         <p className="mt-2 text-sm font-semibold text-slate-600">
           Stock bajo en {stockBajo} medicamento(s). {pending ? "Guardando…" : "Datos guardados en tu cuenta."}
@@ -128,7 +128,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
 
       <section className="grid gap-4 xl:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Medicamentos del dia</h2>
+          <h2 className="text-xl font-semibold text-slate-900">Medicamentos del día</h2>
           <div className="mt-4 space-y-3">
             {medicamentosDelDia.length === 0 ? (
               <p className="text-sm text-slate-600">No hay tomas programadas para hoy. Agrega un medicamento con horarios.</p>
@@ -152,7 +152,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
           <h2 className="text-xl font-semibold text-slate-900">Medicamentos activos</h2>
           <div className="mt-4 space-y-3">
             {medicamentosActivos.length === 0 ? (
-              <p className="text-sm text-slate-600">Todavia no cargaste medicamentos.</p>
+              <p className="text-sm text-slate-600">Todavía no cargaste medicamentos.</p>
             ) : (
               medicamentosActivos.map((item) => (
                 <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -163,7 +163,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
                         {item.dosis} - {item.frecuencia} - Horarios: {item.horarios}
                       </p>
                       <p className="mt-1 text-sm text-slate-600">
-                        Stock: {item.stockActual} | Reposicion: {item.recordatorioReposicion}
+                        Stock: {item.stockActual} | Reposición: {item.recordatorioReposicion}
                       </p>
                     </div>
                     <span
@@ -225,7 +225,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             <Input type="date" label="Fecha de inicio" value={form.fechaInicio} onChange={updateField("fechaInicio")} />
             <Input type="date" label="Fecha de fin opcional" value={form.fechaFin ?? ""} onChange={updateField("fechaFin")} />
             <Input
-              label="Responsable de administracion"
+              label="Responsable de administración"
               className="sm:col-span-2"
               value={form.responsableAdministracion}
               onChange={updateField("responsableAdministracion")}
@@ -238,7 +238,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             />
             <Input label="Stock actual" type="number" value={String(form.stockActual)} onChange={updateField("stockActual")} />
             <Input
-              label="Recordatorio de reposicion"
+              label="Recordatorio de reposición"
               type="number"
               value={String(form.recordatorioReposicion)}
               onChange={updateField("recordatorioReposicion")}
@@ -262,7 +262,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             <div className="sm:col-span-2 space-y-2">
               <CheckboxField
                 id="requiere-confirmacion"
-                label="Requiere confirmacion"
+                label="Requiere confirmación"
                 checked={form.requiereConfirmacion}
                 onChange={(value) => setForm((prev) => ({ ...prev, requiereConfirmacion: value }))}
               />

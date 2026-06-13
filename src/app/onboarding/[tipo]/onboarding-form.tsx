@@ -55,7 +55,7 @@ export function OnboardingForm({ accountType, defaultFullName, defaultPhone }: P
   return (
     <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={onSubmit}>
       <Input label="Tu nombre completo" value={form.fullName} onChange={updateField("fullName")} />
-      <Input label="Telefono" value={form.phone} onChange={updateField("phone")} />
+      <Input label="Teléfono" value={form.phone} onChange={updateField("phone")} />
 
       {isTutor ? (
         <>
@@ -69,7 +69,7 @@ export function OnboardingForm({ accountType, defaultFullName, defaultPhone }: P
             onChange={updateField("recipientName")}
           />
           <Input
-            label="Como prefiere que la llamen"
+            label="Cómo prefiere que la llamen"
             value={form.recipientPreferredName}
             onChange={updateField("recipientPreferredName")}
           />
@@ -95,13 +95,13 @@ export function OnboardingForm({ accountType, defaultFullName, defaultPhone }: P
           <div className="sm:col-span-2">
             <h2 className="text-lg font-semibold text-slate-900">Tu perfil de cuidador</h2>
             <p className="text-sm text-slate-600">
-              Creamos tu perfil base. Despues podes completar zonas, modalidades y referencias.
+              Creamos tu perfil base. Después podés completar zonas, modalidades y referencias.
             </p>
           </div>
           <Input label="Localidad" value={form.locality} onChange={updateField("locality")} />
           <Input
             type="number"
-            label="Anios de experiencia"
+            label="Años de experiencia"
             value={form.experienceYears}
             onChange={updateField("experienceYears")}
           />
@@ -111,9 +111,6 @@ export function OnboardingForm({ accountType, defaultFullName, defaultPhone }: P
       <div className="sm:col-span-2 flex flex-wrap gap-3">
         <Button type="submit" disabled={pending}>
           {pending ? "Guardando..." : "Completar y entrar"}
-        </Button>
-        <Button href="/dashboard" variant="ghost">
-          Omitir por ahora
         </Button>
       </div>
       <div className="sm:col-span-2">

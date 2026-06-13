@@ -47,7 +47,7 @@ export function PersonaClient({ data }: Props) {
         setMessage("Registrado. Buen trabajo.");
         router.refresh();
       } else {
-        setMessage(res.error ?? "No pudimos registrarlo. Pedi ayuda.");
+        setMessage(res.error ?? "No pudimos registrarlo. Pedí ayuda.");
       }
     });
   };
@@ -81,7 +81,7 @@ export function PersonaClient({ data }: Props) {
                   disabled={pending}
                   onClick={() => onConfirmIntake(current.scheduleId!)}
                 >
-                  Ya lo tome
+                  Ya lo tomé
                 </Button>
               ) : null}
               {data.tutorPhone || data.caregiverPhone ? (
@@ -135,10 +135,10 @@ export function PersonaClient({ data }: Props) {
       </Card>
 
       <Card className="p-6 sm:p-8">
-        <h2 className="text-3xl font-bold text-slate-900">Manana</h2>
+        <h2 className="text-3xl font-bold text-slate-900">Mañana</h2>
         {data.tomorrowReminders.length === 0 ? (
           <p className="mt-4 text-xl font-semibold text-slate-700">
-            No hay recordatorios para manana.
+            No hay recordatorios para mañana.
           </p>
         ) : (
           data.tomorrowReminders.map((reminder) => (

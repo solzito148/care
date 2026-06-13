@@ -18,7 +18,7 @@ type ActionResult = { ok: boolean; error?: string };
 
 async function requireAdmin(): Promise<{ ok: true } | { ok: false; error: string }> {
   const user = await getCurrentUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
   if (!user.roles.includes("admin")) return { ok: false, error: "Acceso solo para administradores." };
   return { ok: true };
 }
@@ -61,12 +61,12 @@ export async function reviewRecommendationAction(
       userId: data.recommender_user_id,
       title:
         decisionParsed.data === "aprobada"
-          ? "Tu recomendacion fue aprobada"
-          : "Tu recomendacion fue revisada",
+          ? "Tu recomendación fue aprobada"
+          : "Tu recomendación fue revisada",
       body:
         decisionParsed.data === "aprobada"
-          ? "Gracias. Tu recomendacion ya es visible en el perfil del cuidador."
-          : "Tu recomendacion no fue publicada. Podes enviar otra si lo deseas.",
+          ? "Gracias. Tu recomendación ya es visible en el perfil del cuidador."
+          : "Tu recomendación no fue publicada. Podés enviar otra si lo deseás.",
       kind: "info",
       href: data.caregiver_profile_id ? `/cuidadores/${data.caregiver_profile_id}` : "/cuidadores",
     });
@@ -113,7 +113,7 @@ export async function moderateServiceAction(
     await createNotification({
       userId: data.owner_user_id,
       title: "Tu servicio fue bloqueado",
-      body: `El servicio "${data.provider_name}" fue bloqueado por moderacion. Contactá al equipo CARE para mas informacion.`,
+      body: `El servicio "${data.provider_name}" fue bloqueado por moderación. Contactá al equipo CARE para más información.`,
       kind: "warning",
       href: "/servicios",
     });
@@ -158,8 +158,8 @@ export async function moderateMarketplaceItemAction(
   if (statusParsed.data === "bloqueado" && data?.owner_user_id) {
     await createNotification({
       userId: data.owner_user_id,
-      title: "Tu publicacion fue bloqueada",
-      body: `La publicacion "${data.title}" fue bloqueada por moderacion.`,
+      title: "Tu publicación fue bloqueada",
+      body: `La publicación "${data.title}" fue bloqueada por moderación.`,
       kind: "warning",
       href: "/servicios?seccion=venta",
     });
@@ -248,7 +248,7 @@ export async function activateSubscriptionAction(subscriptionId: string): Promis
     await createNotification({
       userId: data.user_id,
       title: `Plan ${data.plan_name} activado`,
-      body: "El equipo CARE activo tu suscripcion. Ya tenes acceso completo.",
+      body: "El equipo CARE activó tu suscripción. Ya tenés acceso completo.",
       kind: "billing",
       href: "/mi-cuenta",
     });

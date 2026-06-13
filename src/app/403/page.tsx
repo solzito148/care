@@ -8,7 +8,7 @@ export default function ForbiddenPage() {
           Acceso denegado (403)
         </h1>
         <p className="mt-3 text-slate-600">
-          Tu rol no tiene permiso para acceder a esta pagina.
+          Tu rol no tiene permiso para acceder a esta página.
         </p>
         <Link
           href="/dashboard"

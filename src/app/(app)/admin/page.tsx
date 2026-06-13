@@ -28,9 +28,9 @@ export default async function AdminPage() {
   return (
     <section className="space-y-4 pb-8">
       <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Administracion CARE</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Administración CARE</h1>
         <p className="mt-2 text-slate-700">
-          Moderacion de recomendaciones, servicios y publicaciones, y gestion de suscripciones.
+          Moderación de recomendaciones, servicios y publicaciones, y gestión de suscripciones.
         </p>
       </Card>
 

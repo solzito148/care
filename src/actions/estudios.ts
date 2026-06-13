@@ -61,7 +61,7 @@ export async function createStudyAction(
   form: CreateStudyInput
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(createStudySchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -98,7 +98,7 @@ export async function updateStudyStatusAction(
   resultSummary?: string
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, studyId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };
@@ -136,7 +136,7 @@ export async function uploadStudyAttachmentAction(
   formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   const ctx = await ensureCareContext();
-  if (!ctx) return { ok: false, error: "Sesion requerida." };
+  if (!ctx) return { ok: false, error: "Sesión requerida." };
 
   const studyId = formData.get("studyId");
   const file = formData.get("file");

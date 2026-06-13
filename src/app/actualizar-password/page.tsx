@@ -24,7 +24,7 @@ export default function UpdatePasswordPage() {
     const nextErrors: { password?: string; confirmPassword?: string } = {
       password: validateStrongPassword(password),
       confirmPassword:
-        password === confirmPassword ? "" : "Las contrasenas no coinciden.",
+        password === confirmPassword ? "" : "Las contraseñas no coinciden.",
     };
     setErrors(nextErrors);
     setFormError("");
@@ -42,7 +42,7 @@ export default function UpdatePasswordPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "No pudimos actualizar la contrasena.";
+          : "No pudimos actualizar la contraseña.";
       setFormError(message);
     } finally {
       setLoading(false);
@@ -53,10 +53,10 @@ export default function UpdatePasswordPage() {
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <Card className="w-full max-w-md p-6">
         <h1 className="text-2xl font-semibold text-slate-900">
-          Definir nueva contrasena
+          Definir nueva contraseña
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Esta pagina solo funciona luego de abrir el enlace de recuperacion enviado
+          Esta página solo funciona luego de abrir el enlace de recuperación enviado
           por email.
         </p>
 
@@ -68,7 +68,7 @@ export default function UpdatePasswordPage() {
           <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
             <Input
               type="password"
-              label="Nueva contrasena"
+              label="Nueva contraseña"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               error={errors.password}
@@ -76,7 +76,7 @@ export default function UpdatePasswordPage() {
             />
             <Input
               type="password"
-              label="Confirmar contrasena"
+              label="Confirmar contraseña"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               error={errors.confirmPassword}
@@ -84,14 +84,14 @@ export default function UpdatePasswordPage() {
             />
             <FormMessage message={formError} />
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Guardando..." : "Actualizar contrasena"}
+              {loading ? "Guardando..." : "Actualizar contraseña"}
             </Button>
           </form>
         )}
 
         <p className="mt-6 text-sm text-slate-600">
           <Link href="/login" className="font-medium text-care-700">
-            Volver a iniciar sesion
+            Volver a iniciar sesión
           </Link>
         </p>
       </Card>

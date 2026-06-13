@@ -8,14 +8,14 @@ export const LEGAL_DOC_TYPE_LABELS: Record<LegalDocType, string> = {
   poder: "Poder",
   "directiva-anticipada": "Directiva anticipada",
   curatela: "Curatela",
-  tramite: "Tramite",
+  tramite: "Trámite",
   seguro: "Seguro",
   otro: "Otro",
 };
 
 export const LEGAL_DOC_STATUS_LABELS: Record<LegalDocStatus, string> = {
   pendiente: "Pendiente",
-  "en-tramite": "En tramite",
+  "en-tramite": "En trámite",
   vigente: "Vigente",
   vencido: "Vencido",
 };

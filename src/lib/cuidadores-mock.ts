@@ -10,18 +10,18 @@ export const caregiversMock: CaregiverSearchItem[] = careMockData.cuidadores.per
 export const caregiverReferencesMock: Record<string, CaregiverReferencePublic[]> = {
   "c-1": [
     {
-      nombreContratante: "Ana Martinez",
+      nombreContratante: "Ana Martínez",
       zona: "Belgrano",
       periodo: "2024-2026",
       modalidad: "Con retiro",
-      tareas: "Medicacion, compania y turnos medicos",
+      tareas: "Medicación, compañía y turnos médicos",
       telefono: "+54 11 4000-1112",
     },
   ],
   "c-2": [
     {
-      nombreContratante: "Familia Perez",
-      zona: "Ramos Mejia",
+      nombreContratante: "Familia Pérez",
+      zona: "Ramos Mejía",
       periodo: "2023-2025",
       modalidad: "Sin retiro",
       tareas: "Guardias 24 hs y control de signos vitales",
@@ -30,11 +30,11 @@ export const caregiverReferencesMock: Record<string, CaregiverReferencePublic[]>
   ],
   "c-3": [
     {
-      nombreContratante: "Lucia Gomez",
+      nombreContratante: "Lucía Gómez",
       zona: "Caballito",
       periodo: "2025-2026",
       modalidad: "Por hora",
-      tareas: "Acompanamiento y tareas livianas",
+      tareas: "Acompañamiento y tareas livianas",
       telefono: "+54 11 4777-2200",
     },
   ],

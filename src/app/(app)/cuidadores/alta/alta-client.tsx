@@ -43,9 +43,9 @@ export function AltaCuidadorClient() {
     const next: Record<string, string> = {};
     if (form.fullName.trim().length < 2) next.fullName = "Nombre completo obligatorio.";
     if (!form.locality.trim()) next.locality = "Localidad obligatoria.";
-    if (!form.zones.trim()) next.zones = "Indica al menos una zona.";
-    if (!form.modalities.trim()) next.modalities = "Indica al menos una modalidad.";
-    if (!form.tasks.trim()) next.tasks = "Indica al menos una tarea.";
+    if (!form.zones.trim()) next.zones = "Indicá al menos una zona.";
+    if (!form.modalities.trim()) next.modalities = "Indicá al menos una modalidad.";
+    if (!form.tasks.trim()) next.tasks = "Indicá al menos una tarea.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -72,7 +72,7 @@ export function AltaCuidadorClient() {
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900">Alta de cuidador</h1>
         <p className="mt-2 text-slate-700">
-          Crea tu perfil en el directorio CARE. Los datos seran visibles para familias que
+          Creá tu perfil en el directorio CARE. Los datos serán visibles para familias que
           buscan cuidadores. Tu perfil queda vinculado a tu cuenta.
         </p>
       </Card>
@@ -96,7 +96,7 @@ export function AltaCuidadorClient() {
             type="number"
             min="0"
             max="60"
-            label="Anos de experiencia"
+            label="Años de experiencia"
             value={form.experienceYears}
             onChange={updateField("experienceYears")}
           />
@@ -119,7 +119,7 @@ export function AltaCuidadorClient() {
           <Input
             label="Tareas que realizas (separadas por coma)"
             className="sm:col-span-2"
-            hint="Ej: Adultos mayores, Administracion de medicacion, Movilidad reducida"
+            hint="Ej: Adultos mayores, Administración de medicación, Movilidad reducida"
             value={form.tasks}
             onChange={updateField("tasks")}
             error={errors.tasks}
@@ -127,7 +127,7 @@ export function AltaCuidadorClient() {
           <Input
             label="Disponibilidad especial (separadas por coma)"
             className="sm:col-span-2"
-            hint="Ej: Sabados, Domingos, Feriados"
+            hint="Ej: Sábados, Domingos, Feriados"
             value={form.availabilitySpecial}
             onChange={updateField("availabilitySpecial")}
           />
@@ -146,7 +146,7 @@ export function AltaCuidadorClient() {
               Crear perfil
             </Button>
             <Button href="/cuidadores" variant="secondary">
-              Volver a busqueda
+              Volver a búsqueda
             </Button>
           </div>
         </form>

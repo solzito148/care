@@ -144,7 +144,7 @@ export function EstudiosClient({ studies }: Props) {
           ) : null}
           {study.preparationNotes ? (
             <p className="mt-2 text-sm font-medium text-warning-700">
-              Preparacion: {study.preparationNotes}
+              Preparación: {study.preparationNotes}
             </p>
           ) : null}
           {study.resultSummary ? (
@@ -184,7 +184,7 @@ export function EstudiosClient({ studies }: Props) {
           </label>
           <label className="block">
             <span className="text-sm font-medium text-slate-800">
-              Adjuntar resultado (PDF o imagen, max 10 MB)
+              Adjuntar resultado (PDF o imagen, máx 10 MB)
             </span>
             <input
               type="file"
@@ -218,15 +218,15 @@ export function EstudiosClient({ studies }: Props) {
   return (
     <section className="space-y-6 pb-10">
       <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Estudios medicos</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Estudios médicos</h1>
         <p className="mt-2 text-slate-700">
           Historial de estudios, preparaciones previas y resultados adjuntos. Visible para
-          miembros del hogar segun permisos.
+          miembros del hogar según permisos.
         </p>
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Proximos y en curso</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Próximos y en curso</h2>
         <div className="mt-4 space-y-3">
           {activos.length === 0 ? (
             <p className="text-sm text-slate-600">
@@ -252,12 +252,12 @@ export function EstudiosClient({ studies }: Props) {
             value={form.studyType}
             onChange={updateField("studyType")}
           />
-          <Input label="Medico que lo indica" value={form.doctor} onChange={updateField("doctor")} />
+          <Input label="Médico que lo indica" value={form.doctor} onChange={updateField("doctor")} />
           <Input type="date" label="Fecha" value={form.fecha} onChange={updateField("fecha")} />
           <Input type="time" label="Hora" value={form.hora} onChange={updateField("hora")} />
           <label className="sm:col-span-2">
             <span className="text-sm font-medium text-slate-800">
-              Preparacion previa (ayuno, medicacion, etc.)
+              Preparación previa (ayuno, medicación, etc.)
             </span>
             <textarea
               value={form.preparationNotes}

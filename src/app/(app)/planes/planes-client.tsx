@@ -58,7 +58,7 @@ export function PlanesClient({ plans, subscription, paymentsEnabled }: Props) {
       const res = await cancelSubscriptionAction(subscription.id);
       if (res.ok) {
         setMessageType("success");
-        setMessage("Suscripcion cancelada.");
+        setMessage("Suscripción cancelada.");
         router.refresh();
       } else {
         setMessageType("error");
@@ -82,19 +82,19 @@ export function PlanesClient({ plans, subscription, paymentsEnabled }: Props) {
           </p>
           {subscription.next_due_date ? (
             <p className="text-sm text-slate-700">
-              <strong>Proximo vencimiento:</strong> {subscription.next_due_date}
+              <strong>Próximo vencimiento:</strong> {subscription.next_due_date}
             </p>
           ) : null}
           {subscription.status === "pendiente-pago" ? (
             <p className="mt-2 text-sm text-slate-600">
               {paymentsEnabled
-                ? "Tu pago esta pendiente de confirmacion. En cuanto Mercado Pago lo acredite, el plan se activa automaticamente."
-                : "El cobro online (Mercado Pago) todavia no esta habilitado en este entorno. El equipo CARE activara tu plan manualmente."}
+                ? "Tu pago está pendiente de confirmación. En cuanto Mercado Pago lo acredite, el plan se activa automáticamente."
+                : "El cobro online (Mercado Pago) todavía no está habilitado en este entorno. El equipo CARE activará tu plan manualmente."}
             </p>
           ) : null}
           <div className="mt-4">
             <Button variant="secondary" disabled={pending} onClick={onCancel}>
-              Cancelar suscripcion
+              Cancelar suscripción
             </Button>
           </div>
         </Card>

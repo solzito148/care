@@ -113,62 +113,62 @@ function translateAuthError(message: string, code?: string): string {
   const m = message.toLowerCase();
 
   if (c === "user_already_exists" || c === "email_exists") {
-    return "Ese email ya esta registrado. Proba iniciar sesion.";
+    return "Ese email ya está registrado. Probá iniciar sesión.";
   }
   if (c === "redirect_to_not_allowed" || c === "validation_failed") {
     if (m.includes("redirect")) {
-      return "Error de configuracion: la URL de redireccion no esta autorizada en Supabase.";
+      return "Error de configuración: la URL de redirección no está autorizada en Supabase.";
     }
   }
   if (c === "weak_password") {
-    return "La contrasena es muy debil. Usa al menos 10 caracteres con mayuscula, minuscula y numero.";
+    return "La contraseña es muy débil. Usá al menos 10 caracteres con mayúscula, minúscula y número.";
   }
   if (c === "signup_disabled") {
-    return "El registro de nuevas cuentas esta deshabilitado temporalmente.";
+    return "El registro de nuevas cuentas está deshabilitado temporalmente.";
   }
   if (c === "over_email_send_rate_limit" || c === "over_request_rate_limit") {
-    return "Demasiados intentos. Espera unos minutos antes de reintentar.";
+    return "Demasiados intentos. Esperá unos minutos antes de reintentar.";
   }
   if (c === "unexpected_failure" && m.includes("database")) {
-    return "No se pudo crear el perfil en la base de datos. Aplica supabase/migrate-all.sql en el proyecto cloud.";
+    return "No se pudo crear el perfil en la base de datos. Aplicá supabase/migrate-all.sql en el proyecto cloud.";
   }
 
   if (m.includes("invalid login") || m.includes("invalid credentials")) {
-    return "Email o contrasena invalidos.";
+    return "Email o contraseña inválidos.";
   }
   if (
     m.includes("already registered") ||
     m.includes("already exists") ||
     m.includes("user already registered")
   ) {
-    return "Ese email ya esta registrado. Proba iniciar sesion.";
+    return "Ese email ya está registrado. Probá iniciar sesión.";
   }
   if (m.includes("redirect") && (m.includes("not allowed") || m.includes("invalid"))) {
-    return "Error de configuracion: la URL de redireccion no esta autorizada en Supabase. Contacta al administrador.";
+    return "Error de configuración: la URL de redirección no está autorizada en Supabase. Contactá al administrador.";
   }
   if (m.includes("database error") || m.includes("saving new user")) {
-    return "No se pudo crear el perfil en la base de datos. Verifica que las migraciones de Supabase esten aplicadas.";
+    return "No se pudo crear el perfil en la base de datos. Verificá que las migraciones de Supabase estén aplicadas.";
   }
   if (m.includes("signup") && m.includes("disabled")) {
-    return "El registro de nuevas cuentas esta deshabilitado temporalmente.";
+    return "El registro de nuevas cuentas está deshabilitado temporalmente.";
   }
   if (m.includes("invalid api key") || m.includes("invalid jwt")) {
-    return "Error de configuracion del servidor. Las credenciales de Supabase no son validas.";
+    return "Error de configuración del servidor. Las credenciales de Supabase no son válidas.";
   }
   if (m.includes("password") && m.includes("weak")) {
-    return "La contrasena es muy debil. Usa al menos 10 caracteres con mayuscula, minuscula y numero.";
+    return "La contraseña es muy débil. Usá al menos 10 caracteres con mayúscula, minúscula y número.";
   }
   if (m.includes("password")) {
-    return "La contrasena no cumple los requisitos minimos.";
+    return "La contraseña no cumple los requisitos mínimos.";
   }
   if (m.includes("invalid email") || m.includes("unable to validate email")) {
-    return "El email no es valido.";
+    return "El email no es válido.";
   }
   if (m.includes("email") && m.includes("not confirmed")) {
-    return "Necesitas confirmar tu email antes de iniciar sesion.";
+    return "Necesitás confirmar tu email antes de iniciar sesión.";
   }
   if (m.includes("rate limit") || m.includes("too many requests")) {
-    return "Demasiados intentos. Espera unos minutos antes de reintentar.";
+    return "Demasiados intentos. Esperá unos minutos antes de reintentar.";
   }
 
   // En desarrollo mostrar el mensaje original para diagnosticar mas rapido.
@@ -176,5 +176,5 @@ function translateAuthError(message: string, code?: string): string {
     return message;
   }
 
-  return "No pudimos completar la operacion. Intentalo nuevamente.";
+  return "No pudimos completar la operación. Intentalo nuevamente.";
 }

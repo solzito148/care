@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   const quickActions = [
     { label: "Agregar medicamento", href: "/medicacion" },
-    { label: "Agregar turno medico", href: "/agenda" },
+    { label: "Agregar turno médico", href: "/agenda" },
     { label: "Gestionar turnos", href: "/turnos" },
     { label: "Agregar cuidador", href: "/cuidadores" },
     { label: "Editar persona cuidada", href: "/persona-cuidada" },
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
 
   return (
     <section className="space-y-5">
-      <Card className="p-6 sm:p-8">
+      <Card size="lg">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
           Dashboard Administrador del Cuidado
         </h1>
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
 
       <section aria-label="Resumen principal" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {summaryCards.map((card) => (
-          <Card key={card.title} className="p-6">
+          <Card key={card.title}>
             <p className="text-base font-semibold text-slate-900">{card.title}</p>
             <p className="mt-3 text-4xl font-bold text-care-800">{card.value}</p>
             <p className="mt-2 text-sm text-slate-600">{card.detail}</p>
@@ -44,12 +44,12 @@ export default async function DashboardPage() {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-6 sm:p-7">
+        <Card>
           <h2 className="text-xl font-semibold text-slate-900">Alertas importantes</h2>
           <div className="mt-4 space-y-3">
             {alerts.length === 0 ? (
               <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-base text-slate-700">
-                Sin alertas pendientes. Todo al dia.
+                Sin alertas pendientes. Todo al día.
               </p>
             ) : (
               alerts.map((alert) => (
@@ -65,8 +65,8 @@ export default async function DashboardPage() {
           </div>
         </Card>
 
-        <Card className="p-6 sm:p-7">
-          <h2 className="text-xl font-semibold text-slate-900">Acciones rapidas</h2>
+        <Card>
+          <h2 className="text-xl font-semibold text-slate-900">Acciones rápidas</h2>
           <div className="mt-4 grid gap-3">
             {quickActions.map((action) => (
               <Button

@@ -50,7 +50,7 @@ export function ReminderList({ caregivers }: Props) {
       <FormMessage message={message} type={messageType} />
       <div className="mt-4 space-y-3">
         {caregivers.length === 0 ? (
-          <p className="text-sm text-slate-600">Todos los perfiles estan al dia.</p>
+          <p className="text-sm text-slate-600">Todos los perfiles están al día.</p>
         ) : (
           caregivers.map((c) => (
             <article key={c.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -59,7 +59,7 @@ export function ReminderList({ caregivers }: Props) {
                 <Badge tone={statusTone[c.profileStatus]}>{c.profileStatus}</Badge>
               </div>
               <p className="mt-2 text-sm text-slate-700">
-                Ultima actualizacion: {c.lastProfileUpdate ?? "sin registro"}
+                Última actualización: {c.lastProfileUpdate ?? "sin registro"}
               </p>
               {!c.linkedUserId ? (
                 <p className="text-sm text-warning-700">Sin cuenta vinculada.</p>

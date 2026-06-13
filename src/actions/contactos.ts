@@ -58,7 +58,7 @@ export async function deleteContactAction(contactId: string): Promise<{ ok: bool
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, contactId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

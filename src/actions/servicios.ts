@@ -29,7 +29,7 @@ export async function publishServiceAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const parsed = parseInput(publishServiceSchema, form);
   if (!parsed.ok) return { ok: false, error: parsed.error };
@@ -70,7 +70,7 @@ export async function setServiceStatusAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const idParsed = parseInput(uuidSchema, serviceId);
   if (!idParsed.ok) return { ok: false, error: idParsed.error };

@@ -33,7 +33,7 @@ export function ServiciosClient({ services, items, initialTab = "prestaciones" }
       <Card className="p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Servicios CARE</h1>
         <p className="mt-2 text-slate-700">
-          Prestaciones complementarias para el cuidado y publicaciones de articulos y equipamiento:
+          Prestaciones complementarias para el cuidado y publicaciones de artículos y equipamiento:
           venta, alquiler, intercambio y donaciones.
         </p>
       </Card>

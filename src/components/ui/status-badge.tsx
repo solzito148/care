@@ -21,7 +21,7 @@ const statusMap: Record<CareStatus, { label: string; tone: "warning" | "success"
   urgente: { label: "Urgente", tone: "danger" },
   actualizado: { label: "Actualizado", tone: "info" },
   recomendado: { label: "Recomendado", tone: "success" },
-  proximo: { label: "Proximo", tone: "info" },
+  proximo: { label: "Próximo", tone: "info" },
   completado: { label: "Completado", tone: "success" },
 };
 

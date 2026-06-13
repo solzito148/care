@@ -81,7 +81,7 @@ export function ContactosClient({ contacts }: Props) {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {contacts.length === 0 ? (
           <Card className="p-6 text-sm text-slate-600 md:col-span-2 xl:col-span-3">
-            Todavia no hay contactos cargados.
+            Todavía no hay contactos cargados.
           </Card>
         ) : (
           contacts.map((contact) => (
@@ -100,7 +100,7 @@ export function ContactosClient({ contacts }: Props) {
               ) : null}
               {contact.phone ? (
                 <p className="mt-2 text-sm text-slate-700">
-                  <strong>Telefono:</strong>{" "}
+                  <strong>Teléfono:</strong>{" "}
                   <a className="text-care-800 underline" href={`tel:${contact.phone}`}>
                     {contact.phone}
                   </a>
@@ -127,13 +127,13 @@ export function ContactosClient({ contacts }: Props) {
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onAdd}>
           <Input label="Nombre completo" value={form.fullName} onChange={updateField("fullName")} />
           <Input
-            label="Relacion / rol"
+            label="Relación / rol"
             value={form.relationship}
             onChange={updateField("relationship")}
-            placeholder="Ej: Hija, Cardiologo"
+            placeholder="Ej: Hija, Cardióloga"
           />
           <label className="block text-sm font-medium text-slate-800">
-            Categoria
+            Categoría
             <select
               value={form.category}
               onChange={updateField("category")}
@@ -146,7 +146,7 @@ export function ContactosClient({ contacts }: Props) {
               ))}
             </select>
           </label>
-          <Input label="Telefono" value={form.phone} onChange={updateField("phone")} />
+          <Input label="Teléfono" value={form.phone} onChange={updateField("phone")} />
           <Input type="email" label="Email" value={form.email} onChange={updateField("email")} />
           <label className="flex items-end">
             <span className="inline-flex min-h-12 w-full items-center gap-2 rounded-xl2 border border-slate-300 px-4">

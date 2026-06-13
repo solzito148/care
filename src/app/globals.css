@@ -70,7 +70,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #93c5fd;
+    outline: 3px solid #1d4ed8;
     outline-offset: 2px;
   }
   html {

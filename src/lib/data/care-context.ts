@@ -50,11 +50,79 @@ export async function ensureCareContext(): Promise<CareContext | null> {
     return ensureRecipientForHousehold(supabase, memberId);
   }
 
+  // Cuidador / profesional: el contexto sale de la persona a la que esta
+  // vinculado (relacion aprobada o pendiente), no de un hogar propio.
+  const relationshipContext = await findRelationshipContext(supabase, user.id);
+  if (relationshipContext) {
+    return relationshipContext;
+  }
+
+  // Solo los tutores (o cuentas legacy sin tipo) reciben un hogar propio.
+  // Un cuidador/medico sin vinculo todavia no tiene contexto.
+  if (!(await isTutorAccount(supabase, user.id))) {
+    return null;
+  }
+
   const createdId = await createOwnedHousehold(supabase, user.id);
   if (!createdId) return null;
 
   await ensureOwnerMembership(supabase, createdId, user.id);
   return ensureRecipientForHousehold(supabase, createdId);
+}
+
+/**
+ * El usuario es tutor (o cuenta legacy sin account_type, que tratamos como
+ * tutor para no romper datos previos). Cuidadores/profesionales/proveedores no
+ * deben recibir un hogar propio automatico.
+ */
+async function isTutorAccount(
+  supabase: SupabaseSrv,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("account_type")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const accountType = data?.account_type ?? null;
+  return accountType === null || accountType === "tutor-familiar-encargado";
+}
+
+/**
+ * Deriva el contexto (hogar + persona cuidada) de la relacion activa del
+ * usuario. Prioriza relaciones aprobadas; si solo hay pendientes de cuidador,
+ * tambien sirven para acceso de lectura limitada.
+ */
+async function findRelationshipContext(
+  supabase: SupabaseSrv,
+  userId: string,
+): Promise<CareContext | null> {
+  const { data, error } = await supabase
+    .from("care_relationships")
+    .select("care_recipient_id, status")
+    .eq("subject_user_id", userId)
+    .in("status", ["approved", "pending"]);
+
+  if (error || !data?.length) return null;
+
+  const recipientIds = data
+    .sort((a, b) => (a.status === "approved" ? -1 : 1) - (b.status === "approved" ? -1 : 1))
+    .map((row) => row.care_recipient_id);
+
+  const preferred = await readActiveRecipientCookie();
+  const careRecipientId =
+    preferred && recipientIds.includes(preferred) ? preferred : recipientIds[0];
+
+  const { data: recipient } = await supabase
+    .from("care_recipients")
+    .select("household_id")
+    .eq("id", careRecipientId)
+    .maybeSingle();
+
+  if (!recipient) return null;
+
+  return { householdId: recipient.household_id, careRecipientId };
 }
 
 async function findOwnedHouseholdId(

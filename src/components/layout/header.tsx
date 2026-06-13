@@ -12,7 +12,7 @@ export function Header() {
           <span className="text-lg font-semibold text-slate-900">CARE</span>
         </Link>
         <div className="hidden text-sm text-slate-600 md:block">
-          Gestion del cuidado de personas mayores
+          Gestión del cuidado de personas mayores
         </div>
         <div className="flex items-center gap-2">
           <Button href="/login" variant="secondary">

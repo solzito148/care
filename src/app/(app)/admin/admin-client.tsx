@@ -59,7 +59,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
         router.refresh();
       } else {
         setMessageType("error");
-        setMessage(res.error ?? "No se pudo completar la accion.");
+        setMessage(res.error ?? "No se pudo completar la acción.");
       }
     });
   };
@@ -81,7 +81,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
         <OverviewStat label="Suscripciones activas" value={overview.activeSubscriptions} />
       </div>
 
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de administracion">
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de administración">
         {tabs.map((t) => (
           <Button
             key={t.id}
@@ -117,14 +117,14 @@ export function AdminClient({ overview, recommendations, services, items, subscr
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button
                       disabled={pending}
-                      onClick={() => run(() => reviewRecommendationAction(rec.id, "aprobada"), "Recomendacion aprobada.")}
+                      onClick={() => run(() => reviewRecommendationAction(rec.id, "aprobada"), "Recomendación aprobada.")}
                     >
                       Aprobar
                     </Button>
                     <Button
                       variant="secondary"
                       disabled={pending}
-                      onClick={() => run(() => reviewRecommendationAction(rec.id, "rechazada"), "Recomendacion rechazada.")}
+                      onClick={() => run(() => reviewRecommendationAction(rec.id, "rechazada"), "Recomendación rechazada.")}
                     >
                       Rechazar
                     </Button>
@@ -201,7 +201,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
                     {item.status === "bloqueado" ? (
                       <Button
                         disabled={pending}
-                        onClick={() => run(() => moderateMarketplaceItemAction(item.id, "publicado"), "Publicacion restaurada.")}
+                        onClick={() => run(() => moderateMarketplaceItemAction(item.id, "publicado"), "Publicación restaurada.")}
                       >
                         Restaurar
                       </Button>
@@ -209,7 +209,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
                       <Button
                         variant="secondary"
                         disabled={pending}
-                        onClick={() => run(() => moderateMarketplaceItemAction(item.id, "bloqueado"), "Publicacion bloqueada.")}
+                        onClick={() => run(() => moderateMarketplaceItemAction(item.id, "bloqueado"), "Publicación bloqueada.")}
                       >
                         Bloquear
                       </Button>
@@ -244,7 +244,7 @@ export function AdminClient({ overview, recommendations, services, items, subscr
                     <div className="mt-3">
                       <Button
                         disabled={pending}
-                        onClick={() => run(() => activateSubscriptionAction(sub.id), "Suscripcion activada.")}
+                        onClick={() => run(() => activateSubscriptionAction(sub.id), "Suscripción activada.")}
                       >
                         Activar manualmente
                       </Button>

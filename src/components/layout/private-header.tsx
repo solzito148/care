@@ -2,20 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
+import { Shield, UserRound } from "lucide-react";
+
 import { signOutAction } from "@/app/actions/auth";
 import { setActiveCareRecipientAction } from "@/actions/care-recipients";
 import type { CareRecipientsState } from "@/lib/data/care-recipients";
-import { appNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/cn";
 
 const viewOptions = [
-  { href: "/dashboard", label: "Vista Administrador" },
-  { href: "/persona", label: "Vista Persona Cuidada" },
+  { href: "/dashboard", label: "Administrador", icon: Shield },
+  { href: "/persona", label: "Persona cuidada", icon: UserRound },
 ];
 
 const logoutButtonClasses =
-  "inline-flex min-h-11 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-300";
+  "inline-flex min-h-11 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-care-300";
 
 type PrivateHeaderProps = {
   userDisplayName: string;
@@ -26,7 +27,6 @@ type PrivateHeaderProps = {
 export function PrivateHeader({ userDisplayName, userEmail, careRecipients }: PrivateHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [openMenu, setOpenMenu] = useState(false);
   const [, startTransition] = useTransition();
 
   const onSelectRecipient = (id: string) => {
@@ -75,70 +75,44 @@ export function PrivateHeader({ userDisplayName, userEmail, careRecipients }: Pr
           </p>
           <form action={signOutAction}>
             <button type="submit" className={logoutButtonClasses}>
-              Cerrar sesion
+              Cerrar sesión
             </button>
           </form>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setOpenMenu((prev) => !prev)}
-          className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 px-3 text-sm font-semibold text-slate-700 lg:hidden"
-          aria-expanded={openMenu}
-          aria-controls="mobile-secondary-menu"
-        >
-          Menu
-        </button>
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-3 pb-3 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap gap-2">
+        <div
+          role="group"
+          aria-label="Cambiar vista"
+          className="inline-flex items-center gap-1 rounded-xl bg-slate-100 p-1"
+        >
+          <span className="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Vista
+          </span>
           {viewOptions.map((option) => {
-            const active = pathname.startsWith(option.href);
+            const active =
+              pathname === option.href || pathname.startsWith(`${option.href}/`);
+            const Icon = option.icon;
             return (
               <Link
                 key={option.href}
                 href={option.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex min-h-10 items-center rounded-xl px-3 text-sm font-semibold",
-                  active ? "bg-care-100 text-care-800" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  "inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition",
+                  active
+                    ? "bg-white text-care-800 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900",
                 )}
               >
+                <Icon className="h-4 w-4" aria-hidden />
                 {option.label}
               </Link>
             );
           })}
         </div>
       </div>
-
-      {openMenu ? (
-        <div id="mobile-secondary-menu" className="border-t border-slate-200 bg-white lg:hidden">
-          <div className="mx-auto w-full max-w-7xl space-y-2 px-3 py-3 sm:px-6">
-            <p className="text-sm font-medium text-slate-700" title={userEmail}>
-              {userDisplayName}
-            </p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {appNavItems
-                .filter((item) => !item.mobilePrimary)
-                .map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpenMenu(false)}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-            </div>
-            <form action={signOutAction}>
-              <button type="submit" className={cn(logoutButtonClasses, "w-full")}>
-                Cerrar sesion
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }

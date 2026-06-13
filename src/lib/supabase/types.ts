@@ -28,6 +28,19 @@ export type AccountTypeCode =
   | "proveedor-marketplace"
   | "proveedor-servicios";
 
+export type RelationshipType =
+  | "caregiver"
+  | "professional"
+  | "family"
+  | "legal"
+  | "other";
+
+export type RelationshipStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "revoked";
+
 // Nota: dejamos `Relationships: []` vacio porque modelamos la BD a mano.
 // Si en el futuro generamos los tipos con `supabase gen types typescript`,
 // se va a poblar automaticamente y los embeds (`tabla!fk(col)`) van a tipar
@@ -576,6 +589,45 @@ export type Database = {
           notes?: string;
         };
         Update: Partial<Omit<Database["public"]["Tables"]["legal_documents"]["Insert"], "household_id">>;
+        Relationships: [];
+      };
+      care_relationships: {
+        Row: {
+          id: string;
+          care_recipient_id: string;
+          relationship_type: RelationshipType;
+          subject_user_id: string | null;
+          subject_name: string | null;
+          subject_phone: string | null;
+          subject_email: string | null;
+          status: RelationshipStatus;
+          requested_by: string | null;
+          approved_by: string | null;
+          approved_at: string | null;
+          notes: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          care_recipient_id: string;
+          relationship_type: RelationshipType;
+          subject_user_id?: string | null;
+          subject_name?: string | null;
+          subject_phone?: string | null;
+          subject_email?: string | null;
+          status?: RelationshipStatus;
+          requested_by?: string | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          notes?: string;
+        };
+        Update: Partial<
+          Omit<
+            Database["public"]["Tables"]["care_relationships"]["Insert"],
+            "care_recipient_id"
+          >
+        > & { updated_at?: string };
         Relationships: [];
       };
       audit_logs: {

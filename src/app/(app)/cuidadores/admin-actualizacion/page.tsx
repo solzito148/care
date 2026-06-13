@@ -20,7 +20,7 @@ export default async function AdminActualizacionCuidadoresPage() {
         </h1>
         <p className="mt-2 text-slate-700">
           Recordatorio para que los cuidadores verifiquen y actualicen sus datos. El aviso llega
-          como notificacion in-app (y por email/WhatsApp cuando esten configurados los proveedores).
+          como notificación in-app (y por email/WhatsApp cuando estén configurados los proveedores).
         </p>
       </Card>
 

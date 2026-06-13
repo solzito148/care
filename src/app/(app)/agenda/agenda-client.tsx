@@ -94,7 +94,7 @@ export function AgendaClient({ items }: Props) {
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Proximos turnos</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Próximos turnos</h2>
         <div className="mt-4 space-y-3">
           {formatted.length === 0 ? (
             <p className="text-sm text-slate-600">No hay turnos cargados. Agrega uno con el formulario.</p>
@@ -118,10 +118,10 @@ export function AgendaClient({ items }: Props) {
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Nuevo turno medico</h2>
+        <h2 className="text-xl font-semibold text-slate-900">Nuevo turno médico</h2>
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onCreate}>
-          <Input label="Titulo" className="sm:col-span-2" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
-          <Input label="Profesional / institucion" value={profesional} onChange={(e) => setProfesional(e.target.value)} />
+          <Input label="Título" className="sm:col-span-2" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+          <Input label="Profesional / institución" value={profesional} onChange={(e) => setProfesional(e.target.value)} />
           <Input label="Lugar" value={lugar} onChange={(e) => setLugar(e.target.value)} />
           <Input type="date" label="Fecha" value={fecha} onChange={(e) => setFecha(e.target.value)} />
           <Input type="time" label="Hora" value={hora} onChange={(e) => setHora(e.target.value)} />

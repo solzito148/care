@@ -26,7 +26,7 @@ export function LoginForm() {
       : "/dashboard";
   const initialError =
     searchParams.get("error") === "supabase_not_configured"
-      ? "Supabase no esta configurado. Revisa NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY."
+      ? "Supabase no está configurado. Revisá NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY."
       : "";
 
   const [email, setEmail] = useState("");
@@ -53,7 +53,7 @@ export function LoginForm() {
       router.refresh();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "No pudimos iniciar sesion.";
+        error instanceof Error ? error.message : "No pudimos iniciar sesión.";
       setFormError(message);
     } finally {
       setLoading(false);
@@ -62,10 +62,10 @@ export function LoginForm() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <Card className="w-full max-w-md p-6">
+      <Card className="w-full max-w-md">
         <h1 className="text-2xl font-semibold text-slate-900">Ingresar a CARE</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Iniciá sesion con tu email y contrasena.
+          Iniciá sesión con tu email y contraseña.
         </p>
         <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
           <Input
@@ -79,7 +79,7 @@ export function LoginForm() {
           />
           <Input
             type="password"
-            label="Contrasena"
+            label="Contraseña"
             placeholder="********"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -95,10 +95,10 @@ export function LoginForm() {
           href="/recuperar-password"
           className="mt-4 inline-block text-sm font-medium text-care-700"
         >
-          Olvide mi contrasena
+          Olvidé mi contraseña
         </Link>
         <p className="mt-4 text-sm text-slate-600">
-          No tenes cuenta?{" "}
+          ¿No tenés cuenta?{" "}
           <Link href="/registro" className="font-medium text-care-700">
             Crear cuenta
           </Link>

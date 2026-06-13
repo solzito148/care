@@ -49,7 +49,7 @@ export async function completeOnboardingAction(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Sesion requerida." };
+  if (!user) return { ok: false, error: "Sesión requerida." };
 
   const { data: profile, error: profileReadError } = await supabase
     .from("profiles")
@@ -61,7 +61,7 @@ export async function completeOnboardingAction(
     return { ok: false, error: profileReadError.message };
   }
   if (!profile?.account_type) {
-    return { ok: false, error: "Falta el tipo de cuenta. Volve a registrarte." };
+    return { ok: false, error: "Falta el tipo de cuenta. Volvé a registrarte." };
   }
   if (input.accountType !== profile.account_type) {
     return { ok: false, error: "El tipo de cuenta no coincide con tu registro." };
