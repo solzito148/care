@@ -24,6 +24,12 @@ const views = [
   },
 ];
 
+const mision =
+  "Nuestra misión es transformar el cuidado de las personas mayores a través de un lugar diseñado para centralizar y simplificar sus vidas, convirtiéndonos en una verdadera red de contención y ayuda para las familias. Conectamos al entorno familiar y permitimos que el adulto mayor tenga el control de sus médicos, turnos y contactos sin necesidad de recurrir a diferentes fuentes, transformando la complejidad del día a día en un proceso organizado, cercano y seguro.";
+
+const vision =
+  "Nuestra visión es consolidarnos como la comunidad de ayuda familiar más confiable, transformando la forma en que la sociedad gestiona el envejecimiento para que cuidar a nuestros mayores sea siempre sinónimo de paz mental, amor y organización, y nunca más de soledad o desinformación.";
+
 const features = [
   "Agenda",
   "Medicación",
@@ -98,6 +104,56 @@ export default function LandingPage() {
               ))}
             </div>
           </Card>
+        </section>
+
+        <section aria-labelledby="proposito-heading">
+          <h2 id="proposito-heading" className="mb-3 text-2xl font-semibold text-slate-900">
+            Nuestro propósito
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card size="lg" className="border-l-4 border-l-care-600">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-care-100 text-care-700">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6"
+                    aria-hidden="true"
+                  >
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
+                  </svg>
+                </span>
+                <h3 className="text-xl font-semibold text-slate-900">Misión</h3>
+              </div>
+              <p className="mt-4 text-base leading-relaxed text-slate-600">{mision}</p>
+            </Card>
+
+            <Card size="lg" className="border-l-4 border-l-care-400">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-care-100 text-care-700">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6"
+                    aria-hidden="true"
+                  >
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </span>
+                <h3 className="text-xl font-semibold text-slate-900">Visión</h3>
+              </div>
+              <p className="mt-4 text-base leading-relaxed text-slate-600">{vision}</p>
+            </Card>
+          </div>
         </section>
 
         <section>

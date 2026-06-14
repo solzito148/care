@@ -1,4 +1,5 @@
 import type { CaregiverReferencePublic, CaregiverSearchItem } from "@/lib/cuidadores-types";
+import { normalizeProfessionalTier } from "@/lib/professional-tier";
 import type { Database } from "@/lib/supabase/types";
 
 type ProfileRow = Database["public"]["Tables"]["caregiver_profiles"]["Row"];
@@ -11,6 +12,9 @@ export function profileRowToSearchItem(row: ProfileRow): CaregiverSearchItem {
     id: row.id,
     foto: row.display_initials,
     nombre: row.full_name,
+    tier: normalizeProfessionalTier(row.subscription_tier),
+    telefonoContacto: row.contact_phone ?? undefined,
+    whatsappContacto: row.contact_whatsapp ?? undefined,
     zonasTrabajo: row.zones ?? [],
     localidad: row.locality,
     modalidades: row.modalities ?? [],

@@ -9,8 +9,10 @@ export type RelationshipView = {
   id: string;
   type: RelationshipType;
   status: RelationshipStatus;
+  isManager: boolean;
   subjectUserId: string | null;
   subjectName: string;
+  subjectRelation: string | null;
   subjectPhone: string | null;
   subjectEmail: string | null;
   notes: string;
@@ -41,7 +43,7 @@ export async function loadRelationships(): Promise<RelationshipsState> {
   const { data, error } = await supabase
     .from("care_relationships")
     .select(
-      "id, relationship_type, status, subject_user_id, subject_name, subject_phone, subject_email, notes, created_at",
+      "id, relationship_type, status, is_manager, subject_user_id, subject_name, subject_relation, subject_phone, subject_email, notes, created_at",
     )
     .eq("care_recipient_id", context.careRecipientId)
     .order("created_at", { ascending: false });
@@ -72,12 +74,14 @@ export async function loadRelationships(): Promise<RelationshipsState> {
     id: row.id,
     type: row.relationship_type,
     status: row.status,
+    isManager: row.is_manager ?? false,
     subjectUserId: row.subject_user_id,
     subjectName:
       (row.subject_user_id && nameByUserId.get(row.subject_user_id)) ||
       row.subject_name?.trim() ||
       row.subject_email?.trim() ||
       "Persona vinculada",
+    subjectRelation: row.subject_relation?.trim() || null,
     subjectPhone: row.subject_phone,
     subjectEmail: row.subject_email,
     notes: row.notes,

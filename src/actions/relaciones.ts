@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { recordAuditLog } from "@/lib/audit";
 import { ensureCareContext } from "@/lib/data/care-context";
+import { familyLimitsForPlanId } from "@/lib/plans";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import type { RelationshipType } from "@/lib/supabase/types";
@@ -11,6 +12,7 @@ import { uuidSchema } from "@/lib/validations/common-schema";
 import {
   createRelationshipSchema,
   relationshipDecisionSchema,
+  relationshipManagerSchema,
 } from "@/lib/validations/relacion-schema";
 import { parseInput } from "@/lib/validations/parse";
 
@@ -19,6 +21,7 @@ export type CreateRelationshipInput = {
   relationshipType: RelationshipType;
   subjectUserId?: string;
   subjectName?: string;
+  subjectRelation?: string;
   subjectPhone?: string;
   subjectEmail?: string;
   notes?: string;
@@ -27,6 +30,11 @@ export type CreateRelationshipInput = {
 export type RelationshipDecisionInput = {
   relationshipId: string;
   decision: "approved" | "rejected" | "revoked";
+};
+
+export type RelationshipManagerInput = {
+  relationshipId: string;
+  isManager: boolean;
 };
 
 const TYPE_LABELS: Record<RelationshipType, string> = {
@@ -61,6 +69,74 @@ async function recipientOwnerAndName(
     recipient.preferred_name?.trim() || recipient.full_name || "la persona cuidada";
 
   return { ownerId: household?.owner_user_id ?? null, name };
+}
+
+/**
+ * Hace cumplir el tope de cuidadores/medicos del plan de la familia (vertical
+ * Familias). Solo aplica a vinculos `caregiver` (cuidadores) y `professional`
+ * (medicos). Cuenta los vinculos activos + pendientes para no superar el limite.
+ * Si no hay service client o no se puede resolver el owner, no bloquea.
+ */
+async function checkFamilyLinkLimit(
+  careRecipientId: string,
+  relationshipType: RelationshipType,
+): Promise<{ ok: boolean; error?: string }> {
+  if (relationshipType !== "caregiver" && relationshipType !== "professional") {
+    return { ok: true };
+  }
+
+  const service = createServiceClient();
+  if (!service) return { ok: true };
+
+  const { data: recipient } = await service
+    .from("care_recipients")
+    .select("household_id")
+    .eq("id", careRecipientId)
+    .maybeSingle();
+  if (!recipient) return { ok: true };
+
+  const { data: household } = await service
+    .from("households")
+    .select("owner_user_id")
+    .eq("id", recipient.household_id)
+    .maybeSingle();
+  const ownerId = household?.owner_user_id ?? null;
+  if (!ownerId) return { ok: true };
+
+  const { data: sub } = await service
+    .from("subscriptions")
+    .select("plan_id, line")
+    .eq("user_id", ownerId)
+    .eq("status", "activa")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const planId = sub?.line === "familias" ? sub.plan_id : null;
+  const limits = familyLimitsForPlanId(planId);
+  const max = relationshipType === "caregiver" ? limits.cuidadores : limits.medicos;
+  if (max === null) return { ok: true };
+
+  const { count } = await service
+    .from("care_relationships")
+    .select("id", { count: "exact", head: true })
+    .eq("care_recipient_id", careRecipientId)
+    .eq("relationship_type", relationshipType)
+    .in("status", ["pending", "approved"]);
+
+  if ((count ?? 0) >= max) {
+    const tipo = relationshipType === "caregiver" ? "cuidadores" : "médicos";
+    const sugerencia =
+      max === 0
+        ? "Activá un plan Familiar (Esencial o Premium) para vincular profesionales."
+        : "Pasá a Familiar Premium para vincular cuidadores y médicos ilimitados.";
+    return {
+      ok: false,
+      error: `Alcanzaste el máximo de ${tipo} de tu plan (${max}). ${sugerencia}`,
+    };
+  }
+
+  return { ok: true };
 }
 
 async function notifyUser(input: {
@@ -99,6 +175,12 @@ export async function createRelationshipAction(
   if (!parsed.ok) return { ok: false, error: parsed.error };
   const input = parsed.data;
 
+  const limitCheck = await checkFamilyLinkLimit(
+    input.careRecipientId,
+    input.relationshipType,
+  );
+  if (!limitCheck.ok) return { ok: false, error: limitCheck.error };
+
   const { data, error } = await supabase
     .from("care_relationships")
     .insert({
@@ -106,6 +188,7 @@ export async function createRelationshipAction(
       relationship_type: input.relationshipType,
       subject_user_id: input.subjectUserId ? input.subjectUserId : null,
       subject_name: input.subjectName ? input.subjectName : null,
+      subject_relation: input.subjectRelation ? input.subjectRelation : null,
       subject_phone: input.subjectPhone ? input.subjectPhone : null,
       subject_email: input.subjectEmail ? input.subjectEmail : null,
       notes: input.notes ?? "",
@@ -251,6 +334,72 @@ export async function decideRelationshipAction(
             : "Vínculo dado de baja",
       body: decisionText,
       href: "/dashboard",
+    });
+  }
+
+  revalidatePath("/persona-cuidada");
+  return { ok: true };
+}
+
+/**
+ * El tutor legal (owner) delega o revoca la administración de un cuidador
+ * aprobado. El trigger de la base impide que cualquiera que no sea el owner/admin
+ * cambie `is_manager`, así que solo el tutor puede delegar de verdad.
+ */
+export async function setRelationshipManagerAction(
+  form: RelationshipManagerInput,
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sesión requerida." };
+
+  const parsed = parseInput(relationshipManagerSchema, form);
+  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const { relationshipId, isManager } = parsed.data;
+
+  const { data, error } = await supabase
+    .from("care_relationships")
+    .update({ is_manager: isManager })
+    .eq("id", relationshipId)
+    .eq("relationship_type", "caregiver")
+    .eq("status", "approved")
+    .select("id, is_manager, subject_user_id, care_recipient_id")
+    .maybeSingle();
+
+  if (error) {
+    console.error("setRelationshipManager", error);
+    return { ok: false, error: error.message };
+  }
+  if (!data) {
+    return {
+      ok: false,
+      error: "Solo el tutor responsable puede delegar la administración.",
+    };
+  }
+  if (data.is_manager !== isManager) {
+    return {
+      ok: false,
+      error: "Solo el tutor responsable puede delegar la administración.",
+    };
+  }
+
+  await recordAuditLog({
+    entityType: "care_relationship",
+    entityId: data.id,
+    action: isManager ? "relationship_manager_granted" : "relationship_manager_revoked",
+  });
+
+  if (data.subject_user_id) {
+    const { name } = await recipientOwnerAndName(data.care_recipient_id);
+    await notifyUser({
+      userId: data.subject_user_id,
+      title: isManager ? "Administración delegada" : "Administración revocada",
+      body: isManager
+        ? `El tutor de ${name} te delegó la administración del cuidado.`
+        : `El tutor de ${name} revocó tu administración del cuidado.`,
+      href: "/persona-cuidada",
     });
   }
 

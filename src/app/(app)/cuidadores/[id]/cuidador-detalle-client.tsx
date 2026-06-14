@@ -8,6 +8,7 @@ import {
   requestCaregiverContactAction,
 } from "@/actions/cuidadores";
 import { assignCaregiverFromDirectoryAction } from "@/actions/relaciones";
+import { VerifiedBadge } from "@/app/(app)/cuidadores/cuidadores-client";
 import { FormMessage } from "@/components/forms/form-message";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import type {
   CaregiverReferencePublic,
   CaregiverSearchItem,
 } from "@/lib/cuidadores-types";
+import { tierCapabilities, telLink, whatsappLink } from "@/lib/professional-tier";
 
 type Props = {
   caregiver: CaregiverSearchItem;
@@ -32,6 +34,9 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
   const [messageType, setMessageType] = useState<"success" | "error">("success");
 
   const isAuthorizedTutor = searchParams.get("authorized") === "1";
+  const caps = tierCapabilities(caregiver.tier);
+  const directWhatsapp = caps.showDirectContact ? caregiver.whatsappContacto : undefined;
+  const directPhone = caps.showDirectContact ? caregiver.telefonoContacto : undefined;
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, okMsg: string) => {
     startTransition(async () => {
@@ -55,7 +60,10 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
             {caregiver.foto}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{caregiver.nombre}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-bold text-slate-900">{caregiver.nombre}</h1>
+              {caps.isVerified ? <VerifiedBadge /> : null}
+            </div>
             <p className="text-sm text-slate-600">Última actualización: {caregiver.ultimaActualizacion}</p>
             <p className="mt-1 text-sm font-semibold text-slate-800">Calificación: {caregiver.calificacion.toFixed(1)}</p>
           </div>
@@ -118,6 +126,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
         </div>
       </Card>
 
+      {caps.showReviews ? (
       <Card className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-slate-900">Recomendaciones CARE aprobadas</h2>
@@ -153,9 +162,74 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
           )}
         </div>
       </Card>
+      ) : null}
+
+      {caps.hasIntegratedAgenda ? (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-slate-900">Agenda integrada</h2>
+          <p className="mt-2 text-sm text-slate-700">
+            Este profesional ofrece reserva de turnos y entrevistas online. Elegí un horario y CARE coordina la confirmación.
+          </p>
+          <div className="mt-3">
+            <Button
+              variant="secondary"
+              disabled={pending}
+              onClick={() =>
+                run(
+                  () => requestCaregiverContactAction(caregiver.id, "entrevista"),
+                  "Solicitud de reserva enviada. Coordinamos el horario."
+                )
+              }
+            >
+              Reservar turno / entrevista
+            </Button>
+          </div>
+        </Card>
+      ) : null}
+
+      {caps.hasProfileStats ? (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-slate-900">Estadísticas de perfil</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Panel Premium, visible para el profesional dueño del perfil.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <StatBox label="Vistas del perfil" value="—" />
+            <StatBox label="Clics en WhatsApp" value="—" />
+            <StatBox label="Solicitudes de contacto" value="—" />
+          </div>
+        </Card>
+      ) : null}
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-slate-900">Acciones</h2>
+        {directWhatsapp || directPhone ? (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {directWhatsapp ? (
+              <a
+                href={whatsappLink(directWhatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl2 bg-care-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-care-800"
+              >
+                Enviar WhatsApp
+              </a>
+            ) : null}
+            {directPhone ? (
+              <a
+                href={telLink(directPhone)}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+              >
+                Llamar
+              </a>
+            ) : null}
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-slate-600">
+            Este perfil tiene contacto por chat interno de CARE. Coordinamos el contacto sin
+            exponer datos directos.
+          </p>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             disabled={pending}
@@ -190,7 +264,7 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
               )
             }
           >
-            Contactar
+            Contactar por Chat de CARE
           </Button>
           <Button
             variant="secondary"
@@ -216,5 +290,14 @@ export function CuidadorDetalleClient({ caregiver, references, recommendations }
         </div>
       </Card>
     </section>
+  );
+}
+
+function StatBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="mt-1 text-xs text-slate-600">{label}</p>
+    </div>
   );
 }

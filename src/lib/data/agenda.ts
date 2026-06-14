@@ -6,6 +6,9 @@ type AppointmentRow = {
   title: string;
   provider_name: string | null;
   location: string | null;
+  address: string | null;
+  locality: string | null;
+  province: string | null;
   starts_at: string;
   ends_at: string | null;
   status: "scheduled" | "confirmed" | "done" | "cancelled";
@@ -23,6 +26,9 @@ export type AgendaServerItem = {
   endsAt: string | null;
   titulo: string;
   lugar: string | null;
+  direccion: string | null;
+  localidad: string | null;
+  provincia: string | null;
   responsable: string | null;
   estado: AgendaEventStatus;
   notas: string | null;
@@ -49,6 +55,9 @@ function rowToItem(row: AppointmentRow): AgendaServerItem {
     endsAt: row.ends_at,
     titulo: row.title,
     lugar: row.location,
+    direccion: row.address,
+    localidad: row.locality,
+    provincia: row.province,
     responsable: row.provider_name,
     estado: mapStatus(row.status),
     notas: row.notes,

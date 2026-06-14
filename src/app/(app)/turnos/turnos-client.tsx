@@ -104,6 +104,14 @@ export function TurnosClient({ items, nowMs }: Props) {
                       {turno.fechaLabel} - {turno.horaLabel}
                       {turno.lugar ? ` — ${turno.lugar}` : ""}
                     </p>
+                    {turno.direccion ? (
+                      <p className="text-sm text-slate-600">{turno.direccion}</p>
+                    ) : null}
+                    {turno.localidad || turno.provincia ? (
+                      <p className="text-sm text-slate-600">
+                        {[turno.localidad, turno.provincia].filter(Boolean).join(", ")}
+                      </p>
+                    ) : null}
                     {turno.responsable ? (
                       <p className="mt-1 text-sm text-slate-600">Con: {turno.responsable}</p>
                     ) : null}

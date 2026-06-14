@@ -8,4 +8,4 @@ export const reviewDecisionSchema = z.enum(["aprobada", "rechazada"]);
 
 export const idParamSchema = z.object({ id: uuidSchema });
 
-export const planIdSchema = z.string().trim().min(2, "Plan invalido.").max(10);
+export const planIdSchema = z.string().trim().min(2, "Plan invalido.").max(40);

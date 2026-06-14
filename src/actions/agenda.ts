@@ -17,6 +17,9 @@ export type CreateAppointmentInput = {
   titulo: string;
   profesional: string;
   lugar: string;
+  direccion: string;
+  localidad: string;
+  provincia: string;
   fecha: string;
   hora: string;
   notas: string;
@@ -64,6 +67,9 @@ export async function createAppointmentAction(
     title,
     provider_name: input.profesional || null,
     location: input.lugar || null,
+    address: input.direccion || null,
+    locality: input.localidad || null,
+    province: input.provincia || null,
     starts_at: starts.toISOString(),
     status: "scheduled",
     notes: input.notas || null,

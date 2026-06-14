@@ -135,6 +135,7 @@ export type Database = {
           household_id: string;
           full_name: string;
           preferred_name: string | null;
+          dni: string | null;
           birth_date: string | null;
           blood_type: string | null;
           emergency_notes: string | null;
@@ -146,6 +147,7 @@ export type Database = {
           household_id: string;
           full_name: string;
           preferred_name?: string | null;
+          dni?: string | null;
           birth_date?: string | null;
           blood_type?: string | null;
           emergency_notes?: string | null;
@@ -228,6 +230,9 @@ export type Database = {
           title: string;
           provider_name: string | null;
           location: string | null;
+          address: string | null;
+          locality: string | null;
+          province: string | null;
           starts_at: string;
           ends_at: string | null;
           status: "scheduled" | "confirmed" | "done" | "cancelled";
@@ -240,6 +245,9 @@ export type Database = {
           title: string;
           provider_name?: string | null;
           location?: string | null;
+          address?: string | null;
+          locality?: string | null;
+          province?: string | null;
           starts_at: string;
           ends_at?: string | null;
           status?: "scheduled" | "confirmed" | "done" | "cancelled";
@@ -253,6 +261,9 @@ export type Database = {
           id: string;
           display_initials: string;
           full_name: string;
+          subscription_tier: "basico" | "destacado" | "premium";
+          contact_phone: string | null;
+          contact_whatsapp: string | null;
           zones: string[];
           locality: string;
           modalities: string[];
@@ -280,6 +291,9 @@ export type Database = {
           id?: string;
           display_initials: string;
           full_name: string;
+          subscription_tier?: "basico" | "destacado" | "premium";
+          contact_phone?: string | null;
+          contact_whatsapp?: string | null;
           zones?: string[];
           locality?: string;
           modalities?: string[];
@@ -484,13 +498,7 @@ export type Database = {
           user_id: string;
           plan_id: string;
           plan_name: string;
-          line:
-            | "planes-familiares"
-            | "profesionales"
-            | "proveedores-marketplace"
-            | "servicios"
-            | "legales-administrativos"
-            | "intercambio-donaciones";
+          line: "familias" | "profesionales" | "empresas" | "intercambio-donaciones";
           status: "activa" | "pendiente-pago" | "vencida" | "cancelada";
           amount: string;
           billing_cycle: string;
@@ -600,7 +608,9 @@ export type Database = {
           subject_name: string | null;
           subject_phone: string | null;
           subject_email: string | null;
+          subject_relation: string | null;
           status: RelationshipStatus;
+          is_manager: boolean;
           requested_by: string | null;
           approved_by: string | null;
           approved_at: string | null;
@@ -616,7 +626,9 @@ export type Database = {
           subject_name?: string | null;
           subject_phone?: string | null;
           subject_email?: string | null;
+          subject_relation?: string | null;
           status?: RelationshipStatus;
+          is_manager?: boolean;
           requested_by?: string | null;
           approved_by?: string | null;
           approved_at?: string | null;

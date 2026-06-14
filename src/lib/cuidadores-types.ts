@@ -1,7 +1,15 @@
+import type { ProfessionalTier } from "@/lib/professional-tier";
+
 export type CaregiverSearchItem = {
   id: string;
   foto: string;
   nombre: string;
+  /** Nivel de suscripcion del profesional (Vertical Profesionales). */
+  tier: ProfessionalTier;
+  /** Telefono de contacto directo (visible solo en Destacado/Premium). */
+  telefonoContacto?: string;
+  /** WhatsApp de contacto directo (visible solo en Destacado/Premium). */
+  whatsappContacto?: string;
   zonasTrabajo: string[];
   localidad: string;
   modalidades: string[];

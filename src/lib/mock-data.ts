@@ -1,4 +1,5 @@
 import { CareMockData } from "@/lib/mock-types";
+import { PLAN_CATALOG } from "@/lib/plans";
 
 export const careMockData: CareMockData = {
   usuarios: [
@@ -76,8 +77,8 @@ export const careMockData: CareMockData = {
       telefonoUtil: "0800-333-6733",
       credencialAdjunta: "credencial_osde_rosa.pdf",
       tutores: [
-        { id: "t1", nombre: "Ana Martínez", rol: "principal", permisos: "Total" },
-        { id: "t2", nombre: "Jorge Martínez", rol: "secundario", permisos: "Turnos y contactos" },
+        { id: "t1", nombre: "Ana Martínez", rol: "principal", permisos: "administrador" },
+        { id: "t2", nombre: "Jorge Martínez", rol: "secundario", permisos: "agenda" },
       ],
       cuidadores: [
         { id: "c1", nombre: "Laura Sosa", rol: "Cuidadora diurna", horarios: "Lun a Vie 08:00-16:00", contacto: "+54 11 4555-9090" },
@@ -103,6 +104,9 @@ export const careMockData: CareMockData = {
         id: "c-1",
         foto: "LS",
         nombre: "Laura Sosa",
+        tier: "premium",
+        telefonoContacto: "+54 11 4000-2001",
+        whatsappContacto: "+54 11 4000-2001",
         zonasTrabajo: ["CABA", "Buenos Aires Norte"],
         localidad: "Belgrano",
         modalidades: ["Con retiro", "Por hora", "Noches"],
@@ -125,6 +129,8 @@ export const careMockData: CareMockData = {
         id: "c-2",
         foto: "MD",
         nombre: "Mario Díaz",
+        tier: "destacado",
+        whatsappContacto: "+54 11 4333-2002",
         zonasTrabajo: ["Buenos Aires Oeste", "La Plata"],
         localidad: "Ramos Mejía",
         modalidades: ["Sin retiro", "Jornada completa", "Guardia 24 hs"],
@@ -147,6 +153,7 @@ export const careMockData: CareMockData = {
         id: "c-3",
         foto: "CR",
         nombre: "Carla Ríos",
+        tier: "basico",
         zonasTrabajo: ["CABA", "Buenos Aires Sur"],
         localidad: "Caballito",
         modalidades: ["Con retiro", "Reemplazos", "Por hora"],
@@ -342,29 +349,14 @@ export const careMockData: CareMockData = {
     { id: "s5", nombreProveedor: "Asistencia Hogar Integral", categoria: "servicios-domiciliarios-complementarios", descripcion: "Limpieza, cocina, lavandería, compras, mantenimiento menor, compañía y asistencia digital domiciliaria.", zonaCobertura: "CABA y Buenos Aires Oeste", telefonoWhatsapp: "+54 11 4777-1313", email: "contacto@hogarintegral.com", plan: "Basico", destacado: false, disponibilidad: "Turnos por hora y jornada completa" },
   ],
   monetizacion: {
-    planes: [
-      { id: "pf-1", linea: "planes-familiares", nombre: "Gratis", cliente: "Tutor / familia", modalidad: "Suscripción mensual", precioMensual: "$0", descripcion: "Acceso inicial con funcionalidades limitadas." },
-      { id: "pf-2", linea: "planes-familiares", nombre: "Familiar Básico", cliente: "Tutor / familia", modalidad: "Suscripción mensual", precioMensual: "$9.900", descripcion: "Funciones esenciales para seguimiento diario del cuidado." },
-      { id: "pf-3", linea: "planes-familiares", nombre: "Familiar Plus", cliente: "Tutor / familia", modalidad: "Suscripción mensual", precioMensual: "$19.900", descripcion: "Alertas avanzadas, reportes y mayor capacidad de gestión.", destacado: true },
-      { id: "pf-4", linea: "planes-familiares", nombre: "Familiar Premium", cliente: "Tutor / familia", modalidad: "Suscripción mensual", precioMensual: "$34.900", descripcion: "Experiencia completa con soporte prioritario." },
-      { id: "pr-1", linea: "profesionales", nombre: "Perfil gratuito", cliente: "Cuidadores, médicos, enfermeros, terapeutas, abogados, contadores", modalidad: "Fee mensual por publicación", precioMensual: "$0", descripcion: "Perfil no destacado con alcance limitado." },
-      { id: "pr-2", linea: "profesionales", nombre: "Perfil publicado", cliente: "Profesionales", modalidad: "Fee mensual por publicación", precioMensual: "$12.500", descripcion: "Perfil visible en búsquedas y contacto directo." },
-      { id: "pr-3", linea: "profesionales", nombre: "Perfil destacado", cliente: "Profesionales", modalidad: "Fee mensual por publicación", precioMensual: "$22.000", descripcion: "Mayor posicionamiento y badge de destacado.", destacado: true },
-      { id: "pr-4", linea: "profesionales", nombre: "Perfil premium", cliente: "Profesionales", modalidad: "Fee mensual por publicación", precioMensual: "$35.000", descripcion: "Posicion preferencial y beneficios de conversion." },
-      { id: "pm-1", linea: "proveedores-marketplace", nombre: "Proveedor de productos", cliente: "Farmacias, ortopedias, alquiler, insumos", modalidad: "Fee mensual + futura comisión por venta/alquiler", precioMensual: "$45.000", descripcion: "Publicación de productos con preparación para comisiones futuras." },
-      { id: "sv-1", linea: "servicios", nombre: "Servicio Básico", cliente: "Empresas / prestadores de servicios", modalidad: "Fee mensual por publicar servicio", precioMensual: "$14.000", descripcion: "Publicación básica de servicios." },
-      { id: "sv-2", linea: "servicios", nombre: "Servicio Destacado", cliente: "Empresas / prestadores de servicios", modalidad: "Fee mensual por publicar servicio", precioMensual: "$24.000", descripcion: "Mayor visibilidad en listados.", destacado: true },
-      { id: "sv-3", linea: "servicios", nombre: "Servicio Premium", cliente: "Empresas / prestadores de servicios", modalidad: "Fee mensual por publicar servicio", precioMensual: "$39.000", descripcion: "Exposición prioritaria y posición destacada." },
-      { id: "lg-1", linea: "legales-administrativos", nombre: "Legal / Administrativo publicado", cliente: "Abogados, contadores, gestores CUD, liquidadores", modalidad: "Fee mensual por publicar nombre y servicio", precioMensual: "$16.500", descripcion: "Publicación profesional para servicios legales y administrativos." },
-      { id: "id-1", linea: "intercambio-donaciones", nombre: "Intercambio y donaciones", cliente: "Comunidad CARE", modalidad: "Gratuito, sin comisión, sin dinero entre usuarios", precioMensual: "$0", descripcion: "Uso social sin cobros ni comisiones." },
-    ],
+    planes: PLAN_CATALOG,
     suscripcionActual: {
       cuenta: "Familia Martínez",
-      planNombre: "Familiar Plus",
-      linea: "planes-familiares",
+      planNombre: "Familiar Esencial",
+      linea: "familias",
       estado: "activa",
       proximoVencimiento: "2026-06-01",
-      monto: "$19.900",
+      monto: "$14.900",
       cicloFacturacion: "Mensual",
       notaIntegracion: "Preparado para integrar cobros y renovaciones automáticas con Mercado Pago.",
     },

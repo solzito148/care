@@ -8,6 +8,7 @@ function makeCaregiver(overrides: Partial<CaregiverSearchItem>): CaregiverSearch
     id: "c1",
     foto: "AB",
     nombre: "Cuidador",
+    tier: "basico",
     zonasTrabajo: [],
     localidad: "CABA",
     modalidades: [],
@@ -46,5 +47,19 @@ describe("rankingScore", () => {
     const verified = makeCaregiver({ referenciasVerificadas: true });
     const unverified = makeCaregiver({ referenciasVerificadas: false });
     expect(rankingScore(verified)).toBeGreaterThan(rankingScore(unverified));
+  });
+
+  it("prioriza por nivel de suscripcion: Premium > Destacado > Basico", () => {
+    const premium = makeCaregiver({ tier: "premium" });
+    const destacado = makeCaregiver({ tier: "destacado" });
+    const basico = makeCaregiver({ tier: "basico" });
+    expect(rankingScore(premium)).toBeGreaterThan(rankingScore(destacado));
+    expect(rankingScore(destacado)).toBeGreaterThan(rankingScore(basico));
+  });
+
+  it("el nivel Premium pesa mas que el badge Recomendado CARE", () => {
+    const premiumPlain = makeCaregiver({ tier: "premium", recomendadoCare: false });
+    const basicoRecomendado = makeCaregiver({ tier: "basico", recomendadoCare: true });
+    expect(rankingScore(premiumPlain)).toBeGreaterThan(rankingScore(basicoRecomendado));
   });
 });

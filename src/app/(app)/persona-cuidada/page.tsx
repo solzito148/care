@@ -32,14 +32,29 @@ export default async function PersonaCuidadaPage() {
       .maybeSingle(),
   ]);
 
-  const isOwner = Boolean(user && household.data?.owner_user_id === user.id);
+  const ownerUserId = household.data?.owner_user_id ?? null;
+  const isOwner = Boolean(user && ownerUserId === user.id);
+  const isManager = Boolean(
+    user && relationships.active.some((r) => r.subjectUserId === user.id && r.isManager),
+  );
   const roles = user?.roles ?? [];
-  const canModerate = isOwner || roles.includes("admin");
+  const canModerate = isOwner || isManager || roles.includes("admin");
+  const canDelegate = isOwner || roles.includes("admin");
   const canPropose =
     canModerate || roles.includes("caregiver") || roles.includes("professional");
   const allowedTypes: RelationshipType[] = canModerate
     ? ["caregiver", "professional", "family", "legal", "other"]
     : ["professional"];
+
+  let ownerName = "";
+  if (ownerUserId) {
+    const { data: ownerProfile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", ownerUserId)
+      .maybeSingle();
+    ownerName = ownerProfile?.full_name?.trim() || "Tutor legal";
+  }
 
   return (
     <div className="space-y-6">
@@ -47,7 +62,10 @@ export default async function PersonaCuidadaPage() {
       <RelacionesSection
         careRecipientId={ctx.careRecipientId}
         canModerate={canModerate}
+        canDelegate={canDelegate}
         canPropose={canPropose}
+        ownerName={ownerName}
+        ownerIsYou={isOwner}
         active={relationships.active}
         pending={relationships.pending}
         allowedTypes={allowedTypes}

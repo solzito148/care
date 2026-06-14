@@ -14,17 +14,7 @@ import type {
   EmergencyContact,
   PersonaCuidada,
   Tutor,
-  TutorPermiso,
 } from "@/lib/persona-cuidada-types";
-
-const TUTOR_PERMISO_OPTIONS: { value: TutorPermiso; label: string }[] = [
-  { value: "administrador", label: "Administrador (todo y aprueba vínculos)" },
-  { value: "edicion_total", label: "Edición total (ver y editar)" },
-  { value: "salud", label: "Solo salud (medicación, turnos, estudios)" },
-  { value: "agenda", label: "Solo agenda" },
-  { value: "legales", label: "Solo legales y administrativo" },
-  { value: "solo_lectura", label: "Solo lectura" },
-];
 
 type Props = {
   initial: PersonaCuidada;
@@ -65,8 +55,6 @@ export function PersonaCuidadaClient({ initial }: Props) {
   const [pending, startTransition] = useTransition();
   const [form, setForm] = useState<PersonaCuidada>(initial);
   const [saveMessage, setSaveMessage] = useState("");
-  // El DNI es la clave unívoca del adulto mayor: una vez seteado no se edita.
-  const dniLocked = initial.dni.trim().length > 0;
 
   const updateField =
     <K extends keyof PersonaCuidada>(field: K) =>
@@ -177,14 +165,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Nombre" value={form.nombre} onChange={updateField("nombre")} />
           <Input label="Apellido" value={form.apellido} onChange={updateField("apellido")} />
-          <Input
-            label="DNI"
-            inputMode="numeric"
-            value={form.dni}
-            onChange={updateField("dni")}
-            disabled={dniLocked}
-            hint={dniLocked ? "Clave única del adulto mayor. No se modifica." : "7 u 8 dígitos."}
-          />
+          <Input label="DNI" value={form.dni} onChange={updateField("dni")} />
           <Input
             type="date"
             label="Fecha de nacimiento"
@@ -194,7 +175,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <Input label="Domicilio" className="sm:col-span-2" value={form.domicilio} onChange={updateField("domicilio")} />
           <Input label="Localidad" value={form.localidad} onChange={updateField("localidad")} />
           <Input label="Provincia" value={form.provincia} onChange={updateField("provincia")} />
-          <Input label="Teléfono" className="sm:col-span-2" value={form.telefono} onChange={updateField("telefono")} />
+          <Input label="Telefono" className="sm:col-span-2" value={form.telefono} onChange={updateField("telefono")} />
           <label className="sm:col-span-2">
             <span className="text-sm font-medium text-slate-800">Observaciones generales</span>
             <textarea
@@ -224,35 +205,18 @@ export function PersonaCuidadaClient({ initial }: Props) {
                 <span className="text-sm font-medium text-slate-800">Rol</span>
                 <select
                   value={tutor.rol}
-                  onChange={(e) => {
-                    const rol = e.target.value as Tutor["rol"];
-                    updateTutor(
-                      tutor.id,
-                      rol === "principal" ? { rol, permisos: "administrador" } : { rol },
-                    );
-                  }}
+                  onChange={(e) => updateTutor(tutor.id, { rol: e.target.value as Tutor["rol"] })}
                   className="mt-2 min-h-11 w-full rounded-xl2 border border-slate-300 bg-white px-4 py-2 text-base text-slate-900"
                 >
                   <option value="principal">Tutor principal</option>
                   <option value="secundario">Tutor secundario</option>
                 </select>
               </label>
-              <label>
-                <span className="text-sm font-medium text-slate-800">Permisos</span>
-                <select
-                  value={tutor.permisos}
-                  onChange={(e) =>
-                    updateTutor(tutor.id, { permisos: e.target.value as TutorPermiso })
-                  }
-                  className="mt-2 min-h-11 w-full rounded-xl2 border border-slate-300 bg-white px-4 py-2 text-base text-slate-900"
-                >
-                  {TUTOR_PERMISO_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <Input
+                label="Permisos"
+                value={tutor.permisos}
+                onChange={(e) => updateTutor(tutor.id, { permisos: e.target.value as Tutor["permisos"] })}
+              />
               <div className="sm:col-span-3 flex justify-end">
                 <Button
                   type="button"
@@ -271,10 +235,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
 
       <SectionCard title="3. Salud">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input label="Médico de cabecera" value={form.medicoCabecera} onChange={updateField("medicoCabecera")} />
+          <Input label="Medico de cabecera" value={form.medicoCabecera} onChange={updateField("medicoCabecera")} />
           <Input label="Movilidad" value={form.movilidad} onChange={updateField("movilidad")} />
           <label className="sm:col-span-2">
-            <span className="text-sm font-medium text-slate-800">Diagnósticos relevantes</span>
+            <span className="text-sm font-medium text-slate-800">Diagnosticos relevantes</span>
             <textarea
               value={form.diagnosticosRelevantes}
               onChange={updateField("diagnosticosRelevantes")}
@@ -286,7 +250,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <div className="sm:col-span-2">
             <CheckboxField
               id="necesita-acompanamiento"
-              label="Necesita acompañamiento"
+              label="Necesita acompanamiento"
               checked={form.necesitaAcompanamiento}
               onChange={(value) => {
                 setForm((prev) => ({ ...prev, necesitaAcompanamiento: value }));
@@ -295,7 +259,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
             />
           </div>
           <label className="sm:col-span-2">
-            <span className="text-sm font-medium text-slate-800">Observaciones médicas</span>
+            <span className="text-sm font-medium text-slate-800">Observaciones medicas</span>
             <textarea
               value={form.observacionesMedicas}
               onChange={updateField("observacionesMedicas")}
@@ -310,8 +274,8 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <Input label="Tipo" value={form.obraSocialTipo} onChange={updateField("obraSocialTipo")} />
           <Input label="Nombre" value={form.obraSocialNombre} onChange={updateField("obraSocialNombre")} />
           <Input label="Plan" value={form.obraSocialPlan} onChange={updateField("obraSocialPlan")} />
-          <Input label="Número de afiliado" value={form.numeroAfiliado} onChange={updateField("numeroAfiliado")} />
-          <Input label="Teléfono útil" value={form.telefonoUtil} onChange={updateField("telefonoUtil")} />
+          <Input label="Numero de afiliado" value={form.numeroAfiliado} onChange={updateField("numeroAfiliado")} />
+          <Input label="Telefono util" value={form.telefonoUtil} onChange={updateField("telefonoUtil")} />
           <Input label="Credencial adjunta" value={form.credencialAdjunta} onChange={updateField("credencialAdjunta")} />
         </div>
       </SectionCard>
@@ -376,12 +340,12 @@ export function PersonaCuidadaClient({ initial }: Props) {
                 onChange={(e) => updateContact(item.id, { nombre: e.target.value })}
               />
               <Input
-                label="Relación"
+                label="Relacion"
                 value={item.relacion}
                 onChange={(e) => updateContact(item.id, { relacion: e.target.value })}
               />
               <Input
-                label="Teléfono"
+                label="Telefono"
                 value={item.telefono}
                 onChange={(e) => updateContact(item.id, { telefono: e.target.value })}
               />
@@ -412,7 +376,7 @@ export function PersonaCuidadaClient({ initial }: Props) {
         </ListEditor>
       </SectionCard>
 
-      <SectionCard title="7. Documentación">
+      <SectionCard title="7. Documentacion">
         <ListEditor
           title="Archivos cargados"
           addLabel="Adjuntar documento"

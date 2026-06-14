@@ -17,6 +17,8 @@ const ORDER = [
   "phase4.sql",
   "phase5.sql",
   "phase6.sql",
+  "phase7.sql",
+  "phase8.sql",
 ];
 
 const banner = (file) =>

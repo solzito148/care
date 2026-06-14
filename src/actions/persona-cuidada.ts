@@ -25,6 +25,13 @@ export async function savePersonaCuidada(form: PersonaCuidada): Promise<{ ok: bo
 
   if (error) {
     console.error("savePersonaCuidada", error);
+    if (error.code === "23505") {
+      return {
+        ok: false,
+        error:
+          "Ese DNI ya pertenece a otro adulto mayor registrado. Verificá el número.",
+      };
+    }
     return { ok: false, error: error.message };
   }
 

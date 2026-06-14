@@ -6,6 +6,7 @@ import type {
   CaregiverReferencePublic,
   CaregiverSearchItem,
 } from "@/lib/cuidadores-types";
+import { tierCapabilities } from "@/lib/professional-tier";
 import type { Database } from "@/lib/supabase/types";
 
 type RecommendationRow = Database["public"]["Tables"]["caregiver_recommendations"]["Row"];
@@ -13,15 +14,17 @@ type RecommendationRow = Database["public"]["Tables"]["caregiver_recommendations
 type RecommendationStats = { count: number; average: number };
 
 /**
- * Score de ranking CARE: combina recomendacion CARE (badge), promedio de
- * recomendaciones aprobadas y cantidad de recomendaciones. Mayor es mejor.
+ * Score de ranking CARE: combina el nivel de suscripcion (Premium prioritario,
+ * luego Destacado, luego Basico al final), recomendacion CARE (badge), promedio
+ * de recomendaciones aprobadas y cantidad de recomendaciones. Mayor es mejor.
  */
 export function rankingScore(item: CaregiverSearchItem): number {
+  const tierBoost = tierCapabilities(item.tier).rankBoost;
   const careBoost = item.recomendadoCare ? 100 : 0;
   const verifiedBoost = item.referenciasVerificadas ? 10 : 0;
   const avgBoost = item.recomendacionesPromedio * 5;
   const volumeBoost = Math.min(item.recomendacionesCount, 10);
-  return careBoost + verifiedBoost + avgBoost + volumeBoost + item.calificacion;
+  return tierBoost + careBoost + verifiedBoost + avgBoost + volumeBoost + item.calificacion;
 }
 
 async function loadApprovedRecommendationStats(): Promise<Map<string, RecommendationStats>> {

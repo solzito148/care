@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   createRelationshipAction,
   decideRelationshipAction,
+  setRelationshipManagerAction,
 } from "@/actions/relaciones";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,10 +22,26 @@ const TYPE_LABELS: Record<RelationshipType, string> = {
   other: "Otro vínculo",
 };
 
+// Parentesco que se deriva cuando el Tipo es "Familiar".
+const FAMILY_RELATION_OPTIONS = [
+  "Hija/o",
+  "Hermano/a",
+  "Tío/Tía",
+  "Primo/a",
+  "Cónyuge",
+  "Concubino/a",
+  "Nieto/a",
+  "Sobrino/a",
+  "Otro",
+];
+
 type Props = {
   careRecipientId: string;
   canModerate: boolean;
+  canDelegate: boolean;
   canPropose: boolean;
+  ownerName: string;
+  ownerIsYou: boolean;
   active: RelationshipView[];
   pending: RelationshipView[];
   allowedTypes: RelationshipType[];
@@ -33,7 +50,10 @@ type Props = {
 export function RelacionesSection({
   careRecipientId,
   canModerate,
+  canDelegate,
   canPropose,
+  ownerName,
+  ownerIsYou,
   active,
   pending,
   allowedTypes,
@@ -45,6 +65,7 @@ export function RelacionesSection({
   );
 
   const [type, setType] = useState<RelationshipType>(allowedTypes[0] ?? "other");
+  const [relation, setRelation] = useState(FAMILY_RELATION_OPTIONS[0]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -62,6 +83,18 @@ export function RelacionesSection({
     });
   };
 
+  const delegate = (relationshipId: string, isManager: boolean) => {
+    setMessage(null);
+    startTransition(async () => {
+      const res = await setRelationshipManagerAction({ relationshipId, isManager });
+      if (res.ok) {
+        router.refresh();
+      } else {
+        setMessage({ ok: false, text: res.error ?? "No se pudo actualizar la delegación." });
+      }
+    });
+  };
+
   const submit = () => {
     setMessage(null);
     startTransition(async () => {
@@ -69,6 +102,7 @@ export function RelacionesSection({
         careRecipientId,
         relationshipType: type,
         subjectName: name,
+        subjectRelation: type === "family" ? relation : "",
         subjectPhone: phone,
         subjectEmail: email,
         notes,
@@ -135,6 +169,7 @@ export function RelacionesSection({
                   <p className="font-semibold text-slate-900">{rel.subjectName}</p>
                   <p className="text-sm text-slate-600">
                     {TYPE_LABELS[rel.type]}
+                    {rel.subjectRelation ? ` · ${rel.subjectRelation}` : ""}
                     {rel.subjectPhone ? ` · ${rel.subjectPhone}` : ""}
                   </p>
                 </div>
@@ -165,40 +200,67 @@ export function RelacionesSection({
 
       <section className="space-y-3">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Vínculos activos
+          Red de cuidado
         </h3>
-        {active.length === 0 ? (
-          <p className="text-sm text-slate-500">Todavía no hay vínculos activos.</p>
-        ) : (
-          <ul className="space-y-2">
-            {active.map((rel) => (
-              <li
-                key={rel.id}
-                className="flex flex-col gap-2 rounded-xl2 border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="font-semibold text-slate-900">{rel.subjectName}</p>
-                  <p className="text-sm text-slate-600">
-                    {TYPE_LABELS[rel.type]}
-                    {rel.subjectPhone ? ` · ${rel.subjectPhone}` : ""}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge tone="success">Activo</Badge>
-                  {canModerate ? (
-                    <Button
-                      variant="ghost"
-                      onClick={() => decide(rel.id, "revoked")}
-                      disabled={isPending}
-                    >
-                      Dar de baja
-                    </Button>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul className="space-y-2">
+          {ownerName ? (
+            <li className="flex flex-col gap-2 rounded-xl2 border border-care-200 bg-care-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold text-slate-900">
+                  {ownerName}
+                  {ownerIsYou ? " (vos)" : ""}
+                </p>
+                <p className="text-sm text-slate-600">Tutor legal · administra la red</p>
+              </div>
+              <Badge tone="info">Tutor legal</Badge>
+            </li>
+          ) : null}
+
+          {active.length === 0 ? (
+            <li className="text-sm text-slate-500">Todavía no hay otros vínculos activos.</li>
+          ) : (
+            active.map((rel) => {
+              const isCaregiver = rel.type === "caregiver";
+              return (
+                <li
+                  key={rel.id}
+                  className="flex flex-col gap-2 rounded-xl2 border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="font-semibold text-slate-900">{rel.subjectName}</p>
+                    <p className="text-sm text-slate-600">
+                      {TYPE_LABELS[rel.type]}
+                      {rel.subjectRelation ? ` · ${rel.subjectRelation}` : ""}
+                      {rel.subjectPhone ? ` · ${rel.subjectPhone}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {rel.isManager ? <Badge tone="info">Administra</Badge> : null}
+                    <Badge tone="success">Activo</Badge>
+                    {canDelegate && isCaregiver ? (
+                      <Button
+                        variant="ghost"
+                        onClick={() => delegate(rel.id, !rel.isManager)}
+                        disabled={isPending}
+                      >
+                        {rel.isManager ? "Quitar administración" : "Delegar administración"}
+                      </Button>
+                    ) : null}
+                    {canModerate ? (
+                      <Button
+                        variant="ghost"
+                        onClick={() => decide(rel.id, "revoked")}
+                        disabled={isPending}
+                      >
+                        Dar de baja
+                      </Button>
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })
+          )}
+        </ul>
       </section>
 
       {canPropose ? (
@@ -228,6 +290,22 @@ export function RelacionesSection({
                 ))}
               </select>
             </label>
+            {type === "family" ? (
+              <label className="text-sm font-medium text-slate-700">
+                Parentesco
+                <select
+                  value={relation}
+                  onChange={(event) => setRelation(event.target.value)}
+                  className={inputClass}
+                >
+                  {FAMILY_RELATION_OPTIONS.map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="text-sm font-medium text-slate-700">
               Nombre
               <input

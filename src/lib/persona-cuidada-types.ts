@@ -1,8 +1,16 @@
+export type TutorPermiso =
+  | "administrador"
+  | "edicion_total"
+  | "salud"
+  | "agenda"
+  | "legales"
+  | "solo_lectura";
+
 export type Tutor = {
   id: string;
   nombre: string;
   rol: "principal" | "secundario";
-  permisos: string;
+  permisos: TutorPermiso;
 };
 
 export type Caregiver = {

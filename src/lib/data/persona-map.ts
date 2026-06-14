@@ -6,6 +6,7 @@ type Meta = Record<string, Json | undefined>;
 export function careRecipientToPersona(row: {
   full_name: string;
   preferred_name: string | null;
+  dni?: string | null;
   birth_date: string | null;
   emergency_notes: string | null;
   metadata: Json;
@@ -19,7 +20,8 @@ export function careRecipientToPersona(row: {
   return {
     nombre: typeof meta.nombre === "string" ? meta.nombre : defaultNombre,
     apellido: typeof meta.apellido === "string" ? meta.apellido : defaultApellido,
-    dni: typeof meta.dni === "string" ? meta.dni : "",
+    // La columna `dni` es la fuente de verdad (clave univoca); metadata es fallback legacy.
+    dni: row.dni?.trim() || (typeof meta.dni === "string" ? meta.dni : ""),
     fechaNacimiento: row.birth_date ?? (typeof meta.fechaNacimiento === "string" ? meta.fechaNacimiento : ""),
     domicilio: typeof meta.domicilio === "string" ? meta.domicilio : "",
     localidad: typeof meta.localidad === "string" ? meta.localidad : "",
@@ -51,6 +53,7 @@ export function careRecipientToPersona(row: {
 export function personaToCareRecipientUpdate(form: PersonaCuidada): {
   full_name: string;
   preferred_name: string | null;
+  dni: string | null;
   birth_date: string | null;
   emergency_notes: string | null;
   metadata: Json;
@@ -88,6 +91,7 @@ export function personaToCareRecipientUpdate(form: PersonaCuidada): {
   return {
     full_name,
     preferred_name: form.nombre || null,
+    dni: form.dni?.trim() ? form.dni.trim() : null,
     birth_date: form.fechaNacimiento || null,
     emergency_notes: form.observacionesGenerales || null,
     metadata: metadata as Json,

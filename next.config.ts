@@ -16,7 +16,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' ${supabaseConnect} https://api.mercadopago.com`.trim(),
+  `connect-src 'self' ${supabaseConnect} https://api.mercadopago.com https://apis.datos.gob.ar`.trim(),
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self' https://*.mercadopago.com https://*.mercadopago.com.ar",

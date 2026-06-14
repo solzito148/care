@@ -21,6 +21,7 @@ export const createRelationshipSchema = z
     relationshipType: relationshipTypeSchema,
     subjectUserId: z.union([z.literal(""), uuidSchema]).default(""),
     subjectName: z.string().trim().max(120).default(""),
+    subjectRelation: z.string().trim().max(40).default(""),
     subjectPhone: phoneSchema.default(""),
     subjectEmail: emailOptionalSchema.default(""),
     notes: mediumText(1000).default(""),
@@ -42,4 +43,13 @@ export const relationshipDecisionSchema = z.object({
 
 export type RelationshipDecisionSchema = z.infer<
   typeof relationshipDecisionSchema
+>;
+
+export const relationshipManagerSchema = z.object({
+  relationshipId: uuidSchema,
+  isManager: z.boolean(),
+});
+
+export type RelationshipManagerSchema = z.infer<
+  typeof relationshipManagerSchema
 >;

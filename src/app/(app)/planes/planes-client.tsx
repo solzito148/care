@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { cancelSubscriptionAction, selectPlanAction } from "@/actions/planes";
@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { SubscriptionRow } from "@/lib/data/planes";
-import type { PlanItem } from "@/lib/monetizacion-types";
+import type { MonetizationLine, PlanItem } from "@/lib/monetizacion-types";
+import { LINE_LABELS, LINE_ORDER } from "@/lib/plans";
 
 const stateTone = {
   activa: "success",
@@ -29,6 +30,14 @@ export function PlanesClient({ plans, subscription, paymentsEnabled }: Props) {
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error">("success");
+
+  const groups = useMemo(() => {
+    return LINE_ORDER.map((line) => ({
+      line,
+      label: LINE_LABELS[line],
+      items: plans.filter((plan) => plan.linea === line),
+    })).filter((group) => group.items.length > 0);
+  }, [plans]);
 
   const onSelect = (plan: PlanItem) => {
     startTransition(async () => {
@@ -102,45 +111,97 @@ export function PlanesClient({ plans, subscription, paymentsEnabled }: Props) {
 
       <FormMessage message={message} type={messageType} />
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {plans.map((plan) => {
-          const isCurrent =
-            subscription !== null &&
-            subscription.plan_id === plan.id &&
-            subscription.status !== "cancelada";
-          return (
-            <Card key={plan.id} className="p-6">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <h2 className="text-lg font-semibold text-slate-900">{plan.nombre}</h2>
-                <div className="flex gap-1">
-                  {plan.destacado ? <Badge tone="success">Destacado</Badge> : null}
-                  {isCurrent ? <Badge tone="info">Plan actual</Badge> : null}
-                </div>
-              </div>
-              <p className="mt-2 text-sm text-slate-700">
-                <strong>Cliente:</strong> {plan.cliente}
-              </p>
-              <p className="mt-1 text-sm text-slate-700">
-                <strong>Modalidad:</strong> {plan.modalidad}
-              </p>
-              <p className="mt-1 text-sm text-slate-700">
-                <strong>Precio mensual:</strong> {plan.precioMensual}
-              </p>
-              <p className="mt-1 text-sm text-slate-700">{plan.descripcion}</p>
-              <div className="mt-4">
-                <Button
-                  className="w-full"
-                  variant="secondary"
-                  disabled={pending || isCurrent}
-                  onClick={() => onSelect(plan)}
-                >
-                  {isCurrent ? "Plan actual" : "Seleccionar plan"}
-                </Button>
-              </div>
-            </Card>
-          );
-        })}
-      </section>
+      {groups.map((group) => (
+        <section key={group.line} className="space-y-4">
+          <VerticalHeading line={group.line} label={group.label} />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {group.items.map((plan) => {
+              const isCurrent =
+                subscription !== null &&
+                subscription.plan_id === plan.id &&
+                subscription.status !== "cancelada";
+              return (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  isCurrent={isCurrent}
+                  disabled={pending}
+                  onSelect={() => onSelect(plan)}
+                />
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </>
+  );
+}
+
+function VerticalHeading({ line, label }: { line: MonetizationLine; label: string }) {
+  const subtitles: Record<MonetizationLine, string> = {
+    familias: "Para tutores y familias que organizan el cuidado.",
+    profesionales:
+      "Para cuidadores, médicos, enfermeros, terapeutas, abogados y contadores.",
+    empresas: "Para farmacias, ortopedias, residencias y empresas de servicios.",
+    "intercambio-donaciones": "Beneficio transversal, siempre gratuito.",
+  };
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-slate-900">{label}</h2>
+      <p className="text-sm text-slate-600">{subtitles[line]}</p>
+    </div>
+  );
+}
+
+function PlanCard({
+  plan,
+  isCurrent,
+  disabled,
+  onSelect,
+}: {
+  plan: PlanItem;
+  isCurrent: boolean;
+  disabled: boolean;
+  onSelect: () => void;
+}) {
+  const isFree = plan.precioMensual === "$0";
+  return (
+    <Card className={`flex flex-col p-6 ${plan.destacado ? "ring-2 ring-care-300" : ""}`}>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <h3 className="text-lg font-semibold text-slate-900">{plan.nombre}</h3>
+        <div className="flex gap-1">
+          {plan.destacado ? <Badge tone="success">Recomendado</Badge> : null}
+          {isCurrent ? <Badge tone="info">Plan actual</Badge> : null}
+        </div>
+      </div>
+
+      <p className="mt-2">
+        <span className="text-2xl font-bold text-slate-900">{plan.precioMensual}</span>
+        {!isFree ? <span className="text-sm text-slate-600"> / mes</span> : null}
+      </p>
+      <p className="mt-2 text-sm text-slate-700">{plan.descripcion}</p>
+
+      <ul className="mt-4 space-y-2 text-sm text-slate-700">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex gap-2">
+            <span aria-hidden className="mt-0.5 font-bold text-care-600">
+              ✓
+            </span>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 pt-2">
+        <Button
+          className="w-full"
+          variant={plan.destacado ? "primary" : "secondary"}
+          disabled={disabled || isCurrent}
+          onClick={onSelect}
+        >
+          {isCurrent ? "Plan actual" : isFree ? "Activar gratis" : "Seleccionar plan"}
+        </Button>
+      </div>
+    </Card>
   );
 }

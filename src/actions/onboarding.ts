@@ -15,6 +15,7 @@ export type OnboardingInput = {
   phone: string;
   // tutor / familiar
   recipientName: string;
+  recipientDni: string;
   recipientPreferredName: string;
   recipientBirthDate: string;
   recipientEmergencyNotes: string;
@@ -22,6 +23,13 @@ export type OnboardingInput = {
   locality: string;
   experienceYears: string;
 };
+
+// Roles que se vinculan a un adulto mayor existente cruzando por DNI.
+const LINKS_BY_DNI = new Set<AccountType>([
+  "cuidador",
+  "profesional-salud",
+  "profesional-legal-administrativo",
+]);
 
 function dateOrNull(value: string): string | null {
   return /^\d{4}-\d{2}-\d{2}$/.test(value.trim()) ? value.trim() : null;
@@ -67,6 +75,10 @@ export async function completeOnboardingAction(
     return { ok: false, error: "El tipo de cuenta no coincide con tu registro." };
   }
 
+  if (profile.account_type === "tutor-familiar-encargado" && !input.recipientDni) {
+    return { ok: false, error: "Ingresá el DNI de la persona cuidada." };
+  }
+
   const { error: profileError } = await supabase
     .from("profiles")
     .update({ full_name: input.fullName, phone: input.phone || null })
@@ -97,11 +109,39 @@ export async function completeOnboardingAction(
         .update({
           full_name: input.recipientName,
           preferred_name: input.recipientPreferredName || null,
+          dni: input.recipientDni || null,
           birth_date: dateOrNull(input.recipientBirthDate),
           emergency_notes: input.recipientEmergencyNotes || null,
         })
         .eq("id", context.careRecipientId);
-      if (error) console.error("completeOnboarding: recipient", error);
+      if (error) {
+        console.error("completeOnboarding: recipient", error);
+        if (error.code === "23505") {
+          return {
+            ok: false,
+            error:
+              "Ese DNI ya está registrado por otro tutor. Si sos tutor secundario, pedile al tutor principal que te agregue al adulto mayor.",
+          };
+        }
+      }
+    }
+  }
+
+  // Cuidador / profesional / legal: se vinculan al adulto mayor cruzando por DNI.
+  // Si el DNI existe queda pendiente de aprobación del tutor; si no, avisa.
+  if (LINKS_BY_DNI.has(profile.account_type as AccountType) && input.recipientDni) {
+    const { data: linkData, error: linkError } = await supabase.rpc(
+      "link_self_to_recipient_by_dni",
+      { p_dni: input.recipientDni, p_name: input.recipientName || null },
+    );
+    if (linkError) {
+      console.error("completeOnboarding: link by dni", linkError);
+    } else if ((linkData as { status?: string } | null)?.status === "not_found") {
+      return {
+        ok: false,
+        error:
+          "No encontramos un adulto mayor con ese DNI. Verificá el número o pedile al tutor que lo registre. Podés dejarlo vacío y vincularte más tarde.",
+      };
     }
   }
 

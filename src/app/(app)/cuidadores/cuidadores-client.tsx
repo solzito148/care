@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { CaregiverSearchItem } from "@/lib/cuidadores-types";
+import { tierCapabilities, telLink, whatsappLink } from "@/lib/professional-tier";
 
 const modalityFilters = [
   "Con retiro",
@@ -167,50 +168,91 @@ export function CuidadoresClient({ caregivers }: Props) {
       </Card>
 
       <section className="grid gap-4 md:grid-cols-2">
-        {filtered.map((item) => (
-          <Card key={item.id} className="p-6">
-            <div className="flex items-start gap-3">
-              <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-care-100 text-lg font-bold text-care-800">
-                {item.foto}
+        {filtered.map((item) => {
+          const caps = tierCapabilities(item.tier);
+          const directWhatsapp = caps.showDirectContact ? item.whatsappContacto : undefined;
+          const directPhone = caps.showDirectContact ? item.telefonoContacto : undefined;
+          const hasDirectContact = Boolean(directWhatsapp || directPhone);
+          return (
+            <Card key={item.id} className="p-6">
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-care-100 text-lg font-bold text-care-800">
+                  {item.foto}
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-xl font-semibold text-slate-900">{item.nombre}</h3>
+                    {caps.isVerified ? <VerifiedBadge /> : null}
+                  </div>
+                  <p className="text-sm text-slate-600">
+                    {item.localidad} - {item.zonasTrabajo.join(", ")}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-800">Calificación: {item.calificacion.toFixed(1)}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-slate-900">{item.nombre}</h3>
-                <p className="text-sm text-slate-600">
-                  {item.localidad} - {item.zonasTrabajo.join(", ")}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">Calificación: {item.calificacion.toFixed(1)}</p>
+
+              <p className="mt-3 text-sm text-slate-700">
+                <strong>Modalidad:</strong> {item.modalidades.join(", ")}
+              </p>
+              <p className="mt-1 text-sm text-slate-700">
+                <strong>Disponibilidad:</strong> {item.disponibilidadEspecial.join(", ")}
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {item.perfilCompleto ? <Badge tone="success">Perfil completo</Badge> : <Badge tone="warning">Perfil incompleto</Badge>}
+                {item.referenciasCargadas ? <Badge tone="info">Referencias cargadas</Badge> : null}
+                {item.referenciasVerificadas ? <Badge tone="success">Referencias verificadas</Badge> : null}
+                {item.recomendadoCare ? <Badge tone="success">Recomendado CARE</Badge> : null}
+                {item.datosActualizados ? <Badge tone="info">Datos actualizados</Badge> : null}
+                {item.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualización</Badge> : null}
+                {item.estadoActualizacionPerfil === "datos-vencidos" ? <Badge tone="danger">Datos vencidos</Badge> : null}
+                {item.estadoActualizacionPerfil === "perfil-pausado" ? <Badge tone="danger">Perfil pausado</Badge> : null}
+                {item.altaDisponibilidad ? <Badge tone="warning">Alta disponibilidad</Badge> : null}
               </div>
-            </div>
 
-            <p className="mt-3 text-sm text-slate-700">
-              <strong>Modalidad:</strong> {item.modalidades.join(", ")}
-            </p>
-            <p className="mt-1 text-sm text-slate-700">
-              <strong>Disponibilidad:</strong> {item.disponibilidadEspecial.join(", ")}
-            </p>
-
-            <div className="mt-3 flex flex-wrap gap-2">
-              {item.perfilCompleto ? <Badge tone="success">Perfil completo</Badge> : <Badge tone="warning">Perfil incompleto</Badge>}
-              {item.referenciasCargadas ? <Badge tone="info">Referencias cargadas</Badge> : null}
-              {item.referenciasVerificadas ? <Badge tone="success">Referencias verificadas</Badge> : null}
-              {item.recomendadoCare ? <Badge tone="success">Recomendado CARE</Badge> : null}
-              {item.datosActualizados ? <Badge tone="info">Datos actualizados</Badge> : null}
-              {item.estadoActualizacionPerfil === "pendiente-actualizacion" ? <Badge tone="warning">Pendiente de actualización</Badge> : null}
-              {item.estadoActualizacionPerfil === "datos-vencidos" ? <Badge tone="danger">Datos vencidos</Badge> : null}
-              {item.estadoActualizacionPerfil === "perfil-pausado" ? <Badge tone="danger">Perfil pausado</Badge> : null}
-              {item.altaDisponibilidad ? <Badge tone="warning">Alta disponibilidad</Badge> : null}
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button href={`/cuidadores/${item.id}`} variant="secondary">
-                Ver perfil
-              </Button>
-              <Button href={`/cuidadores/${item.id}`}>Contactar</Button>
-            </div>
-          </Card>
-        ))}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button href={`/cuidadores/${item.id}`} variant="secondary">
+                  Ver perfil
+                </Button>
+                {hasDirectContact ? (
+                  <>
+                    {directWhatsapp ? (
+                      <a
+                        href={whatsappLink(directWhatsapp)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl2 bg-care-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-care-800"
+                      >
+                        WhatsApp
+                      </a>
+                    ) : null}
+                    {directPhone ? (
+                      <a
+                        href={telLink(directPhone)}
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                      >
+                        Llamar
+                      </a>
+                    ) : null}
+                  </>
+                ) : (
+                  <Button href={`/cuidadores/${item.id}`}>Contactar por Chat de CARE</Button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </section>
       {filtered.length === 0 ? <Card className="p-6 text-sm text-slate-600">No hay cuidadores con esos filtros.</Card> : null}
     </section>
+  );
+}
+
+/** Sello dorado "Perfil Verificado" (planes Destacado y Premium). */
+export function VerifiedBadge() {
+  return (
+    <span className="inline-flex min-h-7 items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-300">
+      <span aria-hidden>★</span> Perfil Verificado
+    </span>
   );
 }

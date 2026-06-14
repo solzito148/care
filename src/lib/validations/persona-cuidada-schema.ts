@@ -1,16 +1,20 @@
 import { z } from "zod";
 
-import { longText, phoneSchema, shortText } from "@/lib/validations/common-schema";
+import { dniOptionalSchema, longText, phoneSchema, shortText } from "@/lib/validations/common-schema";
 
 const nestedIdName = z.object({
   id: z.string().trim().max(40).default(""),
   nombre: shortText(120).default(""),
 });
 
+export const tutorPermisoSchema = z
+  .enum(["administrador", "edicion_total", "salud", "agenda", "legales", "solo_lectura"])
+  .catch("solo_lectura");
+
 export const savePersonaCuidadaSchema = z.object({
   nombre: shortText(80).default(""),
   apellido: shortText(80).default(""),
-  dni: shortText(20).default(""),
+  dni: dniOptionalSchema.default(""),
   fechaNacimiento: z.string().trim().max(10).default(""),
   domicilio: shortText(200).default(""),
   localidad: shortText(120).default(""),
@@ -30,7 +34,15 @@ export const savePersonaCuidadaSchema = z.object({
   numeroAfiliado: shortText(40).default(""),
   telefonoUtil: phoneSchema.default(""),
   credencialAdjunta: shortText(200).default(""),
-  tutores: z.array(nestedIdName.extend({ rol: z.string().max(40), permisos: shortText(200) })).max(20).default([]),
+  tutores: z
+    .array(
+      nestedIdName.extend({
+        rol: z.enum(["principal", "secundario"]).catch("secundario"),
+        permisos: tutorPermisoSchema.default("solo_lectura"),
+      }),
+    )
+    .max(20)
+    .default([]),
   cuidadores: z.array(nestedIdName.extend({ rol: shortText(80), horarios: shortText(120), contacto: phoneSchema })).max(20).default([]),
   contactosEmergencia: z
     .array(
