@@ -14,13 +14,17 @@ type CardProps = {
   className?: string;
   /** Densidad de padding estandar: sm=16px, md=24px (default), lg=32px. */
   size?: CardSize;
+  /** Activa elevacion al pasar el cursor (para tarjetas clickeables). */
+  interactive?: boolean;
 };
 
-export function Card({ children, className, size = "md" }: CardProps) {
+export function Card({ children, className, size = "md", interactive = false }: CardProps) {
   return (
     <article
       className={cn(
-        "rounded-2xl border border-slate-200 bg-white shadow-soft",
+        "rounded-2xl border border-slate-200 bg-white shadow-soft transition-shadow duration-200",
+        interactive &&
+          "hover-lift cursor-pointer hover:border-care-200 motion-reduce:transition-none",
         sizePadding[size],
         className
       )}

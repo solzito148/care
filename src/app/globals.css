@@ -75,6 +75,136 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Motion foundation: subtle, professional movement used across the app.       */
+/* All motion is automatically disabled under prefers-reduced-motion below.    */
+/* -------------------------------------------------------------------------- */
+
+@keyframes care-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes care-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes care-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes care-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: care-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: care-fade-in 0.45s ease both;
+}
+
+.animate-scale-in {
+  animation: care-scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-up {
+  animation: care-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered entrance: direct children fade-up in sequence. */
+[data-stagger] > * {
+  animation: care-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-stagger] > *:nth-child(1) {
+  animation-delay: 0.03s;
+}
+[data-stagger] > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+[data-stagger] > *:nth-child(3) {
+  animation-delay: 0.13s;
+}
+[data-stagger] > *:nth-child(4) {
+  animation-delay: 0.18s;
+}
+[data-stagger] > *:nth-child(5) {
+  animation-delay: 0.23s;
+}
+[data-stagger] > *:nth-child(6) {
+  animation-delay: 0.28s;
+}
+[data-stagger] > *:nth-child(7) {
+  animation-delay: 0.33s;
+}
+[data-stagger] > *:nth-child(8) {
+  animation-delay: 0.38s;
+}
+[data-stagger] > *:nth-child(n + 9) {
+  animation-delay: 0.42s;
+}
+
+/* Reusable hover lift for interactive surfaces. */
+.hover-lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-stagger] > *,
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-slide-up {
+    animation: none !important;
+  }
+  .hover-lift:hover {
+    transform: none !important;
   }
 }
 

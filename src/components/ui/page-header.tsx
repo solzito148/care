@@ -22,11 +22,11 @@ export function PageHeader({ title, description, actions, className }: PageHeade
       )}
     >
       <div className="min-w-0">
-        <h1 className="text-2xl font-bold tracking-tight text-care-text sm:text-3xl">
+        <h1 className="text-balance text-2xl font-bold tracking-tight text-care-text sm:text-3xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 max-w-2xl text-base text-care-muted">{description}</p>
+          <p className="mt-2 max-w-2xl text-pretty text-base text-care-muted">{description}</p>
         ) : null}
       </div>
       {actions ? (

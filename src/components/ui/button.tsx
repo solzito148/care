@@ -39,7 +39,7 @@ export function Button({
   onClick,
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center rounded-xl2 font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex items-center justify-center rounded-xl2 font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none motion-reduce:transform-none motion-reduce:transition-none",
     variantStyles[variant],
     sizeStyles[size],
     className

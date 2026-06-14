@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useFilteredNavItems } from "@/hooks/useCurrentUser";
+import { cn } from "@/lib/cn";
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -21,13 +22,24 @@ export function SidebarNav() {
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
+              className={cn(
+                "group relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-200",
                 isActive
                   ? "bg-care-100 text-care-700"
                   : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              }`}
+              )}
             >
-              <Icon className="h-5 w-5 shrink-0" aria-hidden />
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-care-700 transition-all duration-300 ease-out",
+                  isActive ? "opacity-100" : "h-0 opacity-0"
+                )}
+              />
+              <Icon
+                className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110 motion-reduce:transform-none"
+                aria-hidden
+              />
               {item.label}
             </Link>
           );
