@@ -1,0 +1,15 @@
+import { ReactNode } from "react";
+import { cn } from "@/lib/cn";
+
+type CardProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+export function Card({ children, className }: CardProps) {
+  return (
+    <article className={cn("rounded-2xl border border-slate-200 bg-white p-5 shadow-soft", className)}>
+      {children}
+    </article>
+  );
+}
