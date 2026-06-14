@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { AR_PROVINCIAS } from "@/lib/ar-provincias";
 import type { AgendaServerItem } from "@/lib/data/agenda";
@@ -56,6 +57,16 @@ export function AgendaClient({ items }: Props) {
     [items]
   );
 
+  const groupedByDate = useMemo<[string, FormatItem[]][]>(() => {
+    const map = new Map<string, FormatItem[]>();
+    for (const ev of formatted) {
+      const arr = map.get(ev.fechaLabel) ?? [];
+      arr.push(ev);
+      map.set(ev.fechaLabel, arr);
+    }
+    return Array.from(map.entries());
+  }, [formatted]);
+
   const onCreate = (e: FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
@@ -98,40 +109,51 @@ export function AgendaClient({ items }: Props) {
       />
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Próximos turnos</h2>
-        <div className="mt-4 space-y-3">
-          {formatted.length === 0 ? (
+        <SectionHeading>Próximos turnos</SectionHeading>
+        {formatted.length === 0 ? (
+          <div className="mt-4">
             <EmptyState
               title="No hay turnos cargados"
               description="Agregá uno con el formulario de nuevo turno médico."
             />
-          ) : (
-            formatted.map((ev) => (
-              <article key={ev.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-lg font-semibold text-slate-900">{ev.titulo}</p>
-                <p className="text-sm text-slate-700">
-                  {ev.fechaLabel} {ev.horaLabel}
-                  {ev.lugar ? ` — ${ev.lugar}` : ""}
-                </p>
-                {ev.direccion ? <p className="mt-1 text-sm text-slate-600">{ev.direccion}</p> : null}
-                {ev.localidad || ev.provincia ? (
-                  <p className="text-sm text-slate-600">
-                    {[ev.localidad, ev.provincia].filter(Boolean).join(", ")}
-                  </p>
-                ) : null}
-                {ev.responsable ? <p className="mt-1 text-sm text-slate-600">Con: {ev.responsable}</p> : null}
-                {ev.notas ? <p className="mt-2 text-sm text-slate-700">{ev.notas}</p> : null}
-                <div className="mt-2">
-                  <StatusBadge status={ev.estado} />
+          </div>
+        ) : (
+          <div className="mt-4 space-y-6">
+            {groupedByDate.map(([fecha, eventos]) => (
+              <div key={fecha}>
+                <h3 className="text-sm font-bold uppercase tracking-wide text-care-700">
+                  {fecha}
+                </h3>
+                <div className="mt-2 space-y-3">
+                  {eventos.map((ev) => (
+                    <article key={ev.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-lg font-semibold text-slate-900">{ev.titulo}</p>
+                        <span className="shrink-0 text-sm font-semibold text-care-800">{ev.horaLabel}</span>
+                      </div>
+                      {ev.lugar ? <p className="text-sm text-slate-700">{ev.lugar}</p> : null}
+                      {ev.direccion ? <p className="mt-1 text-sm text-slate-600">{ev.direccion}</p> : null}
+                      {ev.localidad || ev.provincia ? (
+                        <p className="text-sm text-slate-600">
+                          {[ev.localidad, ev.provincia].filter(Boolean).join(", ")}
+                        </p>
+                      ) : null}
+                      {ev.responsable ? <p className="mt-1 text-sm text-slate-600">Con: {ev.responsable}</p> : null}
+                      {ev.notas ? <p className="mt-2 text-sm text-slate-700">{ev.notas}</p> : null}
+                      <div className="mt-2">
+                        <StatusBadge status={ev.estado} />
+                      </div>
+                    </article>
+                  ))}
                 </div>
-              </article>
-            ))
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Nuevo turno médico</h2>
+        <SectionHeading>Nuevo turno médico</SectionHeading>
         <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={onCreate}>
           <Input label="Título" className="sm:col-span-2" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
           <Input label="Profesional / institución" value={profesional} onChange={(e) => setProfesional(e.target.value)} />

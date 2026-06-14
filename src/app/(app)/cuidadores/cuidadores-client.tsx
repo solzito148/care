@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { cn } from "@/lib/cn";
 import type { CaregiverSearchItem } from "@/lib/cuidadores-types";
 import { tierCapabilities, telLink, whatsappLink } from "@/lib/professional-tier";
 
@@ -47,6 +49,16 @@ export function CuidadoresClient({ caregivers }: Props) {
     recomendadoCare: false,
     datosActualizados: false,
   });
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const activeFilterCount =
+    (zona ? 1 : 0) +
+    (localidad ? 1 : 0) +
+    (Number(minCalificacion) > 0 ? 1 : 0) +
+    selectedModalities.length +
+    selectedAvailability.length +
+    selectedTasks.length +
+    Object.values(flags).filter(Boolean).length;
 
   const filtered = useMemo(() => {
     return caregivers.filter((item) => {
@@ -89,7 +101,24 @@ export function CuidadoresClient({ caregivers }: Props) {
       />
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Filtros</h2>
+        <div className="flex items-center justify-between gap-2">
+          <SectionHeading>Filtros</SectionHeading>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            aria-controls="filtros-panel"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-300 px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 lg:hidden"
+          >
+            {filtersOpen ? "Ocultar filtros" : "Mostrar filtros"}
+            {activeFilterCount > 0 ? (
+              <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-care-600 px-1.5 text-xs font-bold text-white">
+                {activeFilterCount}
+              </span>
+            ) : null}
+          </button>
+        </div>
+        <div id="filtros-panel" className={cn(!filtersOpen && "hidden lg:block")}>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <Input label="Zona de cobertura" value={zona} onChange={(e) => setZona(e.target.value)} />
           <Input label="Localidad/barrio" value={localidad} onChange={(e) => setLocalidad(e.target.value)} />
@@ -163,6 +192,7 @@ export function CuidadoresClient({ caregivers }: Props) {
               <CheckboxField id="f-upd" label="Datos actualizados" checked={flags.datosActualizados} onChange={(v) => setFlags((p) => ({ ...p, datosActualizados: v }))} />
             </div>
           </div>
+        </div>
         </div>
       </Card>
 

@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/cn";
 import { ActiveMedication, DailyMedication, MedicationHistoryItem, MedicationState } from "@/lib/medicacion-types";
 
 const stateTone: Record<MedicationState, "neutral" | "info" | "success" | "warning" | "danger"> = {
@@ -61,6 +62,13 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
   const [form, setForm] = useState<ActiveMedication>(initialForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState("");
+  const [medsTab, setMedsTab] = useState<"hoy" | "activos" | "historial">("hoy");
+
+  const medsTabs = [
+    { id: "hoy" as const, label: "Hoy", count: medicamentosDelDia.length },
+    { id: "activos" as const, label: "Activos", count: medicamentosActivos.length },
+    { id: "historial" as const, label: "Historial", count: historial.length },
+  ];
 
   const tituloFormulario = editingId ? "Editar medicamento" : "Agregar medicamento";
 
@@ -131,7 +139,36 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
         }
       />
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <div role="tablist" aria-label="Vistas de medicación" className="flex gap-1 rounded-xl bg-slate-100 p-1">
+        {medsTabs.map((tab) => {
+          const active = medsTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setMedsTab(tab.id)}
+              className={cn(
+                "inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition",
+                active ? "bg-white text-care-800 shadow-sm" : "text-slate-600 hover:text-slate-900"
+              )}
+            >
+              {tab.label}
+              <span
+                className={cn(
+                  "inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-bold",
+                  active ? "bg-care-100 text-care-700" : "bg-slate-200 text-slate-600"
+                )}
+              >
+                {tab.count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {medsTab === "hoy" ? (
         <Card className="p-6">
           <SectionHeading>Medicamentos del día</SectionHeading>
           <div className="mt-4 space-y-3">
@@ -155,7 +192,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             )}
           </div>
         </Card>
+      ) : null}
 
+      {medsTab === "activos" ? (
         <Card className="p-6">
           <SectionHeading>Medicamentos activos</SectionHeading>
           <div className="mt-4 space-y-3">
@@ -197,9 +236,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             )}
           </div>
         </Card>
-      </section>
+      ) : null}
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      {medsTab === "historial" ? (
         <Card className="p-6">
           <SectionHeading>Historial de cumplimiento</SectionHeading>
           <div className="mt-4 space-y-3">
@@ -223,9 +262,10 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             )}
           </div>
         </Card>
+      ) : null}
 
-        <Card className="p-6">
-          <SectionHeading>{tituloFormulario}</SectionHeading>
+      <Card className="p-6">
+        <SectionHeading>{tituloFormulario}</SectionHeading>
           <p className="mt-1 text-sm text-slate-600">
             Configura recordatorios y alertas al tutor cuando no se confirme la toma.
           </p>
@@ -295,8 +335,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
             </div>
           </form>
           {saveMessage ? <p className="mt-3 text-sm font-semibold text-success-700">{saveMessage}</p> : null}
-        </Card>
-      </section>
+      </Card>
     </section>
   );
 }

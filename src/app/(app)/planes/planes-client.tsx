@@ -166,7 +166,15 @@ function PlanCard({
 }) {
   const isFree = plan.precioMensual === "$0";
   return (
-    <Card className={`flex flex-col p-6 ${plan.destacado ? "ring-2 ring-care-300" : ""}`}>
+    <Card
+      className={`flex flex-col p-6 ${
+        isCurrent
+          ? "ring-2 ring-care-700"
+          : plan.destacado
+            ? "ring-2 ring-care-300"
+            : ""
+      }`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <h3 className="text-lg font-semibold text-slate-900">{plan.nombre}</h3>
         <div className="flex gap-1">
