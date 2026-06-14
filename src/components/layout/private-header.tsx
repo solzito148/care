@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { Shield, UserRound } from "lucide-react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { Check, ChevronDown, Shield, UserRound } from "lucide-react";
 
 import { signOutAction } from "@/app/actions/auth";
 import { setActiveCareRecipientAction } from "@/actions/care-recipients";
@@ -47,21 +47,11 @@ export function PrivateHeader({ userDisplayName, userEmail, careRecipients }: Pr
             <span className="hidden text-lg font-semibold text-slate-900 sm:block">CARE</span>
           </Link>
           {careRecipients.recipients.length > 1 ? (
-            <label className="flex items-center gap-1 text-xs font-semibold text-care-800">
-              <span className="hidden sm:inline">Persona cuidada:</span>
-              <select
-                value={careRecipients.activeId}
-                onChange={(event) => onSelectRecipient(event.target.value)}
-                className="rounded-full bg-care-50 px-2 py-1 text-xs font-semibold text-care-800"
-                aria-label="Persona cuidada activa"
-              >
-                {careRecipients.recipients.map((recipient) => (
-                  <option key={recipient.id} value={recipient.id}>
-                    {recipient.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <CareRecipientPicker
+              recipients={careRecipients.recipients}
+              activeId={careRecipients.activeId}
+              onSelect={onSelectRecipient}
+            />
           ) : careRecipients.recipients.length === 1 ? (
             <p className="rounded-full bg-care-50 px-2 py-1 text-xs font-semibold text-care-800 sm:px-3">
               Persona cuidada: {careRecipients.recipients[0].name}
@@ -114,5 +104,83 @@ export function PrivateHeader({ userDisplayName, userEmail, careRecipients }: Pr
         </div>
       </div>
     </header>
+  );
+}
+
+type CareRecipientPickerProps = {
+  recipients: { id: string; name: string }[];
+  activeId: string;
+  onSelect: (id: string) => void;
+};
+
+function CareRecipientPicker({ recipients, activeId, onSelect }: CareRecipientPickerProps) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
+  const active = recipients.find((r) => r.id === activeId) ?? recipients[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listboxId}
+        className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-care-50 px-3 py-1 text-xs font-semibold text-care-800 transition hover:bg-care-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-care-300"
+      >
+        <span className="hidden sm:inline text-care-700">Persona cuidada:</span>
+        <span className="max-w-[8rem] truncate">{active?.name}</span>
+        <ChevronDown className={cn("h-4 w-4 transition", open && "rotate-180")} aria-hidden />
+      </button>
+      {open ? (
+        <ul
+          id={listboxId}
+          role="listbox"
+          aria-label="Elegir persona cuidada"
+          className="absolute left-0 z-50 mt-2 max-h-72 w-56 overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-soft"
+        >
+          {recipients.map((recipient) => {
+            const isActive = recipient.id === activeId;
+            return (
+              <li key={recipient.id} role="none">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  onClick={() => {
+                    onSelect(recipient.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex w-full min-h-11 items-center justify-between gap-2 rounded-lg px-3 text-left text-sm font-medium transition",
+                    isActive ? "bg-care-50 text-care-800" : "text-slate-700 hover:bg-slate-50"
+                  )}
+                >
+                  <span className="truncate">{recipient.name}</span>
+                  {isActive ? <Check className="h-4 w-4 shrink-0 text-care-700" aria-hidden /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
   );
 }

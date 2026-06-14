@@ -107,12 +107,18 @@ export function BottomNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-center text-[11px] font-semibold leading-tight",
+                  "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg px-1 text-center text-[11px] font-semibold leading-tight",
                   active
                     ? "bg-care-100 text-care-700"
                     : "text-slate-600 hover:bg-slate-100",
                 )}
               >
+                {active ? (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-2 top-0 h-0.5 rounded-full bg-care-700"
+                  />
+                ) : null}
                 <Icon className="h-5 w-5" aria-hidden />
                 <span>{item.shortLabel}</span>
               </Link>

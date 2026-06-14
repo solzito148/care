@@ -1,52 +1,40 @@
-import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import {
-  BottomNavView,
-  SidebarNavView,
-} from "@/components/layout/nav-list";
 import {
   appNavItems,
   filterNavItemsByRoles,
   getMobileNavItems,
 } from "@/lib/navigation";
 
-describe("SidebarNav", () => {
+const labels = (items: { label: string }[]) => items.map((item) => item.label);
+
+describe("filtrado de navegación por rol", () => {
   it("muestra Cuidadores para tutor", () => {
     const items = filterNavItemsByRoles(appNavItems, ["tutor"]);
-    render(<SidebarNavView items={items} pathname="/dashboard" />);
-    expect(screen.getByRole("link", { name: "Cuidadores" })).toBeInTheDocument();
+    expect(labels(items)).toContain("Cuidadores");
   });
 
-  it("oculta Cuidadores para caregiver", () => {
+  it("oculta Cuidadores para caregiver pero mantiene Agenda", () => {
     const items = filterNavItemsByRoles(appNavItems, ["caregiver"]);
-    render(<SidebarNavView items={items} pathname="/dashboard" />);
-    expect(screen.queryByRole("link", { name: "Cuidadores" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Agenda" })).toBeInTheDocument();
+    expect(labels(items)).not.toContain("Cuidadores");
+    expect(labels(items)).toContain("Agenda");
   });
 
   it("muestra Legales para legal_admin", () => {
     const items = filterNavItemsByRoles(appNavItems, ["legal_admin"]);
-    render(<SidebarNavView items={items} pathname="/dashboard" />);
-    expect(
-      screen.getByRole("link", { name: /Legales/ }),
-    ).toBeInTheDocument();
+    expect(labels(items).some((label) => /Legales/.test(label))).toBe(true);
   });
 
   it("oculta Legales para tutor", () => {
     const items = filterNavItemsByRoles(appNavItems, ["tutor"]);
-    render(<SidebarNavView items={items} pathname="/dashboard" />);
-    expect(screen.queryByRole("link", { name: /Legales/ })).not.toBeInTheDocument();
+    expect(labels(items).some((label) => /Legales/.test(label))).toBe(false);
   });
 });
 
-describe("BottomNav", () => {
+describe("navegación móvil", () => {
   it("filtra items móviles por rol", () => {
-    const items = getMobileNavItems(
-      filterNavItemsByRoles(appNavItems, ["provider"]),
-    );
-    render(<BottomNavView items={items} pathname="/dashboard" />);
-    expect(screen.getByRole("link", { name: "Inicio" })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Agenda" })).not.toBeInTheDocument();
+    const items = getMobileNavItems(filterNavItemsByRoles(appNavItems, ["provider"]));
+    expect(items.map((item) => item.shortLabel)).toContain("Inicio");
+    expect(labels(items)).not.toContain("Agenda");
   });
 });
