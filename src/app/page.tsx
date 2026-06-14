@@ -106,14 +106,30 @@ export default function LandingPage() {
           </Card>
         </section>
 
-        <section aria-labelledby="proposito-heading">
-          <h2 id="proposito-heading" className="mb-3 text-2xl font-semibold text-slate-900">
-            Nuestro propósito
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card size="lg" className="border-l-4 border-l-care-600">
+        <section
+          aria-labelledby="proposito-heading"
+          className="rounded-3xl bg-gradient-to-b from-care-50 to-white p-6 ring-1 ring-care-100 sm:p-10"
+        >
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex rounded-full bg-care-100 px-3 py-1 text-sm font-semibold text-care-800">
+              Nuestro propósito
+            </span>
+            <h2
+              id="proposito-heading"
+              className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+            >
+              Por qué existe CARE
+            </h2>
+            <p className="mt-3 text-base text-slate-600">
+              Una red de contención que transforma la complejidad del cuidado en un proceso
+              organizado, cercano y seguro.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
+            <Card size="lg" className="rounded-2xl border-t-4 border-t-care-600">
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-care-100 text-care-700">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-care-600 text-white">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -132,9 +148,9 @@ export default function LandingPage() {
               <p className="mt-4 text-base leading-relaxed text-slate-600">{mision}</p>
             </Card>
 
-            <Card size="lg" className="border-l-4 border-l-care-400">
+            <Card size="lg" className="rounded-2xl border-t-4 border-t-care-400">
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-care-100 text-care-700">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-care-500 text-white">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"

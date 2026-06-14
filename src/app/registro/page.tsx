@@ -154,7 +154,7 @@ export default function RegisterPage() {
           <div className="sm:col-span-2">
             <CheckboxField
               id="terms"
-              label="Acepto los términos y condiciones de CARE."
+              label="Acepto los Términos y Condiciones y declaro comprender que CARE actúa únicamente como intermediario tecnológico de conexión, exento de responsabilidad asistencial y comercial."
               checked={termsAccepted}
               onChange={setTermsAccepted}
               error={errors.terms}
