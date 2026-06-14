@@ -7,6 +7,7 @@ import { setMedicationActiveAction, upsertMedicationAction } from "@/actions/med
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DataList } from "@/components/ui/data-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -241,24 +242,33 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
       {medsTab === "historial" ? (
         <Card className="p-6">
           <SectionHeading>Historial de cumplimiento</SectionHeading>
-          <div className="mt-4 space-y-3">
+          <div className="mt-4">
             {historial.length === 0 ? (
               <EmptyState
                 title="Sin historial todavía"
                 description="El historial aparece cuando registres tomas."
               />
             ) : (
-              historial.map((item) => (
-                <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {item.fecha} - {item.horario}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-700">{item.confirmadoPor}</p>
-                  <div className="mt-2">
-                    <Badge tone={stateTone[item.estado]}>{stateLabels[item.estado]}</Badge>
-                  </div>
-                </article>
-              ))
+              <DataList
+                items={historial}
+                getRowKey={(item) => item.id}
+                columns={[
+                  { key: "fecha", header: "Fecha", render: (item) => item.fecha },
+                  { key: "horario", header: "Hora", render: (item) => item.horario },
+                  {
+                    key: "confirmado",
+                    header: "Confirmado por",
+                    render: (item) => item.confirmadoPor,
+                  },
+                  {
+                    key: "estado",
+                    header: "Estado",
+                    render: (item) => (
+                      <Badge tone={stateTone[item.estado]}>{stateLabels[item.estado]}</Badge>
+                    ),
+                  },
+                ]}
+              />
             )}
           </div>
         </Card>

@@ -46,7 +46,7 @@ export function FormField({
         <p
           id={errorId}
           role="status"
-          className="text-sm font-medium text-red-700"
+          className="text-sm font-medium text-danger-700"
         >
           {error}
         </p>

@@ -53,7 +53,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-care-50 to-white">
       <Header />
-      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:space-y-8 lg:px-8 lg:py-12">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 pt-8 pb-28 sm:px-6 lg:space-y-8 lg:px-8 lg:py-12">
         <section className="grid items-center gap-6 lg:grid-cols-2">
           <div>
             <p className="inline-flex rounded-full bg-care-100 px-3 py-1 text-sm font-semibold text-care-800">
@@ -75,19 +75,59 @@ export default function LandingPage() {
               </Button>
             </div>
           </div>
-          <Card size="lg" className="rounded-3xl">
-            <h2 className="text-xl font-semibold text-slate-900">Diseñada para uso diario</h2>
-            <p className="mt-3 text-slate-600">
-              Interfaz clara, confiable y accesible para familias y adultos mayores, priorizando
-              tareas criticas y lectura comoda.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2" aria-label="Atributos de la plataforma">
+          <div className="rounded-3xl bg-white p-3 shadow-soft ring-1 ring-care-100">
+            <div
+              aria-hidden
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
+            >
+              <div className="flex items-center gap-1.5 border-b border-slate-200 bg-white px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-danger-100" />
+                <span className="h-3 w-3 rounded-full bg-warning-100" />
+                <span className="h-3 w-3 rounded-full bg-success-100" />
+                <span className="ml-3 text-xs font-semibold text-slate-400">
+                  CARE · Panel del cuidado
+                </span>
+              </div>
+              <div className="space-y-3 p-4">
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { k: "Medicación", v: "3" },
+                    { k: "Turnos hoy", v: "2" },
+                    { k: "Alertas", v: "1" },
+                  ].map((tile) => (
+                    <div key={tile.k} className="rounded-xl bg-white p-3 ring-1 ring-slate-200">
+                      <p className="text-2xl font-bold text-care-800">{tile.v}</p>
+                      <p className="text-[11px] font-medium text-slate-500">{tile.k}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl bg-white p-3 ring-1 ring-slate-200">
+                  <div className="flex items-center justify-between">
+                    <span className="h-2.5 w-24 rounded-full bg-slate-200" />
+                    <span className="rounded-full bg-warning-100 px-2 py-0.5 text-[10px] font-bold text-warning-700">
+                      Pendiente
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2.5 w-2/3 rounded-full bg-slate-100" />
+                </div>
+                <div className="rounded-xl bg-white p-3 ring-1 ring-slate-200">
+                  <div className="flex items-center justify-between">
+                    <span className="h-2.5 w-20 rounded-full bg-slate-200" />
+                    <span className="rounded-full bg-success-100 px-2 py-0.5 text-[10px] font-bold text-success-700">
+                      Confirmado
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2.5 w-1/2 rounded-full bg-slate-100" />
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2" aria-label="Atributos de la plataforma">
               <Badge tone="info">Accesible</Badge>
               <Badge tone="success">Mobile-first</Badge>
               <Badge tone="neutral">Simple y moderna</Badge>
               <Badge tone="warning">Prioridad en alertas</Badge>
             </div>
-          </Card>
+          </div>
         </section>
 
         <section>
@@ -231,6 +271,12 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-care-100 bg-white/95 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+        <Button href="/registro" size="lg" className="w-full">
+          Crear cuenta gratis
+        </Button>
+      </div>
     </div>
   );
 }
