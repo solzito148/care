@@ -12,6 +12,7 @@ import { FormMessage } from "@/components/forms/form-message";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 
 const initialForm: CreateCaregiverProfileInput = {
   fullName: "",
@@ -68,14 +69,11 @@ export function AltaCuidadorClient() {
   };
 
   return (
-    <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900">Alta de cuidador</h1>
-        <p className="mt-2 text-slate-700">
-          Creá tu perfil en el directorio CARE. Los datos serán visibles para familias que
-          buscan cuidadores. Tu perfil queda vinculado a tu cuenta.
-        </p>
-      </Card>
+    <section className="space-y-5 pb-8">
+      <PageHeader
+        title="Alta de cuidador"
+        description="Creá tu perfil en el directorio CARE. Los datos serán visibles para familias que buscan cuidadores. Tu perfil queda vinculado a tu cuenta."
+      />
 
       <Card className="p-6">
         <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit}>

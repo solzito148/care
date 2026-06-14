@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AdminClient } from "@/app/(app)/admin/admin-client";
-import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   buildAdminOverview,
   listAllMarketplaceItems,
@@ -26,13 +26,11 @@ export default async function AdminPage() {
   const overview = buildAdminOverview(recommendations, services, items, subscriptions);
 
   return (
-    <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Administración CARE</h1>
-        <p className="mt-2 text-slate-700">
-          Moderación de recomendaciones, servicios y publicaciones, y gestión de suscripciones.
-        </p>
-      </Card>
+    <section className="space-y-5 pb-8">
+      <PageHeader
+        title="Administración CARE"
+        description="Moderación de recomendaciones, servicios y publicaciones, y gestión de suscripciones."
+      />
 
       <AdminClient
         overview={overview}

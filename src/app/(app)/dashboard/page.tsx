@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ensureCareContext } from "@/lib/data/care-context";
 import { loadDashboardData } from "@/lib/data/dashboard";
@@ -18,20 +20,19 @@ export default async function DashboardPage() {
     { label: "Gestionar turnos", href: "/turnos" },
     { label: "Agregar cuidador", href: "/cuidadores" },
     { label: "Editar persona cuidada", href: "/persona-cuidada" },
-    { label: "Cambiar a vista persona cuidada", href: "/persona" },
   ];
 
   return (
     <section className="space-y-5">
-      <Card size="lg">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-          Dashboard Administrador del Cuidado
-        </h1>
-        <p className="mt-3 max-w-3xl text-base text-slate-700">
-          Vista para tutores, familiares, cuidadores o encargados. Centraliza el estado diario del
-          cuidado, alertas y acciones clave.
-        </p>
-      </Card>
+      <PageHeader
+        title="Dashboard Administrador del Cuidado"
+        description="Vista para tutores, familiares, cuidadores o encargados. Centraliza el estado diario del cuidado, alertas y acciones clave."
+        actions={
+          <Button href="/persona" variant="secondary" size="lg">
+            Ver vista persona cuidada
+          </Button>
+        }
+      />
 
       <section aria-label="Resumen principal" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {summaryCards.map((card) => (
@@ -45,7 +46,7 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <h2 className="text-xl font-semibold text-slate-900">Alertas importantes</h2>
+          <SectionHeading>Alertas importantes</SectionHeading>
           <div className="mt-4 space-y-3">
             {alerts.length === 0 ? (
               <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-base text-slate-700">
@@ -66,7 +67,7 @@ export default async function DashboardPage() {
         </Card>
 
         <Card>
-          <h2 className="text-xl font-semibold text-slate-900">Acciones rápidas</h2>
+          <SectionHeading>Acciones rápidas</SectionHeading>
           <div className="mt-4 grid gap-3">
             {quickActions.map((action) => (
               <Button

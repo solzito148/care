@@ -10,6 +10,7 @@ import {
 } from "@/actions/estudios";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { Input } from "@/components/ui/input";
 import type { StudyItem, StudyStatus } from "@/lib/data/estudios";
 
@@ -217,13 +218,10 @@ export function EstudiosClient({ studies }: Props) {
 
   return (
     <section className="space-y-6 pb-10">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Estudios médicos</h1>
-        <p className="mt-2 text-slate-700">
-          Historial de estudios, preparaciones previas y resultados adjuntos. Visible para
-          miembros del hogar según permisos.
-        </p>
-      </Card>
+      <PageHeader
+        title="Estudios médicos"
+        description="Historial de estudios, preparaciones previas y resultados adjuntos. Visible para miembros del hogar según permisos."
+      />
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-slate-900">Próximos y en curso</h2>

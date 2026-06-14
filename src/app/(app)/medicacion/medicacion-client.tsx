@@ -4,17 +4,21 @@ import { ChangeEvent, FormEvent, useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation";
 import { CheckboxField } from "@/components/forms/checkbox-field";
 import { setMedicationActiveAction, upsertMedicationAction } from "@/actions/medicacion";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { Input } from "@/components/ui/input";
 import { ActiveMedication, DailyMedication, MedicationHistoryItem, MedicationState } from "@/lib/medicacion-types";
 
-const stateStyles: Record<MedicationState, string> = {
-  pendiente: "bg-warning-100 text-warning-700",
-  tomado: "bg-success-100 text-success-700",
-  omitido: "bg-danger-100 text-danger-700",
-  "sin-respuesta": "bg-slate-200 text-slate-700",
-  "confirmado-cuidador": "bg-info-100 text-info-700",
+const stateTone: Record<MedicationState, "neutral" | "info" | "success" | "warning" | "danger"> = {
+  pendiente: "warning",
+  tomado: "success",
+  omitido: "danger",
+  "sin-respuesta": "neutral",
+  "confirmado-cuidador": "info",
 };
 
 const stateLabels: Record<MedicationState, string> = {
@@ -116,22 +120,26 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
 
   return (
     <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Módulo Medicación</h1>
-        <p className="mt-2 text-slate-700">
-          Gestión de medicamentos activos, cumplimiento, recordatorios y alertas para tutor o cuidador autorizado.
-        </p>
-        <p className="mt-2 text-sm font-semibold text-slate-600">
-          Stock bajo en {stockBajo} medicamento(s). {pending ? "Guardando…" : "Datos guardados en tu cuenta."}
-        </p>
-      </Card>
+      <PageHeader
+        title="Módulo Medicación"
+        description="Gestión de medicamentos activos, cumplimiento, recordatorios y alertas para tutor o cuidador autorizado."
+        actions={
+          <span className="rounded-full bg-care-50 px-3 py-1 text-sm font-semibold text-care-700">
+            Stock bajo en {stockBajo} medicamento(s).
+            {pending ? " Guardando…" : ""}
+          </span>
+        }
+      />
 
       <section className="grid gap-4 xl:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Medicamentos del día</h2>
+          <SectionHeading>Medicamentos del día</SectionHeading>
           <div className="mt-4 space-y-3">
             {medicamentosDelDia.length === 0 ? (
-              <p className="text-sm text-slate-600">No hay tomas programadas para hoy. Agrega un medicamento con horarios.</p>
+              <EmptyState
+                title="No hay tomas programadas para hoy"
+                description="Agregá un medicamento con sus horarios para verlo acá."
+              />
             ) : (
               medicamentosDelDia.map((item) => (
                 <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -139,9 +147,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
                   <p className="mt-1 text-sm text-slate-700">
                     {item.dosis} - {item.horario} - Responsable: {item.responsable}
                   </p>
-                  <span className={`mt-3 inline-flex rounded-full px-3 py-1 text-sm font-semibold ${stateStyles[item.estado]}`}>
-                    {stateLabels[item.estado]}
-                  </span>
+                  <div className="mt-3">
+                    <Badge tone={stateTone[item.estado]}>{stateLabels[item.estado]}</Badge>
+                  </div>
                 </article>
               ))
             )}
@@ -149,10 +157,13 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Medicamentos activos</h2>
+          <SectionHeading>Medicamentos activos</SectionHeading>
           <div className="mt-4 space-y-3">
             {medicamentosActivos.length === 0 ? (
-              <p className="text-sm text-slate-600">Todavía no cargaste medicamentos.</p>
+              <EmptyState
+                title="Todavía no cargaste medicamentos"
+                description="Sumá el primer medicamento desde el formulario."
+              />
             ) : (
               medicamentosActivos.map((item) => (
                 <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -166,11 +177,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
                         Stock: {item.stockActual} | Reposición: {item.recordatorioReposicion}
                       </p>
                     </div>
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${item.activo ? "bg-success-100 text-success-700" : "bg-slate-200 text-slate-700"}`}
-                    >
+                    <Badge tone={item.activo ? "success" : "neutral"}>
                       {item.activo ? "Activo" : "Pausado/finalizado"}
-                    </span>
+                    </Badge>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button variant="secondary" type="button" onClick={() => startEdit(item)}>
@@ -192,10 +201,13 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
 
       <section className="grid gap-4 xl:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Historial de cumplimiento</h2>
+          <SectionHeading>Historial de cumplimiento</SectionHeading>
           <div className="mt-4 space-y-3">
             {historial.length === 0 ? (
-              <p className="text-sm text-slate-600">El historial aparece cuando registres tomas.</p>
+              <EmptyState
+                title="Sin historial todavía"
+                description="El historial aparece cuando registres tomas."
+              />
             ) : (
               historial.map((item) => (
                 <article key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -203,9 +215,9 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
                     {item.fecha} - {item.horario}
                   </p>
                   <p className="mt-1 text-sm text-slate-700">{item.confirmadoPor}</p>
-                  <span className={`mt-2 inline-flex rounded-full px-3 py-1 text-sm font-semibold ${stateStyles[item.estado]}`}>
-                    {stateLabels[item.estado]}
-                  </span>
+                  <div className="mt-2">
+                    <Badge tone={stateTone[item.estado]}>{stateLabels[item.estado]}</Badge>
+                  </div>
                 </article>
               ))
             )}
@@ -213,7 +225,7 @@ export function MedicacionClient({ medicamentosActivos, medicamentosDelDia, hist
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-slate-900">{tituloFormulario}</h2>
+          <SectionHeading>{tituloFormulario}</SectionHeading>
           <p className="mt-1 text-sm text-slate-600">
             Configura recordatorios y alertas al tutor cuando no se confirme la toma.
           </p>

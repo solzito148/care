@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 import type { CaregiverSearchItem } from "@/lib/cuidadores-types";
 import { tierCapabilities, telLink, whatsappLink } from "@/lib/professional-tier";
 
@@ -69,13 +70,11 @@ export function CuidadoresClient({ caregivers }: Props) {
 
   return (
     <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Búsqueda de Cuidadores</h1>
-            <p className="mt-2 text-slate-700">Filtrá por cobertura, modalidad, disponibilidad, experiencia y calidad de perfil.</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+      <PageHeader
+        title="Búsqueda de Cuidadores"
+        description="Filtrá por cobertura, modalidad, disponibilidad, experiencia y calidad de perfil."
+        actions={
+          <>
             <Button href="/cuidadores/admin-actualizacion" variant="secondary">
               Admin actualización
             </Button>
@@ -85,9 +84,9 @@ export function CuidadoresClient({ caregivers }: Props) {
             <Button href="/cuidadores/alta" variant="secondary">
               Alta de cuidador
             </Button>
-          </div>
-        </div>
-      </Card>
+          </>
+        }
+      />
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-slate-900">Filtros</h2>

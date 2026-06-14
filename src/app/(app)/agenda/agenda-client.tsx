@@ -6,17 +6,12 @@ import { createAppointmentAction } from "@/actions/agenda";
 import { AddressAutocomplete } from "@/components/forms/address-autocomplete";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
-import type { AgendaEventStatus } from "@/lib/agenda-types";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { AR_PROVINCIAS } from "@/lib/ar-provincias";
 import type { AgendaServerItem } from "@/lib/data/agenda";
-
-const estadoStyles: Record<AgendaEventStatus, string> = {
-  pendiente: "bg-warning-100 text-warning-700",
-  confirmado: "bg-info-100 text-info-700",
-  urgente: "bg-danger-100 text-danger-700",
-  completado: "bg-success-100 text-success-700",
-};
 
 const dateFmt = new Intl.DateTimeFormat("es-AR", {
   weekday: "short",
@@ -97,18 +92,19 @@ export function AgendaClient({ items }: Props) {
 
   return (
     <section className="space-y-6 pb-10">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Agenda</h1>
-        <p className="mt-2 text-slate-700">
-          Turnos y actividades del cuidado. Los eventos se guardan en tu cuenta y son visibles para miembros del hogar.
-        </p>
-      </Card>
+      <PageHeader
+        title="Agenda"
+        description="Turnos y actividades del cuidado. Los eventos se guardan en tu cuenta y son visibles para miembros del hogar."
+      />
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-slate-900">Próximos turnos</h2>
         <div className="mt-4 space-y-3">
           {formatted.length === 0 ? (
-            <p className="text-sm text-slate-600">No hay turnos cargados. Agrega uno con el formulario.</p>
+            <EmptyState
+              title="No hay turnos cargados"
+              description="Agregá uno con el formulario de nuevo turno médico."
+            />
           ) : (
             formatted.map((ev) => (
               <article key={ev.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -125,9 +121,9 @@ export function AgendaClient({ items }: Props) {
                 ) : null}
                 {ev.responsable ? <p className="mt-1 text-sm text-slate-600">Con: {ev.responsable}</p> : null}
                 {ev.notas ? <p className="mt-2 text-sm text-slate-700">{ev.notas}</p> : null}
-                <span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${estadoStyles[ev.estado]}`}>
-                  {ev.estado}
-                </span>
+                <div className="mt-2">
+                  <StatusBadge status={ev.estado} />
+                </div>
               </article>
             ))
           )}

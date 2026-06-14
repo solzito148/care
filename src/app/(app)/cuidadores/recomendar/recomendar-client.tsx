@@ -7,6 +7,7 @@ import { FormMessage } from "@/components/forms/form-message";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 import type { CaregiverSearchItem, RecommendationStatus } from "@/lib/cuidadores-types";
 
 const statusLabels: Record<RecommendationStatus, string> = {
@@ -102,13 +103,11 @@ export function RecomendarCuidadorClient({ caregivers }: Props) {
   };
 
   return (
-    <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900">Recomendar cuidador</h1>
-        <p className="mt-2 text-slate-700">
-          Un cuidador puede ser marcado como Recomendado CARE cuando un usuario registrado lo recomienda tras haberlo contratado.
-        </p>
-      </Card>
+    <section className="space-y-5 pb-8">
+      <PageHeader
+        title="Recomendar cuidador"
+        description="Un cuidador puede ser marcado como Recomendado CARE cuando un usuario registrado lo recomienda tras haberlo contratado."
+      />
 
       <Card className="p-6">
         <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit}>

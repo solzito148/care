@@ -19,6 +19,9 @@ const config: Config = {
           700: "#1d4ed8",
           800: "#1e40af",
           900: "#1e3a8a",
+          text: "#0f172a",
+          muted: "#64748b",
+          border: "#e2e8f0",
         },
         success: {
           100: "#dcfce7",

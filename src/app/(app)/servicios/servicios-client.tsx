@@ -5,6 +5,7 @@ import { useState } from "react";
 import { PrestacionesSection } from "@/app/(app)/servicios/prestaciones-section";
 import { PublicacionesSection } from "@/app/(app)/servicios/publicaciones-section";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import type { MarketplaceListItem } from "@/lib/data/marketplace";
 import type { MarketplaceTab } from "@/lib/marketplace-types";
 import type { ServiceListItem } from "@/lib/data/servicios";
@@ -30,13 +31,10 @@ export function ServiciosClient({ services, items, initialTab = "prestaciones" }
 
   return (
     <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Servicios CARE</h1>
-        <p className="mt-2 text-slate-700">
-          Prestaciones complementarias para el cuidado y publicaciones de artículos y equipamiento:
-          venta, alquiler, intercambio y donaciones.
-        </p>
-      </Card>
+      <PageHeader
+        title="Servicios CARE"
+        description="Prestaciones complementarias para el cuidado y publicaciones de artículos y equipamiento: venta, alquiler, intercambio y donaciones."
+      />
 
       <Card className="p-6">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">

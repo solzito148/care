@@ -9,6 +9,7 @@ import {
 } from "@/actions/agenda";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import type { AgendaServerItem } from "@/lib/data/agenda";
 
@@ -71,18 +72,15 @@ export function TurnosClient({ items, nowMs }: Props) {
 
   return (
     <section className="space-y-6 pb-10">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Turnos</h1>
-        <p className="mt-2 text-slate-700">
-          Gestión de turnos médicos: confirmaciones, asistencia y cancelaciones. Para crear un
-          turno nuevo usá la Agenda.
-        </p>
-        <div className="mt-4">
+      <PageHeader
+        title="Turnos"
+        description="Gestión de turnos médicos: confirmaciones, asistencia y cancelaciones. Para crear un turno nuevo usá la Agenda."
+        actions={
           <Button href="/agenda" variant="secondary">
             Crear turno en Agenda
           </Button>
-        </div>
-      </Card>
+        }
+      />
 
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-slate-900">Próximos turnos</h2>

@@ -4,6 +4,8 @@ import { NotificationsCard } from "@/components/notifications/notifications-card
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { loadNotifications } from "@/lib/data/notifications";
 import { loadCurrentSubscription } from "@/lib/data/planes";
 import { ACCOUNT_TYPE_LABELS, getCurrentUser } from "@/lib/permissions";
@@ -39,16 +41,14 @@ export default async function MiCuentaPage() {
     : "Sin definir";
 
   return (
-    <section className="space-y-4 pb-8">
-      <Card className="p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Mi cuenta</h1>
-        <p className="mt-2 text-slate-700">
-          Datos personales, tipo de cuenta y suscripción.
-        </p>
-      </Card>
+    <section className="space-y-5 pb-8">
+      <PageHeader
+        title="Mi cuenta"
+        description="Datos personales, tipo de cuenta y suscripción."
+      />
 
       <Card className="p-6 sm:p-7">
-        <h2 className="text-xl font-semibold text-slate-900">Datos personales</h2>
+        <SectionHeading>Datos personales</SectionHeading>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="font-medium text-slate-600">Nombre</dt>
@@ -89,9 +89,7 @@ export default async function MiCuentaPage() {
         {subscription ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-xl font-semibold text-slate-900">
-                {subscription.plan_name}
-              </h2>
+              <SectionHeading>{subscription.plan_name}</SectionHeading>
               <Badge tone={stateTone[subscription.status]}>{subscription.status}</Badge>
             </div>
             <p className="mt-3 text-sm text-slate-700">
@@ -113,7 +111,7 @@ export default async function MiCuentaPage() {
           </>
         ) : (
           <>
-            <h2 className="text-xl font-semibold text-slate-900">Sin plan activo</h2>
+            <SectionHeading>Sin plan activo</SectionHeading>
             <p className="mt-2 text-sm text-slate-700">
               Todavía no elegiste un plan CARE. Podés empezar con el plan gratuito.
             </p>
