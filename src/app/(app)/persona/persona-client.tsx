@@ -55,12 +55,13 @@ export function PersonaClient({ data }: Props) {
   const current = data.current;
 
   return (
-    <section className="space-y-4 pb-40">
+    <section className="space-y-4 pb-72 sm:pb-44">
       <Card className="p-6 sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-slate-600">Vista simple</p>
         <h1 className="mt-2 text-simple-title text-slate-900">{data.displayName}</h1>
         <p className="mt-3 text-simple-text capitalize text-slate-700">{todayLabel}</p>
-        <p className="mt-1 text-4xl font-bold text-care-800">{timeLabel}</p>
+        <p className="mt-1 text-5xl font-bold tracking-tight text-care-900">{timeLabel}</p>
+        <p className="mt-1 text-base font-medium text-slate-500">Hora local de Argentina</p>
       </Card>
 
       <Card className="p-6 sm:p-8">
@@ -77,7 +78,7 @@ export function PersonaClient({ data }: Props) {
               {current.scheduleId ? (
                 <Button
                   size="lg"
-                  className="min-h-14 text-lg"
+                  className="min-h-16 text-xl"
                   disabled={pending}
                   onClick={() => onConfirmIntake(current.scheduleId!)}
                 >
@@ -88,7 +89,7 @@ export function PersonaClient({ data }: Props) {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="min-h-14 text-lg"
+                  className="min-h-16 text-xl"
                   href={`tel:${data.tutorPhone ?? data.caregiverPhone}`}
                 >
                   Necesito ayuda
@@ -134,27 +135,29 @@ export function PersonaClient({ data }: Props) {
         </div>
       </Card>
 
-      <Card className="p-6 sm:p-8">
-        <h2 className="text-3xl font-bold text-slate-900">Mañana</h2>
-        {data.tomorrowReminders.length === 0 ? (
-          <p className="mt-4 text-xl font-semibold text-slate-700">
-            No hay recordatorios para mañana.
-          </p>
-        ) : (
-          data.tomorrowReminders.map((reminder) => (
+      {data.tomorrowReminders.length === 0 ? (
+        <Card className="p-5">
+          <h2 className="text-xl font-semibold text-slate-700">
+            Mañana · sin recordatorios
+          </h2>
+        </Card>
+      ) : (
+        <Card className="p-6 sm:p-8">
+          <h2 className="text-3xl font-bold text-slate-900">Mañana</h2>
+          {data.tomorrowReminders.map((reminder) => (
             <p key={reminder} className="mt-4 text-xl font-semibold text-slate-900">
               {reminder}
             </p>
-          ))
-        )}
-      </Card>
+          ))}
+        </Card>
+      )}
 
-      <div className="fixed inset-x-0 bottom-16 z-20 bg-white/95 px-3 py-3 backdrop-blur lg:bottom-0 lg:px-6">
+      <div className="fixed inset-x-0 bottom-16 z-20 border-t border-slate-200 bg-white/95 px-3 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur lg:bottom-0 lg:px-6">
         <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3">
           {data.tutorPhone ? (
             <a
               href={`tel:${data.tutorPhone}`}
-              className="inline-flex min-h-14 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-lg font-semibold text-slate-900"
+              className="inline-flex min-h-16 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-lg font-semibold text-slate-900"
             >
               Llamar tutor
             </a>
@@ -162,14 +165,14 @@ export function PersonaClient({ data }: Props) {
           {data.caregiverPhone ? (
             <a
               href={`tel:${data.caregiverPhone}`}
-              className="inline-flex min-h-14 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-lg font-semibold text-slate-900"
+              className="inline-flex min-h-16 items-center justify-center rounded-xl2 border border-slate-300 bg-white px-4 text-lg font-semibold text-slate-900"
             >
               Llamar cuidador
             </a>
           ) : null}
           <a
             href="tel:107"
-            className="inline-flex min-h-14 items-center justify-center rounded-xl2 bg-danger-700 px-4 text-lg font-semibold text-white"
+            className="inline-flex min-h-16 items-center justify-center rounded-xl2 bg-danger-700 px-4 text-lg font-bold text-white"
           >
             Emergencia
           </a>

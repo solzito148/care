@@ -8,6 +8,7 @@ import { ListEditor } from "@/components/persona-cuidada/list-editor";
 import { SectionCard } from "@/components/persona-cuidada/section-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/cn";
 import type {
   Caregiver,
   DocumentItem,
@@ -60,13 +61,29 @@ const factories = {
 
 const removeBtnClass = "text-danger-700 hover:bg-danger-100 focus-visible:ring-care-300";
 
+const WIZARD_STEPS = [
+  { id: "datos", label: "Datos personales" },
+  { id: "salud", label: "Salud y cobertura" },
+  { id: "vinculos", label: "Vínculos y contactos" },
+  { id: "documentacion", label: "Documentación" },
+] as const;
+
 export function PersonaCuidadaClient({ initial }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [form, setForm] = useState<PersonaCuidada>(initial);
   const [saveMessage, setSaveMessage] = useState("");
+  const [step, setStep] = useState(0);
+  const lastStep = WIZARD_STEPS.length - 1;
   // El DNI es la clave unívoca del adulto mayor: una vez seteado no se edita.
   const dniLocked = initial.dni.trim().length > 0;
+
+  const goToStep = (next: number) => {
+    setStep(Math.min(Math.max(next, 0), lastStep));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const updateField =
     <K extends keyof PersonaCuidada>(field: K) =>
@@ -155,25 +172,65 @@ export function PersonaCuidadaClient({ initial }: Props) {
 
   return (
     <section className="space-y-4 pb-10">
-      <SectionCard
-        title="Persona Cuidada"
-        description="Ficha completa editable. Los datos se guardan en tu cuenta (persona cuidada del hogar)."
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <Button size="lg" onClick={onSave} disabled={pending}>
-            Guardar cambios
-          </Button>
-          {saveMessage ? (
-            <p
-              className={`text-sm font-medium ${saveMessage.includes("No se") ? "text-danger-700" : "text-success-700"}`}
-            >
-              {saveMessage}
-            </p>
-          ) : null}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-care-text sm:text-3xl">
+            Persona cuidada
+          </h1>
+          <p className="mt-1 text-base text-care-muted">
+            Ficha completa editable. Los datos se guardan en tu cuenta (persona cuidada del hogar).
+          </p>
         </div>
-      </SectionCard>
+        {saveMessage ? (
+          <p
+            className={`text-sm font-medium ${saveMessage.includes("No se") ? "text-danger-700" : "text-success-700"}`}
+            role="status"
+          >
+            {saveMessage}
+          </p>
+        ) : null}
+      </div>
 
-      <SectionCard title="1. Datos personales">
+      <ol className="flex flex-wrap gap-2" aria-label="Pasos del formulario">
+        {WIZARD_STEPS.map((wizardStep, index) => {
+          const isCurrent = index === step;
+          const isDone = index < step;
+          return (
+            <li key={wizardStep.id} className="min-w-[8rem] flex-1">
+              <button
+                type="button"
+                onClick={() => goToStep(index)}
+                aria-current={isCurrent ? "step" : undefined}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-semibold transition",
+                  isCurrent
+                    ? "border-care-600 bg-care-50 text-care-800"
+                    : isDone
+                      ? "border-care-200 bg-white text-care-700"
+                      : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                    isCurrent
+                      ? "bg-care-600 text-white"
+                      : isDone
+                        ? "bg-care-100 text-care-700"
+                        : "bg-slate-100 text-slate-500"
+                  )}
+                >
+                  {index + 1}
+                </span>
+                <span className="truncate">{wizardStep.label}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      {step === 0 ? (
+      <SectionCard title="Datos personales">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Nombre" value={form.nombre} onChange={updateField("nombre")} />
           <Input label="Apellido" value={form.apellido} onChange={updateField("apellido")} />
@@ -205,8 +262,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           </label>
         </div>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="2. Tutores asociados">
+      {step === 2 ? (
+      <SectionCard title="Tutores asociados">
         <ListEditor
           title="Tutor principal y secundarios"
           addLabel="Agregar tutor"
@@ -268,8 +327,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           ))}
         </ListEditor>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="3. Salud">
+      {step === 1 ? (
+      <SectionCard title="Salud">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Médico de cabecera" value={form.medicoCabecera} onChange={updateField("medicoCabecera")} />
           <Input label="Movilidad" value={form.movilidad} onChange={updateField("movilidad")} />
@@ -304,8 +365,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           </label>
         </div>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="4. Obra social / prepaga">
+      {step === 1 ? (
+      <SectionCard title="Obra social / prepaga">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Tipo" value={form.obraSocialTipo} onChange={updateField("obraSocialTipo")} />
           <Input label="Nombre" value={form.obraSocialNombre} onChange={updateField("obraSocialNombre")} />
@@ -315,8 +378,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           <Input label="Credencial adjunta" value={form.credencialAdjunta} onChange={updateField("credencialAdjunta")} />
         </div>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="5. Cuidadores asociados">
+      {step === 2 ? (
+      <SectionCard title="Cuidadores asociados">
         <ListEditor
           title="Cuidadores"
           addLabel="Agregar cuidador"
@@ -360,8 +425,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           ))}
         </ListEditor>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="6. Contactos de emergencia">
+      {step === 2 ? (
+      <SectionCard title="Contactos de emergencia">
         <ListEditor
           title="Contactos"
           addLabel="Agregar contacto"
@@ -411,8 +478,10 @@ export function PersonaCuidadaClient({ initial }: Props) {
           ))}
         </ListEditor>
       </SectionCard>
+      ) : null}
 
-      <SectionCard title="7. Documentación">
+      {step === 3 ? (
+      <SectionCard title="Documentación">
         <ListEditor
           title="Archivos cargados"
           addLabel="Adjuntar documento"
@@ -452,6 +521,33 @@ export function PersonaCuidadaClient({ initial }: Props) {
           ))}
         </ListEditor>
       </SectionCard>
+      ) : null}
+
+      <div className="sticky bottom-16 z-30 lg:bottom-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-soft backdrop-blur">
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={step === 0}
+            onClick={() => goToStep(step - 1)}
+          >
+            Anterior
+          </Button>
+          <span className="text-sm font-medium text-care-muted">
+            Paso {step + 1} de {WIZARD_STEPS.length}
+          </span>
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" onClick={onSave} disabled={pending}>
+              {pending ? "Guardando…" : "Guardar"}
+            </Button>
+            {step < lastStep ? (
+              <Button type="button" onClick={() => goToStep(step + 1)}>
+                Siguiente
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
