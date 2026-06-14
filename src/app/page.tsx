@@ -49,7 +49,15 @@ const serviceOfferings = [
   "Desarme y organización del hogar",
 ];
 
-export default function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  // #region agent log
+  const sp = await searchParams;
+  fetch('http://127.0.0.1:7470/ingest/ee3f8cae-88a9-4b0b-8537-c8bc3463e644',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'db74d2'},body:JSON.stringify({sessionId:'db74d2',hypothesisId:'E',location:'app/page.tsx:root',message:'landing root render with params',data:{hasCode:!!sp.code,type:sp.type ?? null,error:sp.error ?? null,errorDescription:sp.error_description ?? null,allParams:Object.keys(sp)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return (
     <div className="min-h-screen bg-gradient-to-b from-care-50 to-white">
       <Header />

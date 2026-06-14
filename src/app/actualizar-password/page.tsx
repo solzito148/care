@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FormMessage } from "@/components/forms/form-message";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
 import { updatePassword } from "@/lib/auth";
 import { validateStrongPassword } from "@/lib/form-validation";
 
@@ -18,6 +19,15 @@ export default function UpdatePasswordPage() {
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  // #region agent log
+  useEffect(() => {
+    const sb = createClient();
+    sb.auth.getSession().then(({ data, error }) => {
+      fetch('http://127.0.0.1:7470/ingest/ee3f8cae-88a9-4b0b-8537-c8bc3463e644',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'db74d2'},body:JSON.stringify({sessionId:'db74d2',hypothesisId:'C',location:'actualizar-password/page.tsx:mount',message:'session on mount',data:{hasSession:!!data?.session,userId:data?.session?.user?.id ?? null,getSessionError:error?.message ?? null,hash:typeof window!=='undefined'?window.location.hash:null,search:typeof window!=='undefined'?window.location.search:null},timestamp:Date.now()})}).catch(()=>{});
+    });
+  }, []);
+  // #endregion
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,6 +44,9 @@ export default function UpdatePasswordPage() {
       setLoading(true);
       await updatePassword(password);
       setDone(true);
+      // #region agent log
+      fetch('http://127.0.0.1:7470/ingest/ee3f8cae-88a9-4b0b-8537-c8bc3463e644',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'db74d2'},body:JSON.stringify({sessionId:'db74d2',hypothesisId:'D',location:'actualizar-password/page.tsx:submitOk',message:'updatePassword succeeded',data:{},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setTimeout(() => {
         router.replace("/dashboard");
         router.refresh();
@@ -43,6 +56,9 @@ export default function UpdatePasswordPage() {
         error instanceof Error
           ? error.message
           : "No pudimos actualizar la contraseña.";
+      // #region agent log
+      fetch('http://127.0.0.1:7470/ingest/ee3f8cae-88a9-4b0b-8537-c8bc3463e644',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'db74d2'},body:JSON.stringify({sessionId:'db74d2',hypothesisId:'C',location:'actualizar-password/page.tsx:submitError',message:'updatePassword threw',data:{errorMessage:message},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setFormError(message);
     } finally {
       setLoading(false);

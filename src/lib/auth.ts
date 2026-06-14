@@ -101,7 +101,12 @@ export async function requestPasswordReset(email: string) {
 
 export async function updatePassword(newPassword: string) {
   const supabase = createClient();
-  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  const { data: sessionData } = await supabase.auth.getSession();
+  const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+
+  // #region agent log
+  fetch('http://127.0.0.1:7470/ingest/ee3f8cae-88a9-4b0b-8537-c8bc3463e644',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'db74d2'},body:JSON.stringify({sessionId:'db74d2',hypothesisId:'C',location:'lib/auth.ts:updatePassword',message:'updateUser raw result',data:{hadSessionBefore:!!sessionData?.session,updatedUserId:data?.user?.id ?? null,rawError:error?.message ?? null,rawErrorCode:(error as {code?:string})?.code ?? null},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   if (error) {
     throw new Error(translateAuthError(error.message, error.code));
